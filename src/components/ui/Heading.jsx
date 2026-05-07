@@ -1,5 +1,11 @@
-import { Box, Input, Button, Flex, Stack, Heading } from "@chakra-ui/react";
-import { useState } from "react";
+import {
+  Box,
+  Input,
+  Button,
+  Flex,
+  Heading,
+  Text,
+} from "@chakra-ui/react";
 
 export default function HeadingExample({
   children,
@@ -8,8 +14,6 @@ export default function HeadingExample({
   searchTerm,
   setSearchTerm,
 }) {
-  const handleCreate = () => setCreateOpen(true);
-
   const events = Array.isArray(data?.events) ? data.events : [];
   const categories = Array.isArray(data?.categories) ? data.categories : [];
 
@@ -36,25 +40,22 @@ export default function HeadingExample({
 
   return (
     <Box
-      p={6}
+      p={3}
       bg="gray.100"
       position="sticky"
       top="0"
-      zIndex="sticky"
+      zIndex={100}
       boxShadow="sm"
     >
-      {/* HEADER STROOK */}
       <Flex
         align="center"
         justify="space-between"
         gap={4}
         flexWrap="wrap"
-        mb={4}
+        mb={2}
       >
-        {/* Titel */}
-        <Heading size="lg">{children}</Heading>
+        <Heading size="lg">{children ?? "Events"}</Heading>
 
-        {/* Zoekveld */}
         <Input
           maxW="350px"
           placeholder="Search events..."
@@ -63,13 +64,11 @@ export default function HeadingExample({
           bg="white"
         />
 
-        {/* Create button */}
         <Button onClick={onCreate} colorScheme="blue">
           Create new event
         </Button>
       </Flex>
 
-      {/* No results message */}
       {searchTerm.trim() !== "" && filteredEvents.length === 0 && (
         <Text color="gray.500" textAlign="center">
           No Event Found

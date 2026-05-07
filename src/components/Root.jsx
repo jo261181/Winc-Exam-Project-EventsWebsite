@@ -8,11 +8,11 @@ import { Toaster } from "./ui/toaster";
 export const Root = () => {
   const [data, setData] = useState(null);
 
-  useEffect(() => {
-    fetch("http://localhost:3000/events")
-      .then((res) => res.json())
-      .then((json) => setData(json));
-  }, []);
+useEffect(() => {
+  fetch("http://localhost:3000/events")
+    .then((res) => res.json())
+    .then((json) => setData({ events: json, categories: [] }));
+}, []);
 
   if (!data) return <p>Loading…</p>;
 
@@ -24,4 +24,3 @@ export const Root = () => {
     </Box>
   );
 };
-

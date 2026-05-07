@@ -22,14 +22,14 @@ export const EventsPage = () => {
 
   const navigate = useNavigate();
 
-  const eventsArray = data.events || [];
-  const categories = data.categories || [];
+  const eventsArray = Array.isArray(data?.events) ? data.events : [];
+  const categories = Array.isArray(data?.categories) ? data.categories : [];
 
   const addEvent = (newEvent) => {
     const updated = {
       ...data,
       events: [
-        ...data.events,
+        ...eventsArray,
         {
           id: crypto.randomUUID(),
           ...newEvent,
@@ -56,7 +56,8 @@ export const EventsPage = () => {
       categoryMatch
     );
   });
-
+console.log("EVENTS:", data.events);
+console.log("FILTERED:", filteredEvents);
   return (
     <>
       <HeadingExample
@@ -87,10 +88,10 @@ export const EventsPage = () => {
         bgSize="cover"
         bgPosition="center"
         opacity="0.4"
-        zIndex="-1"
+        zIndex={-1}
       />
 
-      <Box position="relative" zIndex="1" p={6}>
+      <Box position="relative" zIndex={10} p={6} mt="100px">
         <SimpleGrid columns={[1, 2, 3, 4]} spacing={6} gap="30px">
           {filteredEvents.map((evt) => (
             <Card.Root
