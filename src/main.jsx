@@ -1,6 +1,6 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
-import { ChakraProvider } from "@chakra-ui/react";
+import { Provider } from "./components/ui/provider";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import { Root } from "./components/Root";
 import EventPage from "./pages/EventPage";
@@ -20,8 +20,8 @@ const router = createBrowserRouter([
 
 ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>
-    <ChakraProvider>
+    <Provider>
       <RouterProvider router={router} />
-    </ChakraProvider>
-  </React.StrictMode>
+    </Provider>
+  </React.StrictMode>,
 );

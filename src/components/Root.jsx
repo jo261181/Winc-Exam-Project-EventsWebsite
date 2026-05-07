@@ -3,13 +3,13 @@ import { Navigation } from "./Navigation";
 import { Box } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
 
-import { Toaster } from "@chakra-ui/react";
+import { Toaster } from "./ui/toaster"; 
 
 export const Root = () => {
   const [data, setData] = useState(null);
 
   useEffect(() => {
-    fetch("/events.json")
+    fetch("http://localhost:3000/events")
       .then((res) => res.json())
       .then((json) => setData(json));
   }, []);
