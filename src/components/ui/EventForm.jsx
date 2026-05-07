@@ -80,7 +80,7 @@ export default function EventForm({ cancel, initialEvent, onSubmit }) {
           Cancel
         </Button>
 
-        <Button variant="solid" type="submit" colorScheme="blue" width="full">
+        <Button variant="solid" type="submit" colorScheme="blue" width="inherit">
           {initialEvent ? "Save changes" : "Create Event"}
         </Button>
       </Card.Footer>

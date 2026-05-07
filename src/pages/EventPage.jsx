@@ -13,6 +13,7 @@ import {
 
 import SimpleModal from "../components/ui/modal";
 import EventForm from "../components/ui/EventForm";
+import { Tooltip } from "../components/ui/tooltip";
 
 export default function EventPage() {
   const { id } = useParams();
@@ -53,7 +54,7 @@ export default function EventPage() {
     const updated = {
       ...data,
       events: data.events.map((e) =>
-        e.id === event.id ? { ...e, ...values } : e
+        e.id === event.id ? { ...e, ...values } : e,
       ),
     };
 
@@ -62,16 +63,26 @@ export default function EventPage() {
   }
 
   return (
-    <Box p={6}>
-      <Card.Root w="100%" maxW="800px" mx="auto" p={6} boxShadow="md">
+    <Box p={6} position="relative" >
+      <Box
+        position="fixed"
+        inset="0"
+        bgImage="url('/images/pexels-diva-34731924.jpg')"
+        bgSize="cover"
+        bgPosition="center"
+        opacity="0.4"
+        zIndex="-1"
+      />
+
+      <Card.Root w="100%" maxW="700px" mx="auto" p={6} boxShadow="md">
         <Image
           src={event.image}
           alt={event.title}
           w="100%"
-          h={{ base: "200px", md: "300px" }}
+          h={{ base: "160px", md: "260px" }}
           objectFit="cover"
           borderRadius="md"
-          mb={4}
+          mb={3}
         />
 
         <Card.Header>
@@ -110,9 +121,7 @@ export default function EventPage() {
 
         <Card.Footer gap={3}>
           <Button onClick={() => setEditOpen(true)}>Edit</Button>
-          <Button colorPalette="red" onClick={() => setDeleteOpen(true)}>
-            Delete
-          </Button>
+          <Button onClick={() => setDeleteOpen(true)}>Delete</Button>
           <Button onClick={() => navigate("/events")}>Back</Button>
         </Card.Footer>
       </Card.Root>
@@ -131,19 +140,43 @@ export default function EventPage() {
       </SimpleModal>
 
       {/* DELETE MODAL */}
-      <SimpleModal
-        open={deleteOpen}
-        onClose={() => setDeleteOpen(false)}
-        title="Delete event"
-      >
-        <Text>Are you sure you want to delete this event?</Text>
-        <HStack mt={4}>
-          <Button colorPalette="red" onClick={handleDelete}>
-            Delete
-          </Button>
-          <Button onClick={() => setDeleteOpen(false)}>Cancel</Button>
-        </HStack>
-      </SimpleModal>
-    </Box>
+<SimpleModal
+  open={deleteOpen}
+  onClose={() => setDeleteOpen(false)}
+  title="Delete event"
+>
+  <Text>Are you sure you want to delete this event?</Text>
+
+  <HStack mt={4}>
+    <Tooltip
+      showArrow
+      contentProps={{ css: { '--tooltip-bg': 'colors.red.500' } }}
+    >
+      <Button colorPalette="red" onClick={handleDelete}>
+        Delete
+      </Button>
+    </Tooltip>
+
+    <Button
+      variant="outline"
+      size="sm"
+      onClick={() =>
+        toaster.create({
+          description: 'File saved successfully',
+          type: 'loading',
+        })
+      }
+    >
+      Toast
+    </Button>
+
+    <Button onClick={() => setDeleteOpen(false)}>Cancel</Button>
+  </HStack>
+
+
+</SimpleModal>
+</Box>
   );
 }
+
+
