@@ -9,7 +9,6 @@ import {
   SimpleGrid,
 } from "@chakra-ui/react";
 
-import { useToast } from "@chakra-ui/toast";
 import HeadingExample from "../components/ui/Heading";
 import { useState } from "react";
 import { useNavigate, useOutletContext } from "react-router-dom";
@@ -22,7 +21,6 @@ export const EventsPage = () => {
   const [searchTerm, setSearchTerm] = useState("");
 
   const navigate = useNavigate();
-  const toast = useToast();
 
   const eventsArray = data.events || [];
   const categories = data.categories || [];
@@ -41,12 +39,6 @@ export const EventsPage = () => {
     };
 
     setData(updated);
-
-    toast({
-      title: "Event toegevoegd",
-      description: `"${newEvent.title}" is succesvol aangemaakt.`,
-      status: "success",
-    });
   };
 
   const filteredEvents = eventsArray.filter((evt) => {

@@ -1,11 +1,10 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
-import EventPage from "./pages/EventPage";
-import { EventsPage } from "./pages/EventsPage";
 import { ChakraProvider } from "@chakra-ui/react";
-import { ToastProvider } from "@chakra-ui/toast";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import { Root } from "./components/Root";
+import EventPage from "./pages/EventPage";
+import { EventsPage } from "./pages/EventsPage";
 
 const router = createBrowserRouter([
   {
@@ -22,9 +21,7 @@ const router = createBrowserRouter([
 ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>
     <ChakraProvider>
-      <ToastProvider>
-        <RouterProvider router={router} />
-      </ToastProvider>
+      <RouterProvider router={router} />
     </ChakraProvider>
   </React.StrictMode>
 );
