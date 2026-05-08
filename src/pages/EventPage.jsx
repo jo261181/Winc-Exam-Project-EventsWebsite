@@ -16,7 +16,6 @@ import EventForm from "../components/ui/EventForm";
 import { Tooltip } from "../components/ui/tooltip";
 import { toaster, Toaster } from "../components/ui/toaster";
 
-
 export default function EventPage() {
   const { id } = useParams();
   const navigate = useNavigate();
@@ -49,12 +48,11 @@ export default function EventPage() {
 
     setData(updated);
 
-      toaster.create({
-    title: "Event deleted",
-    description: "Het evenement is succesvol verwijderd.",
-    type: "success",
-
-  });
+    toaster.create({
+      title: "Event deleted",
+      description: "Het evenement is succesvol verwijderd.",
+      type: "success",
+    });
     setDeleteOpen(false);
     navigate("/events");
   }
@@ -70,16 +68,16 @@ export default function EventPage() {
     setData(updated);
 
     toaster.create({
-    title: "Event updated",
-    description: "De wijzigingen zijn opgeslagen.",
-    type: "success",
-  });
+      title: "Event updated",
+      description: "De wijzigingen zijn opgeslagen.",
+      type: "success",
+    });
 
     setEditOpen(false);
   }
 
   return (
-    <Box p={6} position="relative" >
+    <Box p={6} position="relative">
       <Box
         position="fixed"
         inset="0"
@@ -90,28 +88,54 @@ export default function EventPage() {
         zIndex="-1"
       />
 
-      <Card.Root w="100%" maxW="700px" mx="auto" p={6} boxShadow="md">
+      <Card.Root
+        w="100%"
+        maxW={{ base: "100%", sm: "500px", md: "650px", lg: "700px" }}
+        mx="auto"
+        p={{ base: 4, md: 6 }}
+        boxShadow="md"
+      >
         <Image
           src={event.image}
           alt={event.title}
           w="100%"
-          h={{ base: "160px", md: "260px" }}
+          h={{ base: "180px", sm: "220px", md: "260px" }}
           objectFit="cover"
           borderRadius="md"
           mb={3}
         />
 
         <Card.Header>
-          <Card.Title fontSize="2xl" fontWeight="bold">
+          <Card.Title
+            fontSize={{ base: "xl", sm: "2xl" }}
+            fontWeight="bold"
+            textAlign={{ base: "center", md: "left" }}
+          >
             {event.title}
           </Card.Title>
-          <Card.Description>{event.description}</Card.Description>
+
+          <Card.Description
+            fontSize={{ base: "md", sm: "lg" }}
+            textAlign={{ base: "center", md: "left" }}
+          >
+            {event.description}
+          </Card.Description>
         </Card.Header>
 
         <Card.Body>
-          <Text mt={2}>{event.location}</Text>
+          <Text
+            mt={2}
+            fontSize={{ base: "md", sm: "lg" }}
+            textAlign={{ base: "center", md: "left" }}
+          >
+            {event.location}
+          </Text>
 
-          <Text mt={2}>
+          <Text
+            mt={2}
+            fontSize={{ base: "sm", sm: "md" }}
+            textAlign={{ base: "center", md: "left" }}
+          >
             {new Date(event.startTime).toLocaleString("nl-NL", {
               dateStyle: "medium",
               timeStyle: "short",
@@ -123,7 +147,12 @@ export default function EventPage() {
             })}
           </Text>
 
-          <HStack mt={4}>
+          <HStack
+            mt={4}
+            justify={{ base: "center", md: "flex-start" }}
+            flexWrap="wrap"
+            gap={2}
+          >
             {event.categoryIds?.map((id) => {
               const category = categories.find((c) => c.id === id);
               return (
@@ -135,7 +164,11 @@ export default function EventPage() {
           </HStack>
         </Card.Body>
 
-        <Card.Footer gap={3}>
+        <Card.Footer
+          gap={3}
+          justify={{ base: "center", md: "flex-start" }}
+          flexWrap="wrap"
+        >
           <Button onClick={() => setEditOpen(true)}>Edit</Button>
           <Button onClick={() => setDeleteOpen(true)}>Delete</Button>
           <Button onClick={() => navigate("/events")}>Back</Button>
@@ -156,30 +189,26 @@ export default function EventPage() {
       </SimpleModal>
 
       {/* DELETE MODAL */}
-<SimpleModal
-  open={deleteOpen}
-  onClose={() => setDeleteOpen(false)}
-  title="Delete event"
->
-  <Text>Are you sure you want to delete this event?</Text>
+      <SimpleModal
+        open={deleteOpen}
+        onClose={() => setDeleteOpen(false)}
+        title="Delete event"
+      >
+        <Text>Are you sure you want to delete this event?</Text>
 
-  <HStack mt={4}>
-    <Tooltip
-      showArrow
-      contentProps={{ css: { '--tooltip-bg': 'colors.red.500' } }}
-    >
-      <Button colorPalette="red" onClick={handleDelete}>
-        Delete
-      </Button>
-    </Tooltip>
+        <HStack mt={4}>
+          <Tooltip
+            showArrow
+            contentProps={{ css: { "--tooltip-bg": "colors.red.500" } }}
+          >
+            <Button colorPalette="red" onClick={handleDelete}>
+              Delete
+            </Button>
+          </Tooltip>
 
-    <Button onClick={() => setDeleteOpen(false)}>Cancel</Button>
-  </HStack>
-
-
-</SimpleModal>
-</Box>
+          <Button onClick={() => setDeleteOpen(false)}>Cancel</Button>
+        </HStack>
+      </SimpleModal>
+    </Box>
   );
 }
-
-

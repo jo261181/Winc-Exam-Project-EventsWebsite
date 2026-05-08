@@ -5,6 +5,9 @@ import {
   Flex,
   Heading,
   Text,
+  Image,
+  Center,
+  Grid,
 } from "@chakra-ui/react";
 
 export default function HeadingExample({
@@ -47,27 +50,52 @@ export default function HeadingExample({
       zIndex={100}
       boxShadow="sm"
     >
-      <Flex
-        align="center"
-        justify="space-between"
+      <Grid
+        templateColumns={{
+          base: "1fr", // mobiel: alles onder elkaar
+          md: "1fr 2fr 1fr", // tablet: zoekbalk krijgt ruimte
+          lg: "1fr 3fr 1fr", // desktop: brede zoekbalk
+        }}
+        alignItems="center"
         gap={4}
-        flexWrap="wrap"
         mb={2}
       >
-        <Heading size="lg">{children ?? "Events"}</Heading>
+        {/* Logo links */}
+        <Box
+          display="flex"
+          alignItems="center"
+          justifyContent={{ base: "center", md: "flex-start" }}
+        >
+          <Image
+            src="/images/logo.png"
+            alt="Winc Events Logo"
+            w={{ base: "100px", md: "120px" }}
+            ml={{ base: 0, md: "20px" }}
+          />
+        </Box>
 
+        {/* Zoekbalk exact in het midden */}
         <Input
-          maxW="350px"
+          width="100%"
+          maxW={{ base: "100%", md: "500px", lg: "700px" }}
           placeholder="Search events..."
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
           bg="white"
+          justifySelf="center"
         />
 
-        <Button onClick={onCreate} colorScheme="blue">
-          Create new event
-        </Button>
-      </Flex>
+        {/* Knop rechts, maar niet tegen de rand */}
+        <Box
+          display="flex"
+          justifyContent={{ base: "center", md: "flex-end" }}
+          pr={{ base: 0, md: "20px" }}
+        >
+          <Button onClick={onCreate} colorScheme="blue">
+            Create new event
+          </Button>
+        </Box>
+      </Grid>
 
       {searchTerm.trim() !== "" && filteredEvents.length === 0 && (
         <Text color="gray.500" textAlign="center">
