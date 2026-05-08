@@ -2,6 +2,8 @@ import { Outlet } from "react-router-dom";
 import { Navigation } from "./Navigation";
 import { Box } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
+import { Toaster, toaster } from "../components/ui/toaster";
+
 
 
 
@@ -23,6 +25,7 @@ export const Root = () => {
     <Box>
       
       <Navigation />
+      <Toaster />
       <Outlet context={{ data, setData }} />
     </Box>
   );

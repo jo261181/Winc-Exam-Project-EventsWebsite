@@ -14,6 +14,8 @@ import {
 import SimpleModal from "../components/ui/modal";
 import EventForm from "../components/ui/EventForm";
 import { Tooltip } from "../components/ui/tooltip";
+import { toaster, Toaster } from "../components/ui/toaster";
+
 
 export default function EventPage() {
   const { id } = useParams();
@@ -46,6 +48,13 @@ export default function EventPage() {
     };
 
     setData(updated);
+
+      toaster.create({
+    title: "Event deleted",
+    description: "Het evenement is succesvol verwijderd.",
+    type: "success",
+
+  });
     setDeleteOpen(false);
     navigate("/events");
   }
@@ -59,6 +68,13 @@ export default function EventPage() {
     };
 
     setData(updated);
+
+    toaster.create({
+    title: "Event updated",
+    description: "De wijzigingen zijn opgeslagen.",
+    type: "success",
+  });
+
     setEditOpen(false);
   }
 
@@ -156,19 +172,6 @@ export default function EventPage() {
         Delete
       </Button>
     </Tooltip>
-
-    <Button
-      variant="outline"
-      size="sm"
-      onClick={() =>
-        toaster.create({
-          description: 'File saved successfully',
-          type: 'loading',
-        })
-      }
-    >
-      Toast
-    </Button>
 
     <Button onClick={() => setDeleteOpen(false)}>Cancel</Button>
   </HStack>
