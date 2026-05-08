@@ -18,15 +18,13 @@ export default function HeadingExample({
   setSearchTerm,
   rightContent,
 }) {
-  // 1️⃣ Bepaal of zoeken actief is
+
   const searchEnabled =
     typeof searchTerm === "string" && typeof setSearchTerm === "function";
 
-  // 2️⃣ Data veilig ophalen
   const events = Array.isArray(data?.events) ? data.events : [];
   const categories = Array.isArray(data?.categories) ? data.categories : [];
 
-  // 3️⃣ Filter alleen als searchEnabled true is
   const filteredEvents =
     searchEnabled && searchTerm.trim() !== ""
       ? events.filter((event) => {
@@ -67,7 +65,7 @@ export default function HeadingExample({
         gap={4}
         mb={2}
       >
-        {/* Logo */}
+  
         <Box
           display="flex"
           alignItems="center"
@@ -81,7 +79,7 @@ export default function HeadingExample({
           />
         </Box>
 
-        {/* Zoekbalk alleen als searchEnabled */}
+    
         {searchEnabled && (
           <Input
             width="100%"
@@ -94,7 +92,6 @@ export default function HeadingExample({
           />
         )}
 
-        {/* Rechterkolom: altijd tonen als rightContent bestaat */}
         {(rightContent || onCreate) && (
           <Box
             display="flex"
@@ -117,7 +114,7 @@ export default function HeadingExample({
         )}
       </Grid>
 
-      {/* No Event Found alleen bij zoeken */}
+      
       {searchEnabled &&
         searchTerm.trim() !== "" &&
         filteredEvents.length === 0 && (

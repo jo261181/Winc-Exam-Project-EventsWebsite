@@ -8,8 +8,6 @@ export default function Footer() {
       py={4}
       mt={10}
       textAlign="center"
-      
-    //   boxShadow="inner"
     >
       <Text 
         fontSize="sm"
