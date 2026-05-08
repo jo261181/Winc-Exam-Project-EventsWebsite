@@ -16,9 +16,11 @@ export default function HeadingExample({
   onCreate,
   searchTerm,
   setSearchTerm,
+  rightContent,
 }) {
   // 🔹 Fallback: als er geen searchTerm is → simpele header
-  const searchEnabled = typeof searchTerm === "string" && typeof setSearchTerm === "function";
+  const searchEnabled =
+    typeof searchTerm === "string" && typeof setSearchTerm === "function";
 
   const events = Array.isArray(data?.events) ? data.events : [];
   const categories = Array.isArray(data?.categories) ? data.categories : [];
@@ -31,7 +33,7 @@ export default function HeadingExample({
           const eventCategoryNames =
             event.categoryIds
               ?.map((id) =>
-                categories.find((c) => c.id === id)?.name?.toLowerCase()
+                categories.find((c) => c.id === id)?.name?.toLowerCase(),
               )
               .filter(Boolean) || [];
 
@@ -97,19 +99,25 @@ export default function HeadingExample({
             justifyContent={{ base: "center", md: "flex-end" }}
             pr={{ base: 0, md: "20px" }}
           >
-            <Button onClick={onCreate} colorScheme="blue">
-              Create new event
-            </Button>
+            {rightContent ? (
+              rightContent
+            ) : onCreate ? (
+              <Button onClick={onCreate} colorScheme="blue">
+                Create new event
+              </Button>
+            ) : null}
           </Box>
         )}
       </Grid>
 
       {/* 🔹 No Event Found alleen als searchEnabled */}
-      {searchEnabled && searchTerm.trim() !== "" && filteredEvents.length === 0 && (
-        <Text color="gray.500" textAlign="center">
-          No Event Found
-        </Text>
-      )}
+      {searchEnabled &&
+        searchTerm.trim() !== "" &&
+        filteredEvents.length === 0 && (
+          <Text color="gray.500" textAlign="center">
+            No Event Found
+          </Text>
+        )}
     </Box>
   );
 }
