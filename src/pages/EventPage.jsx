@@ -15,6 +15,7 @@ import SimpleModal from "../components/ui/modal";
 import EventForm from "../components/ui/EventForm";
 import { Tooltip } from "../components/ui/tooltip";
 import { toaster, Toaster } from "../components/ui/toaster";
+import Footer from "../components/ui/Footer";
 
 export default function EventPage() {
   const { id } = useParams();
@@ -69,7 +70,7 @@ export default function EventPage() {
 
     toaster.create({
       title: "Event updated",
-      description: "De wijzigingen zijn opgeslagen.",
+      description: "The changes have been saved.",
       type: "success",
     });
 
@@ -77,6 +78,7 @@ export default function EventPage() {
   }
 
   return (
+    <>
     <Box p={6} position="relative">
       <Box
         position="fixed"
@@ -210,5 +212,7 @@ export default function EventPage() {
         </HStack>
       </SimpleModal>
     </Box>
+    <Footer />
+    </>
   );
 }

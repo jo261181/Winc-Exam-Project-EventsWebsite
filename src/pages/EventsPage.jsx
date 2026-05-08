@@ -14,6 +14,7 @@ import { useState } from "react";
 import { useNavigate, useOutletContext } from "react-router-dom";
 import SimpleModal from "../components/ui/modal";
 import EventForm from "../components/ui/EventForm";
+import Footer from "../components/ui/Footer";
 
 export const EventsPage = () => {
   const { data, setData } = useOutletContext();
@@ -97,7 +98,7 @@ export const EventsPage = () => {
               key={evt.id}
               w="100%"
               borderRadius="lg"
-              bg="white"
+              bg="whiteAlpha.800"
               alignItems="center"
               mb={5}
               cursor="pointer"
@@ -166,6 +167,11 @@ export const EventsPage = () => {
           ))}
         </SimpleGrid>
       </Box>
+      <Footer>
+        <Text textAlign="center" py={4} color="black.800">
+          &copy; {new Date().getFullYear()} PixelBloom Drift. All rights reserved.
+        </Text>
+      </Footer>
     </>
   );
-};
+}
