@@ -177,7 +177,7 @@ export default function EventPage() {
         </Card.Footer>
       </Card.Root>
 
-      {/* EDIT MODAL */}
+   
       <SimpleModal
         open={editOpen}
         onClose={() => setEditOpen(false)}
@@ -190,7 +190,7 @@ export default function EventPage() {
         />
       </SimpleModal>
 
-      {/* DELETE MODAL */}
+   
       <SimpleModal
         open={deleteOpen}
         onClose={() => setDeleteOpen(false)}
