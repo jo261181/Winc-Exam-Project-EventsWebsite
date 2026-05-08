@@ -6,25 +6,27 @@ import {
   Heading,
   Text,
   Image,
-  Center,
   Grid,
+  ButtonGroup,
 } from "@chakra-ui/react";
+import { Link as RouterLink } from "react-router-dom";
 
 export default function HeadingExample({
-  children,
   data,
   onCreate,
   searchTerm,
   setSearchTerm,
   rightContent,
 }) {
-  // 🔹 Fallback: als er geen searchTerm is → simpele header
+  // 1️⃣ Bepaal of zoeken actief is
   const searchEnabled =
     typeof searchTerm === "string" && typeof setSearchTerm === "function";
 
+  // 2️⃣ Data veilig ophalen
   const events = Array.isArray(data?.events) ? data.events : [];
   const categories = Array.isArray(data?.categories) ? data.categories : [];
 
+  // 3️⃣ Filter alleen als searchEnabled true is
   const filteredEvents =
     searchEnabled && searchTerm.trim() !== ""
       ? events.filter((event) => {
@@ -57,9 +59,9 @@ export default function HeadingExample({
     >
       <Grid
         templateColumns={{
-          base: "1fr",
-          md: searchEnabled ? "1fr 2fr 1fr" : "1fr",
-          lg: searchEnabled ? "1fr 3fr 1fr" : "1fr",
+          base: rightContent ? "1fr 1fr" : "1fr",
+          md: searchEnabled ? "1fr 2fr 1fr" : rightContent ? "1fr 1fr" : "1fr",
+          lg: searchEnabled ? "1fr 3fr 1fr" : rightContent ? "1fr 1fr" : "1fr",
         }}
         alignItems="center"
         gap={4}
@@ -79,7 +81,7 @@ export default function HeadingExample({
           />
         </Box>
 
-        {/* 🔹 Zoekbalk alleen tonen als searchEnabled true is */}
+        {/* Zoekbalk alleen als searchEnabled */}
         {searchEnabled && (
           <Input
             width="100%"
@@ -92,8 +94,8 @@ export default function HeadingExample({
           />
         )}
 
-        {/* 🔹 Knop alleen tonen als onCreate bestaat */}
-        {onCreate && (
+        {/* Rechterkolom: altijd tonen als rightContent bestaat */}
+        {(rightContent || onCreate) && (
           <Box
             display="flex"
             justifyContent={{ base: "center", md: "flex-end" }}
@@ -101,16 +103,21 @@ export default function HeadingExample({
           >
             {rightContent ? (
               rightContent
-            ) : onCreate ? (
-              <Button onClick={onCreate} colorScheme="blue">
-                Create new event
-              </Button>
-            ) : null}
+            ) : (
+              <ButtonGroup>
+                <Button onClick={onCreate} colorScheme="blue">
+                  Create new event
+                </Button>
+                <Button as={RouterLink} to="/about-us" colorScheme="teal">
+                  About Us
+                </Button>
+              </ButtonGroup>
+            )}
           </Box>
         )}
       </Grid>
 
-      {/* 🔹 No Event Found alleen als searchEnabled */}
+      {/* No Event Found alleen bij zoeken */}
       {searchEnabled &&
         searchTerm.trim() !== "" &&
         filteredEvents.length === 0 && (

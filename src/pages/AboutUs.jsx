@@ -1,4 +1,4 @@
-import { Box, Text, Heading, Image, Flex, Button } from "@chakra-ui/react";
+import { Box, Text, Heading, Button } from "@chakra-ui/react";
 import { useNavigate } from "react-router-dom";
 import HeadingExample from "../components/ui/Heading";
 
@@ -14,7 +14,7 @@ export const AboutUs = () => {
         bgImage="url('/images/pexels-diva-34731924.jpg')"
         bgSize="cover"
         bgPosition="center"
-        opacity="0.35"
+        opacity="0.55"
         zIndex="-1"
       />
 
@@ -22,7 +22,7 @@ export const AboutUs = () => {
       <HeadingExample
         rightContent={
           <Button onClick={() => navigate("/")} colorScheme="blue">
-            Terug naar events
+            Back to events
           </Button>
         }
       />
@@ -42,26 +42,38 @@ export const AboutUs = () => {
         </Heading>
 
         <Text mb={4}>
-          Wij zijn een team van enthousiaste evenementenorganisatoren die zich
-          inzetten om onvergetelijke ervaringen te creëren voor onze gemeenschap.
+          We are a team of passionate and dedicated event organizers who pour
+          our heart and energy into creating unforgettable experiences for our
+          community. What drives us is the joy of bringing people together —
+          uniting creativity, excitement, and connection in one place.
         </Text>
 
         <Text mb={4}>
-          Met jarenlange ervaring in het organiseren van diverse evenementen,
-          van kleine bijeenkomsten tot grootschalige festivals, streven we ernaar
-          om elke gelegenheid speciaal te maken.
+          With many years of experience in organizing a wide range of events,
+          from small gatherings to large-scale festivals, we strive to make
+          every occasion truly special. No matter the size, every event receives
+          the same level of care, attention, and enthusiasm from our team.
         </Text>
 
         <Text mb={4}>
-          Onze missie is om mensen samen te brengen door middel van unieke en
-          boeiende evenementen die herinneringen creëren die een leven lang
-          meegaan.
+          Our mission is to bring people closer through unique, inspiring, and
+          engaging events. We believe that meaningful memories are created when
+          people come together to laugh, discover, celebrate, and enjoy —
+          moments that stay with you for a lifetime.
         </Text>
 
         <Text mb={4}>
-          Of je nu op zoek bent naar een intieme bijeenkomst of een groots
-          evenement, wij staan klaar om je te helpen bij het plannen en
-          uitvoeren van een onvergetelijke ervaring.
+          Whether you're looking for an intimate gathering, a lively
+          celebration, or a large public event, we are here to help you plan,
+          shape, and execute an experience you will never forget.
+        </Text>
+
+        <Text mb={4}>
+          We also invite visitors of our platform to contribute by adding their
+          own events. Together, we build a vibrant, up‑to‑date, and inclusive
+          event calendar that reflects the creativity and diversity of our
+          community. Your idea might just become the next highlight everyone is
+          talking about.
         </Text>
       </Box>
     </>
