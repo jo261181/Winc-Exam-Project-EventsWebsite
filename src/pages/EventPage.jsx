@@ -51,7 +51,7 @@ export default function EventPage() {
 
     toaster.create({
       title: "Event deleted",
-      description: "The event has been successfully deleted.",
+      description: "Het evenement is succesvol verwijderd.",
       type: "success",
     });
     setDeleteOpen(false);
