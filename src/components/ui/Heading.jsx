@@ -17,19 +17,21 @@ export default function HeadingExample({
   searchTerm,
   setSearchTerm,
 }) {
+  // 🔹 Fallback: als er geen searchTerm is → simpele header
+  const searchEnabled = typeof searchTerm === "string" && typeof setSearchTerm === "function";
+
   const events = Array.isArray(data?.events) ? data.events : [];
   const categories = Array.isArray(data?.categories) ? data.categories : [];
 
   const filteredEvents =
-    searchTerm.trim() === ""
-      ? events
-      : events.filter((event) => {
+    searchEnabled && searchTerm.trim() !== ""
+      ? events.filter((event) => {
           const search = searchTerm.toLowerCase();
 
           const eventCategoryNames =
             event.categoryIds
               ?.map((id) =>
-                categories.find((c) => c.id === id)?.name?.toLowerCase(),
+                categories.find((c) => c.id === id)?.name?.toLowerCase()
               )
               .filter(Boolean) || [];
 
@@ -39,7 +41,8 @@ export default function HeadingExample({
             event.location.toLowerCase().includes(search) ||
             eventCategoryNames.some((cat) => cat.includes(search))
           );
-        });
+        })
+      : events;
 
   return (
     <Box
@@ -52,15 +55,15 @@ export default function HeadingExample({
     >
       <Grid
         templateColumns={{
-          base: "1fr", // mobiel: alles onder elkaar
-          md: "1fr 2fr 1fr", // tablet: zoekbalk krijgt ruimte
-          lg: "1fr 3fr 1fr", // desktop: brede zoekbalk
+          base: "1fr",
+          md: searchEnabled ? "1fr 2fr 1fr" : "1fr",
+          lg: searchEnabled ? "1fr 3fr 1fr" : "1fr",
         }}
         alignItems="center"
         gap={4}
         mb={2}
       >
-        {/* Logo links */}
+        {/* Logo */}
         <Box
           display="flex"
           alignItems="center"
@@ -74,30 +77,35 @@ export default function HeadingExample({
           />
         </Box>
 
-        {/* Zoekbalk exact in het midden */}
-        <Input
-          width="100%"
-          maxW={{ base: "100%", md: "500px", lg: "700px" }}
-          placeholder="Search events..."
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-          bg="white"
-          justifySelf="center"
-        />
+        {/* 🔹 Zoekbalk alleen tonen als searchEnabled true is */}
+        {searchEnabled && (
+          <Input
+            width="100%"
+            maxW={{ base: "100%", md: "500px", lg: "700px" }}
+            placeholder="Search events..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            bg="white"
+            justifySelf="center"
+          />
+        )}
 
-        {/* Knop rechts, maar niet tegen de rand */}
-        <Box
-          display="flex"
-          justifyContent={{ base: "center", md: "flex-end" }}
-          pr={{ base: 0, md: "20px" }}
-        >
-          <Button onClick={onCreate} colorScheme="blue">
-            Create new event
-          </Button>
-        </Box>
+        {/* 🔹 Knop alleen tonen als onCreate bestaat */}
+        {onCreate && (
+          <Box
+            display="flex"
+            justifyContent={{ base: "center", md: "flex-end" }}
+            pr={{ base: 0, md: "20px" }}
+          >
+            <Button onClick={onCreate} colorScheme="blue">
+              Create new event
+            </Button>
+          </Box>
+        )}
       </Grid>
 
-      {searchTerm.trim() !== "" && filteredEvents.length === 0 && (
+      {/* 🔹 No Event Found alleen als searchEnabled */}
+      {searchEnabled && searchTerm.trim() !== "" && filteredEvents.length === 0 && (
         <Text color="gray.500" textAlign="center">
           No Event Found
         </Text>
