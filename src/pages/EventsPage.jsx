@@ -27,6 +27,12 @@ export const EventsPage = () => {
   const categories = data.categories || [];
 
   const addEvent = (newEvent) => {
+    let imageUrl = null;
+
+    if (newEvent.image instanceof File) {
+      imageUrl = URL.createObjectURL(newEvent.image);
+    }
+
     const updated = {
       ...data,
       events: [
@@ -34,12 +40,19 @@ export const EventsPage = () => {
         {
           id: crypto.randomUUID(),
           ...newEvent,
+          image: imageUrl, // <-- HIER wordt de afbeelding opgeslagen
           categoryIds: [],
         },
       ],
     };
 
     setData(updated);
+
+    toaster.create({
+      title: "Event created",
+      description: "Your event has been successfully added.",
+      type: "success",
+    });
   };
 
   const filteredEvents = eventsArray.filter((evt) => {
@@ -169,9 +182,10 @@ export const EventsPage = () => {
       </Box>
       <Footer>
         <Text textAlign="center" py={4} color="black.800">
-          &copy; {new Date().getFullYear()} PixelBloom Drift. All rights reserved.
+          &copy; {new Date().getFullYear()} PixelBloom Drift. All rights
+          reserved.
         </Text>
       </Footer>
     </>
   );
-}
+};
