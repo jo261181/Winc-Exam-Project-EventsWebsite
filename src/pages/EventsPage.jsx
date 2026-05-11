@@ -40,7 +40,7 @@ export const EventsPage = () => {
         {
           id: crypto.randomUUID(),
           ...newEvent,
-          image: imageUrl, // <-- HIER wordt de afbeelding opgeslagen
+          image: imageUrl,
           categoryIds: [],
         },
       ],

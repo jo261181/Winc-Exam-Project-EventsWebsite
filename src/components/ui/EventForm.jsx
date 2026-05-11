@@ -12,7 +12,7 @@ export default function EventForm({ cancel, initialEvent, onSubmit }) {
     const values = Object.fromEntries(formData.entries());
 
     if (imageFile) {
-      values.image = imageFile; // file toevoegen aan submit
+      values.image = imageFile;
     }
 
     onSubmit(values);

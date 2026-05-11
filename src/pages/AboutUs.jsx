@@ -8,7 +8,6 @@ export const AboutUs = () => {
 
   return (
     <>
-      {/* Achtergrond over de hele pagina */}
       <Box
         position="fixed"
         inset="0"
@@ -19,7 +18,6 @@ export const AboutUs = () => {
         zIndex="-1"
       />
 
-      {/* Header */}
       <HeadingExample
         rightContent={
           <Button onClick={() => navigate("/")} colorScheme="blue">
@@ -28,7 +26,7 @@ export const AboutUs = () => {
         }
       />
 
-      {/* Content */}
+
       <Box
         maxW="900px"
         mx="auto"
