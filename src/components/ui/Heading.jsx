@@ -10,6 +10,28 @@ import {
   ButtonGroup,
 } from "@chakra-ui/react";
 import { Link as RouterLink } from "react-router-dom";
+import { IconButton } from "@chakra-ui/react";
+import { LuMoon, LuSun } from "react-icons/lu";
+import { useColorMode } from "@chakra-ui/react";
+
+export function ColorModeToggle() {
+  const { colorMode, toggleColorMode } = useColorMode();
+
+  return (
+    <IconButton
+      aria-label="Toggle dark mode"
+      onClick={toggleColorMode}
+      variant="ghost"
+      size="md"
+      icon={colorMode === "dark" ? <LuSun /> : <LuMoon />}
+    />
+  );
+}
+
+export function ColorModeIcon() {
+  const { colorMode } = useColorMode();
+  return colorMode === "dark" ? <LuMoon /> : <LuSun />;
+}
 
 export default function HeadingExample({
   data,
@@ -18,7 +40,6 @@ export default function HeadingExample({
   setSearchTerm,
   rightContent,
 }) {
-
   const searchEnabled =
     typeof searchTerm === "string" && typeof setSearchTerm === "function";
 
@@ -65,7 +86,6 @@ export default function HeadingExample({
         gap={4}
         mb={2}
       >
-  
         <Box
           display="flex"
           alignItems="center"
@@ -79,7 +99,6 @@ export default function HeadingExample({
           />
         </Box>
 
-    
         {searchEnabled && (
           <Input
             width="100%"
@@ -114,7 +133,6 @@ export default function HeadingExample({
         )}
       </Grid>
 
-      
       {searchEnabled &&
         searchTerm.trim() !== "" &&
         filteredEvents.length === 0 && (

@@ -8,7 +8,7 @@ import {
   Card,
   SimpleGrid,
 } from "@chakra-ui/react";
-
+import { useColorMode } from '@chakra-ui/react';
 import HeadingExample from "../components/ui/Heading";
 import { useState } from "react";
 import { useNavigate, useOutletContext } from "react-router-dom";
@@ -20,11 +20,21 @@ export const EventsPage = () => {
   const { data, setData } = useOutletContext();
   const [createOpen, setCreateOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
-
+  const cardBg = useColorMode("whiteAlpha.800", "gray.800");
   const navigate = useNavigate();
 
   const eventsArray = data.events || [];
   const categories = data.categories || [];
+
+  function KleurModusKnop() {
+  const { colorMode, toggleColorMode } = useColorMode();
+
+  return (
+    <button onClick={toggleColorMode}>
+      Huidige modus: {colorMode === 'light' ? 'Licht' : 'Donker'}
+    </button>
+  );
+}
 
   const addEvent = (newEvent) => {
     let imageUrl = null;
@@ -100,6 +110,8 @@ export const EventsPage = () => {
         bgImage="url('/images/pexels-diva-34731924.jpg')"
         bgSize="cover"
         bgPosition="center"
+        backgroundColor={{ base: "gray.100", _dark: "gray.700" }}
+        color={useColorMode("black", "white")}
         opacity="0.4"
         zIndex="-1"
       />
@@ -111,7 +123,7 @@ export const EventsPage = () => {
               key={evt.id}
               w="100%"
               borderRadius="lg"
-              bg="whiteAlpha.800"
+              bg={cardBg}
               alignItems="center"
               mb={5}
               cursor="pointer"
