@@ -14,8 +14,9 @@ import {
 import SimpleModal from "../components/ui/modal";
 import EventForm from "../components/ui/EventForm";
 import { Tooltip } from "../components/ui/tooltip";
-import { toaster, Toaster } from "../components/ui/toaster";
+import { toaster } from "../components/ui/toaster";
 import Footer from "../components/ui/Footer";
+import { useColorModeValue } from "../components/ui/color-mode";
 
 export default function EventPage() {
   const { id } = useParams();
@@ -29,6 +30,8 @@ export default function EventPage() {
   const categories = data.categories || [];
 
   const event = events.find((evt) => evt.id.toString() === id);
+
+  const textColor = useColorModeValue("black", "white");
 
   if (!event) {
     return (
@@ -54,6 +57,7 @@ export default function EventPage() {
       description: "Het evenement is succesvol verwijderd.",
       type: "success",
     });
+
     setDeleteOpen(false);
     navigate("/events");
   }
@@ -62,7 +66,7 @@ export default function EventPage() {
     const updated = {
       ...data,
       events: data.events.map((e) =>
-        e.id === event.id ? { ...e, ...values } : e,
+        e.id === event.id ? { ...e, ...values } : e
       ),
     };
 
@@ -79,140 +83,142 @@ export default function EventPage() {
 
   return (
     <>
-    <Box p={6} position="relative">
-      <Box
-        position="fixed"
-        inset="0"
-        bgImage="url('/images/pexels-diva-34731924.jpg')"
-        bgSize="cover"
-        bgPosition="center"
-        opacity="0.4"
-        zIndex="-1"
-      />
-
-      <Card.Root
-        w="100%"
-        maxW={{ base: "100%", sm: "500px", md: "650px", lg: "700px" }}
-        mx="auto"
-        p={{ base: 4, md: 6 }}
-        boxShadow="md"
-      >
-        <Image
-          src={event.image}
-          alt={event.title}
-          w="100%"
-          h={{ base: "180px", sm: "220px", md: "260px" }}
-          objectFit="cover"
-          borderRadius="md"
-          mb={3}
+      <Box p={6} position="relative">
+        <Box
+          position="fixed"
+          inset="0"
+          bgImage="url('/images/pexels-diva-34731924.jpg')"
+          bgSize="cover"
+          bgPosition="center"
+          opacity="0.4"
+          zIndex="-1"
         />
 
-        <Card.Header>
-          <Card.Title
-            fontSize={{ base: "xl", sm: "2xl" }}
-            fontWeight="bold"
-            textAlign={{ base: "center", md: "left" }}
-          >
-            {event.title}
-          </Card.Title>
+        <Card.Root
+          w="100%"
+          maxW={{ base: "100%", sm: "500px", md: "650px", lg: "700px" }}
+          mx="auto"
+          p={{ base: 4, md: 6 }}
+          boxShadow="md"
+          color={textColor}
+        >
+          <Image
+            src={event.image}
+            alt={event.title}
+            w="100%"
+            h={{ base: "180px", sm: "220px", md: "260px" }}
+            objectFit="cover"
+            borderRadius="md"
+            mb={3}
+          />
 
-          <Card.Description
-            fontSize={{ base: "md", sm: "lg" }}
-            textAlign={{ base: "center", md: "left" }}
-          >
-            {event.description}
-          </Card.Description>
-        </Card.Header>
+          <Card.Header>
+            <Card.Title
+              fontSize={{ base: "xl", sm: "2xl" }}
+              fontWeight="bold"
+              textAlign={{ base: "center", md: "left" }}
+            >
+              {event.title}
+            </Card.Title>
 
-        <Card.Body>
-          <Text
-            mt={2}
-            fontSize={{ base: "md", sm: "lg" }}
-            textAlign={{ base: "center", md: "left" }}
-          >
-            {event.location}
-          </Text>
+            <Card.Description
+              fontSize={{ base: "md", sm: "lg" }}
+              textAlign={{ base: "center", md: "left" }}
+            >
+              {event.description}
+            </Card.Description>
+          </Card.Header>
 
-          <Text
-            mt={2}
-            fontSize={{ base: "sm", sm: "md" }}
-            textAlign={{ base: "center", md: "left" }}
-          >
-            {new Date(event.startTime).toLocaleString("nl-NL", {
-              dateStyle: "medium",
-              timeStyle: "short",
-            })}
-            {" – "}
-            {new Date(event.endTime).toLocaleString("nl-NL", {
-              dateStyle: "medium",
-              timeStyle: "short",
-            })}
-          </Text>
+          <Card.Body>
+            <Text
+              mt={2}
+              fontSize={{ base: "md", sm: "lg" }}
+              textAlign={{ base: "center", md: "left" }}
+            >
+              {event.location}
+            </Text>
 
-          <HStack
-            mt={4}
+            <Text
+              mt={2}
+              fontSize={{ base: "sm", sm: "md" }}
+              textAlign={{ base: "center", md: "left" }}
+            >
+              {new Date(event.startTime).toLocaleString("nl-NL", {
+                dateStyle: "medium",
+                timeStyle: "short",
+              })}
+              {" – "}
+              {new Date(event.endTime).toLocaleString("nl-NL", {
+                dateStyle: "medium",
+                timeStyle: "short",
+              })}
+            </Text>
+
+            <HStack
+              mt={4}
+              justify={{ base: "center", md: "flex-start" }}
+              flexWrap="wrap"
+              gap={2}
+            >
+              {event.categoryIds?.map((id) => {
+                const category = categories.find((c) => c.id === id);
+                return (
+                  <Badge key={id} colorPalette="orange">
+                    {category?.name}
+                  </Badge>
+                );
+              })}
+            </HStack>
+          </Card.Body>
+
+          <Card.Footer
+            gap={3}
             justify={{ base: "center", md: "flex-start" }}
             flexWrap="wrap"
-            gap={2}
           >
-            {event.categoryIds?.map((id) => {
-              const category = categories.find((c) => c.id === id);
-              return (
-                <Badge key={id} colorPalette="orange">
-                  {category?.name}
-                </Badge>
-              );
-            })}
-          </HStack>
-        </Card.Body>
+            <Button onClick={() => setEditOpen(true)}>Edit</Button>
+            <Button onClick={() => setDeleteOpen(true)}>Delete</Button>
+            <Button onClick={() => navigate("/events")}>Back</Button>
+          </Card.Footer>
+        </Card.Root>
 
-        <Card.Footer
-          gap={3}
-          justify={{ base: "center", md: "flex-start" }}
-          flexWrap="wrap"
+        {/* EDIT MODAL */}
+        <SimpleModal
+          open={editOpen}
+          onClose={() => setEditOpen(false)}
+          title="Edit event"
         >
-          <Button onClick={() => setEditOpen(true)}>Edit</Button>
-          <Button onClick={() => setDeleteOpen(true)}>Delete</Button>
-          <Button onClick={() => navigate("/events")}>Back</Button>
-        </Card.Footer>
-      </Card.Root>
+          <EventForm
+            initialValues={event}
+            onSubmit={handleEditSubmit}
+            cancel={() => setEditOpen(false)}
+          />
+        </SimpleModal>
 
-      {/* EDIT MODAL */}
-      <SimpleModal
-        open={editOpen}
-        onClose={() => setEditOpen(false)}
-        title="Edit event"
-      >
-        <EventForm
-          initialValues={event}
-          onSubmit={handleEditSubmit}
-          cancel={() => setEditOpen(false)}
-        />
-      </SimpleModal>
+        {/* DELETE MODAL */}
+        <SimpleModal
+          open={deleteOpen}
+          onClose={() => setDeleteOpen(false)}
+          title="Delete event"
+        >
+          <Text>Are you sure you want to delete this event?</Text>
 
-      {/* DELETE MODAL */}
-      <SimpleModal
-        open={deleteOpen}
-        onClose={() => setDeleteOpen(false)}
-        title="Delete event"
-      >
-        <Text>Are you sure you want to delete this event?</Text>
+          <HStack mt={4}>
+            <Tooltip
+              showArrow
+              contentProps={{ css: { "--tooltip-bg": "colors.red.500" } }}
+            >
+              <Button colorPalette="red" onClick={handleDelete}>
+                Delete
+              </Button>
+            </Tooltip>
 
-        <HStack mt={4}>
-          <Tooltip
-            showArrow
-            contentProps={{ css: { "--tooltip-bg": "colors.red.500" } }}
-          >
-            <Button colorPalette="red" onClick={handleDelete}>
-              Delete
-            </Button>
-          </Tooltip>
+            <Button onClick={() => setDeleteOpen(false)}>Cancel</Button>
+          </HStack>
+        </SimpleModal>
+      </Box>
 
-          <Button onClick={() => setDeleteOpen(false)}>Cancel</Button>
-        </HStack>
-      </SimpleModal>
-    </Box>
-    <Footer />
+      <Footer />
     </>
   );
 }

@@ -8,33 +8,28 @@ import {
   Card,
   SimpleGrid,
 } from "@chakra-ui/react";
-import { useColorMode } from '@chakra-ui/react';
+
 import HeadingExample from "../components/ui/Heading";
 import { useState } from "react";
 import { useNavigate, useOutletContext } from "react-router-dom";
 import SimpleModal from "../components/ui/modal";
 import EventForm from "../components/ui/EventForm";
 import Footer from "../components/ui/Footer";
+import { useColorModeValue } from "../components/ui/color-mode";
+import { toaster } from "../components/ui/toaster";
 
 export const EventsPage = () => {
   const { data, setData } = useOutletContext();
   const [createOpen, setCreateOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
-  const cardBg = useColorMode("whiteAlpha.800", "gray.800");
+
+  const cardBg = useColorModeValue("whiteAlpha.800", "gray.800");
+  const textColor = useColorModeValue("black", "white");
+
   const navigate = useNavigate();
 
   const eventsArray = data.events || [];
   const categories = data.categories || [];
-
-  function KleurModusKnop() {
-  const { colorMode, toggleColorMode } = useColorMode();
-
-  return (
-    <button onClick={toggleColorMode}>
-      Huidige modus: {colorMode === 'light' ? 'Licht' : 'Donker'}
-    </button>
-  );
-}
 
   const addEvent = (newEvent) => {
     let imageUrl = null;
@@ -111,7 +106,7 @@ export const EventsPage = () => {
         bgSize="cover"
         bgPosition="center"
         backgroundColor={{ base: "gray.100", _dark: "gray.700" }}
-        color={useColorMode("black", "white")}
+        color={textColor}
         opacity="0.4"
         zIndex="-1"
       />
@@ -192,10 +187,10 @@ export const EventsPage = () => {
           ))}
         </SimpleGrid>
       </Box>
+
       <Footer>
         <Text textAlign="center" py={4} color="black.800">
-          &copy; {new Date().getFullYear()} PixelBloom Drift. All rights
-          reserved.
+          &copy; {new Date().getFullYear()} PixelBloom Drift. All rights reserved.
         </Text>
       </Footer>
     </>

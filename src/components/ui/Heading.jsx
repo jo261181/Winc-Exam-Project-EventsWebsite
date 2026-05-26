@@ -10,28 +10,11 @@ import {
   ButtonGroup,
 } from "@chakra-ui/react";
 import { Link as RouterLink } from "react-router-dom";
-import { IconButton } from "@chakra-ui/react";
-import { LuMoon, LuSun } from "react-icons/lu";
-import { useColorMode } from "@chakra-ui/react";
+import { ColorModeButton } from "./color-mode";
 
-export function ColorModeToggle() {
-  const { colorMode, toggleColorMode } = useColorMode();
 
-  return (
-    <IconButton
-      aria-label="Toggle dark mode"
-      onClick={toggleColorMode}
-      variant="ghost"
-      size="md"
-      icon={colorMode === "dark" ? <LuSun /> : <LuMoon />}
-    />
-  );
-}
 
-export function ColorModeIcon() {
-  const { colorMode } = useColorMode();
-  return colorMode === "dark" ? <LuMoon /> : <LuSun />;
-}
+
 
 export default function HeadingExample({
   data,
@@ -54,7 +37,7 @@ export default function HeadingExample({
           const eventCategoryNames =
             event.categoryIds
               ?.map((id) =>
-                categories.find((c) => c.id === id)?.name?.toLowerCase(),
+                categories.find((c) => c.id === id)?.name?.toLowerCase()
               )
               .filter(Boolean) || [];
 
@@ -127,6 +110,7 @@ export default function HeadingExample({
                 <Button as={RouterLink} to="/about-us" colorScheme="teal">
                   About Us
                 </Button>
+                {/* <ColorModeToggle /> */}
               </ButtonGroup>
             )}
           </Box>
