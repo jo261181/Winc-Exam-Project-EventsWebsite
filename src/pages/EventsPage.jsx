@@ -105,7 +105,7 @@ export const EventsPage = () => {
         bgImage="url('/images/pexels-diva-34731924.jpg')"
         bgSize="cover"
         bgPosition="center"
-        backgroundColor={{ base: "gray.100", _dark: "gray.700" }}
+        backgroundColor={{ base: "gray.400", _dark: "gray.700" }}
         color={textColor}
         opacity="0.4"
         zIndex="-1"
@@ -142,17 +142,24 @@ export const EventsPage = () => {
                 />
 
                 <Card.Title
-                  fontSize={{ base: "md", md: "lg", lg: "2xl" }}
-                  fontWeight="semibold"
+                 fontSize={{ base: "md", md: "lg", lg: "2xl" }}
+                  fontWeight="bold"
                 >
                   {evt.title}
                 </Card.Title>
 
-                <Card.Description>{evt.description}</Card.Description>
+                <Card.Description color="gray.900"
+                 fontSize={{ base: "sx", md: "sm", lg: "md" }}
+                 fontWeight="semibold"
+                >
+                  {evt.description}
+                </Card.Description>
               </Card.Header>
 
               <Card.Body>
-                <Text mt={1}>{evt.location}</Text>
+                <Text mt={1} fontWeight="medium">
+                  {evt.location}
+                </Text>
 
                 <Text mt={1}>
                   {new Date(evt.startTime).toLocaleString("nl-NL", {
