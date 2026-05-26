@@ -1,6 +1,5 @@
 import { Outlet } from "react-router-dom";
 import { Navigation } from "./Navigation";
-import { Spinner, Text, VStack, Box, Center } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
 import { Toaster } from "../components/ui/toaster";
 
@@ -16,22 +15,14 @@ export const Root = () => {
     });
   }, []);
 
-  if (!data) {
-    return (
-      <Center h="100vh">
-        <VStack colorPalette="teal" spacing={3}>
-          <Spinner color="colorPalette.600" size="xl" />
-          <Text color="colorPalette.600">Loading...</Text>
-        </VStack>
-      </Center>
-    );
-  }
-
   return (
-    <Box>
+    <>
       <Navigation />
-      <Toaster />
+
+      {/* ⬇️ Belangrijk: GEEN skeleton hier */}
       <Outlet context={{ data, setData }} />
-    </Box>
+
+      <Toaster />
+    </>
   );
 };

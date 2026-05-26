@@ -7,7 +7,7 @@ import {
   Text,
   Card,
   SimpleGrid,
-  Stack, 
+  Stack,
   Skeleton
 } from "@chakra-ui/react";
 
@@ -21,43 +21,72 @@ import { useColorModeValue } from "../components/ui/color-mode";
 import { toaster } from "../components/ui/toaster";
 
 
+// ⭐ Skeleton voor EventsPage
 export const EventsPageSkeleton = () => {
   return (
-    <Stack gap="6" p="6">
-      {[1, 2, 3].map((i) => (
-        <Stack
-          key={i}
-          borderWidth="1px"
-          borderRadius="md"
-          p="4"
-          bg="white"
-          boxShadow="sm"
-        >
-          <Skeleton height="180px" borderRadius="md" />
+    <Box p={6}>
+      <SimpleGrid columns={[1, 2, 3, 4]} spacing={6} gap="30px">
+        {[1, 2, 3, 4, 5, 6].map((i) => (
+          <Card.Root
+            key={i}
+            w="100%"
+            borderRadius="lg"
+            bg="whiteAlpha.800"
+            alignItems="center"
+            boxShadow="md"
+            p={4}
+          >
+            <Skeleton
+              height={{ base: "120px", md: "130px", lg: "170px" }}
+              w="100%"
+              borderRadius="md"
+              mb={4}
+            />
 
-          <Stack mt="4" gap="3">
-            <Skeleton height="20px" width="60%" />
-            <Skeleton height="16px" width="80%" />
-            <Skeleton height="16px" width="40%" />
-          </Stack>
-        </Stack>
-      ))}
-    </Stack>
+            <Stack w="100%" gap={3}>
+              <Skeleton height="24px" width="70%" />
+              <Skeleton height="16px" width="90%" />
+              <Skeleton height="16px" width="50%" />
+            </Stack>
+
+            <Stack w="100%" mt={4} gap={2}>
+              <Skeleton height="16px" width="60%" />
+              <Skeleton height="16px" width="50%" />
+            </Stack>
+
+            <HStack mt={4} w="100%" gap={2}>
+              <Skeleton height="20px" width="60px" borderRadius="md" />
+              <Skeleton height="20px" width="80px" borderRadius="md" />
+            </HStack>
+
+            <Skeleton
+              height="36px"
+              width="120px"
+              mt={4}
+              borderRadius="md"
+            />
+          </Card.Root>
+        ))}
+      </SimpleGrid>
+    </Box>
   );
 };
 
+
+// ⭐ EventsPage component
 export const EventsPage = () => {
+  // ⬇️ ALLE HOOKS BOVENAAN (belangrijk!)
   const { data, setData } = useOutletContext();
+  const navigate = useNavigate();
+
   const [createOpen, setCreateOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
-
-  if (!data) return <EventsPageSkeleton />;
-
 
   const cardBg = useColorModeValue("whiteAlpha.800", "gray.800");
   const textColor = useColorModeValue("black", "white");
 
-  const navigate = useNavigate();
+  // ⬇️ Skeleton tonen zolang data nog niet geladen is
+  if (!data) return <EventsPageSkeleton />;
 
   const eventsArray = data.events || [];
   const categories = data.categories || [];
@@ -173,15 +202,15 @@ export const EventsPage = () => {
                 />
 
                 <Card.Title
-                 fontSize={{ base: "md", md: "lg", lg: "2xl" }}
+                  fontSize={{ base: "md", md: "lg", lg: "2xl" }}
                   fontWeight="bold"
                 >
                   {evt.title}
                 </Card.Title>
 
-                <Card.Description color="gray.900"
-                 fontSize={{ base: "sx", md: "sm", lg: "md" }}
-                 fontWeight="semibold"
+                <Card.Description
+                  fontSize={{ base: "sx", md: "sm", lg: "md" }}
+                  fontWeight="semibold"
                 >
                   {evt.description}
                 </Card.Description>
