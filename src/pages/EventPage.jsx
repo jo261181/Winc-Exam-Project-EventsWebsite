@@ -9,8 +9,6 @@ import {
   Image,
   HStack,
   Card,
-  Stack, 
-  Skeleton
 } from "@chakra-ui/react";
 
 import SimpleModal from "../components/ui/modal";
@@ -20,6 +18,8 @@ import { toaster } from "../components/ui/toaster";
 import Footer from "../components/ui/Footer";
 import { useColorModeValue } from "../components/ui/color-mode";
 
+// ⭐ JUISTE SKELETON VOOR DE DETAILPAGINA
+import EventDetailSkeleton from "../components/EventDetailSkeleton";
 
 export default function EventPage() {
   const { id } = useParams();
@@ -29,24 +29,27 @@ export default function EventPage() {
   const [editOpen, setEditOpen] = useState(false);
   const [deleteOpen, setDeleteOpen] = useState(false);
 
-  const events = data.events || [];
-  const categories = data.categories || [];
-
-  const event = events.find((evt) => evt.id.toString() === id);
-
-  const textColor = useColorModeValue("black", "white");
-
-  if (!event) {
+  // ⭐ LOADING STATE
+  if (!data) {
     return (
-      <Box p={6}>
-        <Text>Event not found</Text>
-        <Button mt={4} onClick={() => navigate("/events")}>
-          Go back
-        </Button>
+      <Box
+        height="100vh"
+        display="flex"
+        alignItems="center"
+        justifyContent="center"
+      >
+        <EventDetailSkeleton />
       </Box>
     );
   }
 
+  const events = data.events || [];
+  const categories = data.categories || [];
+  const event = events.find((evt) => evt.id.toString() === id);
+
+  const textColor = useColorModeValue("black", "white");
+
+  // ⭐ Delete event
   function handleDelete() {
     const updated = {
       ...data,
@@ -65,28 +68,21 @@ export default function EventPage() {
     navigate("/events");
   }
 
-  function handleEditSubmit(values) {
-    const updated = {
-      ...data,
-      events: data.events.map((e) =>
-        e.id === event.id ? { ...e, ...values } : e
-      ),
-    };
-
-    setData(updated);
-
-    toaster.create({
-      title: "Event updated",
-      description: "The changes have been saved.",
-      type: "success",
-    });
-
-    setEditOpen(false);
+  if (!event) {
+    return (
+      <Box p={6}>
+        <Text>Event not found</Text>
+        <Button mt={4} onClick={() => navigate("/events")}>
+          Go back
+        </Button>
+      </Box>
+    );
   }
 
   return (
     <>
       <Box p={6} position="relative">
+        {/* Background */}
         <Box
           position="fixed"
           inset="0"
@@ -97,6 +93,7 @@ export default function EventPage() {
           zIndex="-1"
         />
 
+        {/* Event Card */}
         <Card.Root
           w="100%"
           maxW={{ base: "100%", sm: "500px", md: "650px", lg: "700px" }}
@@ -179,7 +176,7 @@ export default function EventPage() {
             justify={{ base: "center", md: "flex-start" }}
             flexWrap="wrap"
           >
-            <Button onClick={() => setEditOpen(true)}>Edit</Button>
+            <Button onClick={() => setEditOpen(true)}>Edit Event</Button>
             <Button onClick={() => setDeleteOpen(true)}>Delete</Button>
             <Button onClick={() => navigate("/events")}>Back</Button>
           </Card.Footer>
@@ -193,7 +190,11 @@ export default function EventPage() {
         >
           <EventForm
             initialValues={event}
-            onSubmit={handleEditSubmit}
+            categories={categories}
+            onSubmit={(values) => {
+              updateEvent(event.id, values);
+              setEditOpen(false);
+            }}
             cancel={() => setEditOpen(false)}
           />
         </SimpleModal>
@@ -207,10 +208,7 @@ export default function EventPage() {
           <Text>Are you sure you want to delete this event?</Text>
 
           <HStack mt={4}>
-            <Tooltip
-              showArrow
-              contentProps={{ css: { "--tooltip-bg": "colors.red.500" } }}
-            >
+            <Tooltip>
               <Button colorPalette="red" onClick={handleDelete}>
                 Delete
               </Button>

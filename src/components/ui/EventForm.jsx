@@ -1,7 +1,8 @@
 import { useState } from "react";
 import { Button, Card, Field, Input, Stack, Textarea } from "@chakra-ui/react";
 
-export default function EventForm({ cancel, initialEvent, onSubmit }) {
+export default function EventForm({ initialValues = {}, onSubmit, cancel }) {
+  const initialEvent = initialValues;
   const [imagePreview, setImagePreview] = useState(null);
   const [imageFile, setImageFile] = useState(null);
 

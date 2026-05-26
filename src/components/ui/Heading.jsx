@@ -2,19 +2,12 @@ import {
   Box,
   Input,
   Button,
-  Flex,
-  Heading,
   Text,
   Image,
   Grid,
   ButtonGroup,
 } from "@chakra-ui/react";
 import { Link as RouterLink } from "react-router-dom";
-import { ColorModeButton } from "./color-mode";
-
-
-
-
 
 export default function HeadingExample({
   data,
@@ -22,6 +15,7 @@ export default function HeadingExample({
   searchTerm,
   setSearchTerm,
   rightContent,
+  noSticky = false,
 }) {
   const searchEnabled =
     typeof searchTerm === "string" && typeof setSearchTerm === "function";
@@ -54,8 +48,8 @@ export default function HeadingExample({
     <Box
       p={3}
       bg="gray.100"
-      position="sticky"
-      top="0"
+      position={noSticky ? "relative" : "sticky"}
+      top={noSticky ? "auto" : "0"}
       zIndex={100}
       boxShadow="sm"
     >
@@ -69,6 +63,7 @@ export default function HeadingExample({
         gap={4}
         mb={2}
       >
+        {/* LOGO */}
         <Box
           display="flex"
           alignItems="center"
@@ -82,6 +77,7 @@ export default function HeadingExample({
           />
         </Box>
 
+        {/* SEARCH */}
         {searchEnabled && (
           <Input
             width="100%"
@@ -96,6 +92,7 @@ export default function HeadingExample({
           />
         )}
 
+        {/* BUTTONS */}
         {(rightContent || onCreate) && (
           <Box
             display="flex"
@@ -112,13 +109,13 @@ export default function HeadingExample({
                 <Button as={RouterLink} to="/about-us" colorScheme="teal">
                   About Us
                 </Button>
-                {/* <ColorModeToggle /> */}
               </ButtonGroup>
             )}
           </Box>
         )}
       </Grid>
 
+      {/* NO RESULTS */}
       {searchEnabled &&
         searchTerm.trim() !== "" &&
         filteredEvents.length === 0 && (

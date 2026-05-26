@@ -8,7 +8,7 @@ import {
   Card,
   SimpleGrid,
   Stack,
-  Skeleton
+  Skeleton,
 } from "@chakra-ui/react";
 
 import HeadingExample from "../components/ui/Heading";
@@ -19,7 +19,6 @@ import EventForm from "../components/ui/EventForm";
 import Footer from "../components/ui/Footer";
 import { useColorModeValue } from "../components/ui/color-mode";
 import { toaster } from "../components/ui/toaster";
-
 
 // ⭐ Skeleton voor EventsPage
 export const EventsPageSkeleton = () => {
@@ -59,19 +58,13 @@ export const EventsPageSkeleton = () => {
               <Skeleton height="20px" width="80px" borderRadius="md" />
             </HStack>
 
-            <Skeleton
-              height="36px"
-              width="120px"
-              mt={4}
-              borderRadius="md"
-            />
+            <Skeleton height="36px" width="120px" mt={4} borderRadius="md" />
           </Card.Root>
         ))}
       </SimpleGrid>
     </Box>
   );
 };
-
 
 // ⭐ EventsPage component
 export const EventsPage = () => {
@@ -143,6 +136,8 @@ export const EventsPage = () => {
         searchTerm={searchTerm}
         setSearchTerm={setSearchTerm}
         onCreate={() => setCreateOpen(true)}
+        rightContent={null}
+        noSticky
       />
 
       <SimpleModal
@@ -257,7 +252,8 @@ export const EventsPage = () => {
 
       <Footer>
         <Text textAlign="center" py={4} color="black.800">
-          &copy; {new Date().getFullYear()} PixelBloom Drift. All rights reserved.
+          &copy; {new Date().getFullYear()} PixelBloom Drift. All rights
+          reserved.
         </Text>
       </Footer>
     </>
