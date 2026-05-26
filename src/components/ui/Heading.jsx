@@ -87,9 +87,11 @@ export default function HeadingExample({
             width="100%"
             maxW={{ base: "100%", md: "500px", lg: "700px" }}
             placeholder="Search events..."
+            _placeholder={{ color: "gray.800" }}
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             bg="white"
+            boxShadow="sm"
             justifySelf="center"
           />
         )}
@@ -120,7 +122,7 @@ export default function HeadingExample({
       {searchEnabled &&
         searchTerm.trim() !== "" &&
         filteredEvents.length === 0 && (
-          <Text color="gray.500" textAlign="center">
+          <Text color="gray.700" textAlign="center">
             No Event Found
           </Text>
         )}
