@@ -7,6 +7,8 @@ import {
   Text,
   Card,
   SimpleGrid,
+  Stack, 
+  Skeleton
 } from "@chakra-ui/react";
 
 import HeadingExample from "../components/ui/Heading";
@@ -18,10 +20,39 @@ import Footer from "../components/ui/Footer";
 import { useColorModeValue } from "../components/ui/color-mode";
 import { toaster } from "../components/ui/toaster";
 
+
+export const EventsPageSkeleton = () => {
+  return (
+    <Stack gap="6" p="6">
+      {[1, 2, 3].map((i) => (
+        <Stack
+          key={i}
+          borderWidth="1px"
+          borderRadius="md"
+          p="4"
+          bg="white"
+          boxShadow="sm"
+        >
+          <Skeleton height="180px" borderRadius="md" />
+
+          <Stack mt="4" gap="3">
+            <Skeleton height="20px" width="60%" />
+            <Skeleton height="16px" width="80%" />
+            <Skeleton height="16px" width="40%" />
+          </Stack>
+        </Stack>
+      ))}
+    </Stack>
+  );
+};
+
 export const EventsPage = () => {
   const { data, setData } = useOutletContext();
   const [createOpen, setCreateOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
+
+  if (!data) return <EventsPageSkeleton />;
+
 
   const cardBg = useColorModeValue("whiteAlpha.800", "gray.800");
   const textColor = useColorModeValue("black", "white");

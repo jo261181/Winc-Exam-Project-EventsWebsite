@@ -5,7 +5,7 @@ import { createBrowserRouter, RouterProvider } from "react-router-dom";
 
 import { Root } from "./components/Root";
 import EventPage from "./pages/EventPage";
-import { EventsPage } from "./pages/EventsPage";
+import {EventsPage} from "./pages/EventsPage";
 import { AboutUs } from "./pages/AboutUs";
 
 const router = createBrowserRouter([

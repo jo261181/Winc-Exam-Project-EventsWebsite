@@ -9,6 +9,8 @@ import {
   Image,
   HStack,
   Card,
+  Stack, 
+  Skeleton
 } from "@chakra-ui/react";
 
 import SimpleModal from "../components/ui/modal";
@@ -17,6 +19,7 @@ import { Tooltip } from "../components/ui/tooltip";
 import { toaster } from "../components/ui/toaster";
 import Footer from "../components/ui/Footer";
 import { useColorModeValue } from "../components/ui/color-mode";
+
 
 export default function EventPage() {
   const { id } = useParams();
