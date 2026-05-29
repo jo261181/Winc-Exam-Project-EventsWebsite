@@ -32,6 +32,10 @@ export default function EventForm({ initialValues = {}, onSubmit, cancel }) {
   onSubmit(values);
 }
 
+function toISO(value) {
+  return new Date(value).toISOString();
+}
+
   function toDateTimeLocal(value) {
     if (!value) return "";
     return value.slice(0, 16); // "2023-03-10T18:00"
@@ -47,6 +51,9 @@ export default function EventForm({ initialValues = {}, onSubmit, cancel }) {
         </Card.Description>
       </Card.Header>
 
+      <input type="hidden" name="id" value={initialEvent?.id} />
+
+
       <Card.Body>
         <Stack gap="4" w="full">
           <Field.Root>
@@ -59,16 +66,16 @@ export default function EventForm({ initialValues = {}, onSubmit, cancel }) {
               style={{ display: "flex", flexDirection: "column", gap: "4px" }}
             >
               <label>
-                <input type="checkbox" name="categoryIds" value="1" /> Music
+                <input type="checkbox" name="categoryIds" value="1"  defaultChecked={initialEvent?.categoryIds?.includes(1)}/> Music
               </label>
               <label>
-                <input type="checkbox" name="categoryIds" value="2" /> Art
+                <input type="checkbox" name="categoryIds" value="2" defaultChecked={initialEvent?.categoryIds?.includes(2)} /> Art
               </label>
               <label>
-                <input type="checkbox" name="categoryIds" value="3" /> Tech
+                <input type="checkbox" name="categoryIds" value="3" defaultChecked={initialEvent?.categoryIds?.includes(3)} /> Tech
               </label>
               <label>
-                <input type="checkbox" name="categoryIds" value="4" /> Sports
+                <input type="checkbox" name="categoryIds" value="4" defaultChecked={initialEvent?.categoryIds?.includes(4)} /> Sports
               </label>
             </div>
           </Field.Root>

@@ -17,76 +17,79 @@ import { useNavigate, useOutletContext } from "react-router-dom";
 import SimpleModal from "../components/ui/modal";
 import EventForm from "../components/ui/EventForm";
 import Footer from "../components/ui/Footer";
-
 import { toaster } from "../components/ui/toaster";
 
-// ⭐ Skeleton voor EventsPage
-export const EventsPageSkeleton = () => {
-  return (
-    <Box p={6}>
-      <SimpleGrid columns={[1, 2, 3, 4]} spacing={6} gap="30px">
-        {[1, 2, 3, 4, 5, 6].map((i) => (
-          <Card.Root
-            key={i}
+// -----------------------------------------------------
+// Skeleton
+// -----------------------------------------------------
+export const EventsPageSkeleton = () => (
+  <Box p={6}>
+    <SimpleGrid columns={[1, 2, 3, 4]} spacing={6} gap="30px">
+      {[...Array(6)].map((_, i) => (
+        <Card.Root
+          key={i}
+          w="100%"
+          borderRadius="lg"
+          bg="whiteAlpha.800"
+          alignItems="center"
+          boxShadow="md"
+          p={4}
+        >
+          <Skeleton
+            height={{ base: "120px", md: "130px", lg: "170px" }}
             w="100%"
-            borderRadius="lg"
-            bg="whiteAlpha.800"
-            alignItems="center"
-            boxShadow="md"
-            p={4}
-          >
-            <Skeleton
-              height={{ base: "120px", md: "130px", lg: "170px" }}
-              w="100%"
-              borderRadius="md"
-              mb={4}
-            />
+            borderRadius="md"
+            mb={4}
+          />
 
-            <Stack w="100%" gap={3}>
-              <Skeleton height="24px" width="70%" />
-              <Skeleton height="16px" width="90%" />
-              <Skeleton height="16px" width="50%" />
-            </Stack>
+          <Stack w="100%" gap={3}>
+            <Skeleton height="24px" width="70%" />
+            <Skeleton height="16px" width="90%" />
+            <Skeleton height="16px" width="50%" />
+          </Stack>
 
-            <Stack w="100%" mt={4} gap={2}>
-              <Skeleton height="16px" width="60%" />
-              <Skeleton height="16px" width="50%" />
-            </Stack>
+          <Stack w="100%" mt={4} gap={2}>
+            <Skeleton height="16px" width="60%" />
+            <Skeleton height="16px" width="50%" />
+          </Stack>
 
-            <HStack mt={4} w="100%" gap={2}>
-              <Skeleton height="20px" width="60px" borderRadius="md" />
-              <Skeleton height="20px" width="80px" borderRadius="md" />
-            </HStack>
+          <HStack mt={4} w="100%" gap={2}>
+            <Skeleton height="20px" width="60px" borderRadius="md" />
+            <Skeleton height="20px" width="80px" borderRadius="md" />
+          </HStack>
 
-            <Skeleton height="36px" width="120px" mt={4} borderRadius="md" />
-          </Card.Root>
-        ))}
-      </SimpleGrid>
-    </Box>
-  );
-};
+          <Skeleton height="36px" width="120px" mt={4} borderRadius="md" />
+        </Card.Root>
+      ))}
+    </SimpleGrid>
+  </Box>
+);
 
-// ⭐ EventsPage component
+// -----------------------------------------------------
+// EventsPage
+// -----------------------------------------------------
 export const EventsPage = () => {
-  // ⬇️ ALLE HOOKS BOVENAAN (belangrijk!)
   const { data, setData } = useOutletContext();
   const navigate = useNavigate();
 
   const [createOpen, setCreateOpen] = useState(false);
+  const [editOpen, setEditOpen] = useState(false);
+  const [editEvent, setEditEvent] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
 
-  // ⬇️ Skeleton tonen zolang data nog niet geladen is
   if (!data) return <EventsPageSkeleton />;
 
   const eventsArray = data.events || [];
   const categories = data.categories || [];
 
+  // -----------------------------------------------------
+  // Create
+  // -----------------------------------------------------
   const addEvent = (newEvent) => {
-    let imageUrl = null;
-
-    if (newEvent.image instanceof File) {
-      imageUrl = URL.createObjectURL(newEvent.image);
-    }
+    const imageUrl =
+      newEvent.image instanceof File
+        ? URL.createObjectURL(newEvent.image)
+        : null;
 
     const updated = {
       ...data,
@@ -110,6 +113,37 @@ export const EventsPage = () => {
     });
   };
 
+  // -----------------------------------------------------
+  // Update
+  // -----------------------------------------------------
+  const updateEvent = (values) => {
+    const updated = {
+      ...values,
+      id: Number(values.id),
+      categoryIds: Array.isArray(values.categoryIds)
+        ? values.categoryIds.map(Number)
+        : [],
+    };
+
+    const newData = {
+      ...data,
+      events: data.events.map((evt) =>
+        evt.id === updated.id ? updated : evt
+      ),
+    };
+
+    setData(newData);
+
+    toaster.create({
+      title: "Event updated",
+      description: "De wijzigingen zijn opgeslagen.",
+      type: "success",
+    });
+  };
+
+  // -----------------------------------------------------
+  // Filtering
+  // -----------------------------------------------------
   const filteredEvents = eventsArray.filter((evt) => {
     const search = searchTerm.toLowerCase();
 
@@ -126,6 +160,9 @@ export const EventsPage = () => {
     );
   });
 
+  // -----------------------------------------------------
+  // Render
+  // -----------------------------------------------------
   return (
     <>
       <HeadingExample
@@ -137,6 +174,7 @@ export const EventsPage = () => {
         noSticky
       />
 
+      {/* Create Modal */}
       <SimpleModal
         open={createOpen}
         onClose={() => setCreateOpen(false)}
@@ -151,17 +189,34 @@ export const EventsPage = () => {
         />
       </SimpleModal>
 
+      {/* Edit Modal */}
+      <SimpleModal
+        open={editOpen}
+        onClose={() => setEditOpen(false)}
+        title="Edit event"
+      >
+        <EventForm
+          initialValues={editEvent}
+          onSubmit={(values) => {
+            updateEvent(values);
+            setEditOpen(false);
+          }}
+          cancel={() => setEditOpen(false)}
+        />
+      </SimpleModal>
+
+      {/* Background */}
       <Box
         position="fixed"
         inset="0"
         bgImage="url('/images/pexels-diva-34731924.jpg')"
         bgSize="cover"
         bgPosition="center"
-        backgroundColor={{ base: "gray.400", _dark: "gray.700" }}
         opacity="0.4"
         zIndex="-1"
       />
 
+      {/* Events Grid */}
       <Box position="relative" zIndex="1" p={6}>
         <SimpleGrid columns={[1, 2, 3, 4]} spacing={6} gap="30px">
           {filteredEvents.map((evt) => (
@@ -174,10 +229,7 @@ export const EventsPage = () => {
               cursor="pointer"
               onClick={() => navigate(`/events/${evt.id}`)}
               boxShadow="md"
-              _hover={{
-                transform: "scale(1.03)",
-                boxShadow: "lg",
-              }}
+              _hover={{ transform: "scale(1.03)", boxShadow: "lg" }}
               transition="0.2s"
             >
               <Card.Header p={6} w="100%">
@@ -191,17 +243,11 @@ export const EventsPage = () => {
                   mb={4}
                 />
 
-                <Card.Title
-                  fontSize={{ base: "md", md: "lg", lg: "2xl" }}
-                  fontWeight="bold"
-                >
+                <Card.Title fontSize={{ base: "md", md: "lg", lg: "2xl" }}>
                   {evt.title}
                 </Card.Title>
 
-                <Card.Description
-                  fontSize={{ base: "sx", md: "sm", lg: "md" }}
-                  fontWeight="semibold"
-                >
+                <Card.Description fontSize={{ base: "sx", md: "sm", lg: "md" }}>
                   {evt.description}
                 </Card.Description>
               </Card.Header>
@@ -242,10 +288,25 @@ export const EventsPage = () => {
 
               <Card.Footer gap={3}>
                 <Button
-                  variant="surface" border="1px solid" borderColor="gray.300"
+                  variant="surface"
+                  border="1px solid"
+                  borderColor="gray.300"
                   onClick={() => navigate(`/events/${evt.id}`)}
                 >
                   View details
+                </Button>
+
+                <Button
+                  variant="surface"
+                  border="1px solid"
+                  borderColor="gray.300"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setEditEvent(evt);
+                    setEditOpen(true);
+                  }}
+                >
+                  Edit
                 </Button>
               </Card.Footer>
             </Card.Root>
@@ -255,8 +316,7 @@ export const EventsPage = () => {
 
       <Footer>
         <Text textAlign="center" py={4} color="black.800">
-          &copy; {new Date().getFullYear()} PixelBloom Drift. All rights
-          reserved.
+          &copy; {new Date().getFullYear()} PixelBloom Drift. All rights reserved.
         </Text>
       </Footer>
     </>
