@@ -127,7 +127,7 @@ export default function EventForm({ initialValues = {}, onSubmit, cancel }) {
       </Card.Body>
 
       <Card.Footer justifyContent="flex-end" gap={4} pt={4} mt={2}>
-        <Button variant="outline" onClick={cancel}>
+        <Button variant="surface" border="1px solid" borderColor="gray.300" onClick={cancel}>
           Cancel
         </Button>
 

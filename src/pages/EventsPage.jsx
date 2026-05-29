@@ -75,9 +75,6 @@ export const EventsPage = () => {
   const [createOpen, setCreateOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
 
-
-
-
   // ⬇️ Skeleton tonen zolang data nog niet geladen is
   if (!data) return <EventsPageSkeleton />;
 
@@ -161,7 +158,6 @@ export const EventsPage = () => {
         bgSize="cover"
         bgPosition="center"
         backgroundColor={{ base: "gray.400", _dark: "gray.700" }}
-   
         opacity="0.4"
         zIndex="-1"
       />
@@ -173,7 +169,6 @@ export const EventsPage = () => {
               key={evt.id}
               w="100%"
               borderRadius="lg"
-      
               alignItems="center"
               mb={5}
               cursor="pointer"
@@ -232,7 +227,12 @@ export const EventsPage = () => {
                   {evt.categoryIds?.map((id) => {
                     const category = categories.find((c) => c.id === id);
                     return (
-                      <Badge key={id} colorPalette="orange">
+                      <Badge
+                        key={id}
+                        size="lg"
+                        variant="solid"
+                        colorPalette="orange"
+                      >
                         {category?.name}
                       </Badge>
                     );
@@ -241,7 +241,10 @@ export const EventsPage = () => {
               </Card.Body>
 
               <Card.Footer gap={3}>
-                <Button onClick={() => navigate(`/events/${evt.id}`)}>
+                <Button
+                  variant="surface" border="1px solid" borderColor="gray.300"
+                  onClick={() => navigate(`/events/${evt.id}`)}
+                >
                   View details
                 </Button>
               </Card.Footer>

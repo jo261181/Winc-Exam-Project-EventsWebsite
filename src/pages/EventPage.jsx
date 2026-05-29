@@ -17,7 +17,6 @@ import { Tooltip } from "../components/ui/tooltip";
 import { toaster } from "../components/ui/toaster";
 import Footer from "../components/ui/Footer";
 
-
 // ⭐ JUISTE SKELETON VOOR DE DETAILPAGINA
 import EventDetailSkeleton from "../components/EventDetailSkeleton";
 
@@ -46,8 +45,6 @@ export default function EventPage() {
   const events = data.events || [];
   const categories = data.categories || [];
   const event = events.find((evt) => evt.id.toString() === id);
-
-
 
   // ⭐ Delete event
   function handleDelete() {
@@ -100,7 +97,6 @@ export default function EventPage() {
           mx="auto"
           p={{ base: 4, md: 6 }}
           boxShadow="md"
-   
         >
           <Image
             src={event.image}
@@ -163,7 +159,12 @@ export default function EventPage() {
               {event.categoryIds?.map((id) => {
                 const category = categories.find((c) => c.id === id);
                 return (
-                  <Badge key={id} colorPalette="orange">
+                  <Badge
+                    key={id}
+                    size="lg"
+                    variant="solid"
+                    colorPalette="orange"
+                  >
                     {category?.name}
                   </Badge>
                 );
@@ -176,13 +177,13 @@ export default function EventPage() {
             justify={{ base: "center", md: "flex-start" }}
             flexWrap="wrap"
           >
-            <Button variant="surface" onClick={() => setEditOpen(true)}>
+            <Button variant="surface" border="1px solid" borderColor="gray.300" onClick={() => setEditOpen(true)}>
               Edit Event
             </Button>
-            <Button variant="outline" onClick={() => setDeleteOpen(true)}>
+            <Button variant="surface" border="1px solid" borderColor="gray.300" onClick={() => setDeleteOpen(true)}>
               Delete
             </Button>
-            <Button variant="outline" onClick={() => navigate("/events")}>
+            <Button variant="surface" border="1px solid" borderColor="gray.300" onClick={() => navigate("/events")}>
               Back
             </Button>
           </Card.Footer>

@@ -2,9 +2,11 @@ import { Box, Text, Heading, Button } from "@chakra-ui/react";
 import { useNavigate } from "react-router-dom";
 import HeadingExample from "../components/ui/Heading";
 import Footer from "../components/ui/Footer";
+import { useColorMode, ColorModeButton } from "../components/ui/color-mode";
 
 export const AboutUs = () => {
   const navigate = useNavigate();
+  const { colorMode } = useColorMode();
 
   return (
     <>
@@ -26,14 +28,13 @@ export const AboutUs = () => {
         }
       />
 
-
       <Box
         maxW="900px"
         mx="auto"
         mt={8}
         p={6}
         px={2}
-        bg="whiteAlpha.800"
+        bg={colorMode === "dark" ? "black" : "whiteAlpha.800"}
         borderRadius="md"
         boxShadow="md"
       >
@@ -44,8 +45,8 @@ export const AboutUs = () => {
         <Text mb={4} mx={5}>
           We are a team of passionate and dedicated event organizers who pour
           our heart and energy into creating unforgettable experiences for our
-          community. What drives us is the joy of bringing people together — uniting creativity, 
-          excitement, and connection in one place.
+          community. What drives us is the joy of bringing people together —
+          uniting creativity, excitement, and connection in one place.
         </Text>
 
         <Text mb={4} mx={5}>
@@ -58,8 +59,8 @@ export const AboutUs = () => {
         <Text mb={4} mx={5}>
           Our mission is to bring people closer through unique, inspiring, and
           engaging events. We believe that meaningful memories are created when
-          people come together to laugh, discover, celebrate, and enjoy — moments 
-          that stay with you for a lifetime.
+          people come together to laugh, discover, celebrate, and enjoy —
+          moments that stay with you for a lifetime.
         </Text>
 
         <Text mb={4} mx={5}>

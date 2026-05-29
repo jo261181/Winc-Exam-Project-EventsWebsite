@@ -27,7 +27,15 @@ export function useColorMode() {
 
 export function ColorModeIcon() {
   const { colorMode } = useColorMode()
-  return colorMode === 'dark' ? <LuMoon /> : <LuSun />
+
+  const iconStyle = {
+    width: "32px",
+    height: "32px",
+  }
+
+  return colorMode === "dark"
+    ? <LuMoon style={iconStyle} />
+    : <LuSun style={iconStyle} />
 }
 
 export const ColorModeButton = React.forwardRef(function ColorModeButton(
@@ -38,16 +46,14 @@ export const ColorModeButton = React.forwardRef(function ColorModeButton(
 
   return (
     <ClientOnly fallback={<Skeleton boxSize="9" />}>
-      <IconButton
-        onClick={toggleColorMode}
-        variant="ghost"
-        aria-label="Toggle color mode"
-        size="sm"
-        ref={ref}
-        {...props}
-      >
-        <ColorModeIcon />
-      </IconButton>
+<IconButton
+  onClick={toggleColorMode}
+  variant="ghost"
+  aria-label="Toggle color mode"
+  boxSize="42px"
+>
+  <ColorModeIcon />
+</IconButton>
     </ClientOnly>
   )
 })

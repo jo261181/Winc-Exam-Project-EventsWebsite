@@ -12,7 +12,6 @@ import { Link as RouterLink } from "react-router-dom";
 // ✔ juiste imports
 import { useColorMode, ColorModeButton } from "./color-mode";
 
-
 export default function HeadingExample({
   data,
   onCreate,
@@ -22,6 +21,7 @@ export default function HeadingExample({
   noSticky = false,
 }) {
   const { toggleColorMode } = useColorMode(); // ✔ werkt nu
+  const { colorMode } = useColorMode();
 
   const searchEnabled =
     typeof searchTerm === "string" && typeof setSearchTerm === "function";
@@ -53,7 +53,7 @@ export default function HeadingExample({
   return (
     <Box
       p={3}
-      bg="gray.100"
+      bg={colorMode === "dark" ? "black" : "white"}
       position={noSticky ? "relative" : "sticky"}
       top={noSticky ? "auto" : "0"}
       zIndex={100}
@@ -109,10 +109,10 @@ export default function HeadingExample({
               rightContent
             ) : (
               <ButtonGroup>
-                <Button onClick={onCreate} colorScheme="blue">
+                <Button  variant="surface" border="1px solid" borderColor="gray.300" onClick={onCreate} colorScheme="blue">
                   Create new event
                 </Button>
-                <Button as={RouterLink} to="/about-us" colorScheme="teal">
+                <Button as={RouterLink} to="/about-us" variant="surface" border="1px solid" borderColor="gray.300">
                   About Us
                 </Button>
 
