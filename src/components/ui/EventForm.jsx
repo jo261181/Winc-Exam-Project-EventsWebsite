@@ -46,6 +46,25 @@ export default function EventForm({ initialValues = {}, onSubmit, cancel }) {
           </Field.Root>
 
           <Field.Root>
+            <div
+              style={{ display: "flex", flexDirection: "column", gap: "4px" }}
+            >
+              <label>
+                <input type="checkbox" name="categoryIds" value="1" /> Music
+              </label>
+              <label>
+                <input type="checkbox" name="categoryIds" value="2" /> Art
+              </label>
+              <label>
+                <input type="checkbox" name="categoryIds" value="3" /> Tech
+              </label>
+              <label>
+                <input type="checkbox" name="categoryIds" value="4" /> Sports
+              </label>
+            </div>
+          </Field.Root>
+
+          <Field.Root>
             <Field.Label>Event Description</Field.Label>
             <Textarea
               name="description"
@@ -127,7 +146,12 @@ export default function EventForm({ initialValues = {}, onSubmit, cancel }) {
       </Card.Body>
 
       <Card.Footer justifyContent="flex-end" gap={4} pt={4} mt={2}>
-        <Button variant="surface" border="1px solid" borderColor="gray.300" onClick={cancel}>
+        <Button
+          variant="surface"
+          border="1px solid"
+          borderColor="gray.300"
+          onClick={cancel}
+        >
           Cancel
         </Button>
 
