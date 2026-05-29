@@ -16,16 +16,25 @@ export default function EventForm({ initialValues = {}, onSubmit, cancel }) {
   const [imageFile, setImageFile] = useState(null);
 
   function handleSubmit(e) {
-    e.preventDefault();
+  e.preventDefault();
 
-    const formData = new FormData(e.target);
-    const values = Object.fromEntries(formData.entries());
+  const formData = new FormData(e.target);
+  const values = Object.fromEntries(formData.entries());
 
-    if (imageFile) {
-      values.image = imageFile;
-    }
+  // Convert datetime-local → ISO
+  values.startTime = toISO(values.startTime);
+  values.endTime = toISO(values.endTime);
 
-    onSubmit(values);
+  if (imageFile) {
+    values.image = imageFile;
+  }
+
+  onSubmit(values);
+}
+
+  function toDateTimeLocal(value) {
+    if (!value) return "";
+    return value.slice(0, 16); // "2023-03-10T18:00"
   }
 
   return (
@@ -87,8 +96,7 @@ export default function EventForm({ initialValues = {}, onSubmit, cancel }) {
             <Input
               type="datetime-local"
               name="startTime"
-              required
-              defaultValue={initialEvent?.startTime}
+              defaultValue={toDateTimeLocal(initialEvent?.startTime)}
             />
           </Field.Root>
 
@@ -97,8 +105,7 @@ export default function EventForm({ initialValues = {}, onSubmit, cancel }) {
             <Input
               type="datetime-local"
               name="endTime"
-              required
-              defaultValue={initialEvent?.endTime}
+              defaultValue={toDateTimeLocal(initialEvent?.endTime)}
             />
           </Field.Root>
 
