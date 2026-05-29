@@ -1,5 +1,14 @@
 import { useState } from "react";
-import { Button, Card, Field, Input, Stack, Textarea } from "@chakra-ui/react";
+import {
+  Button,
+  Card,
+  Field,
+  Input,
+  Stack,
+  Text,
+  Textarea,
+  HStack,
+} from "@chakra-ui/react";
 
 export default function EventForm({ initialValues = {}, onSubmit, cancel }) {
   const initialEvent = initialValues;
@@ -22,7 +31,6 @@ export default function EventForm({ initialValues = {}, onSubmit, cancel }) {
   return (
     <Card.Root maxW="sm" as="form" onSubmit={handleSubmit}>
       <Card.Header>
-        
         <Card.Description>
           {initialEvent
             ? "Update the event details below"
@@ -48,7 +56,11 @@ export default function EventForm({ initialValues = {}, onSubmit, cancel }) {
 
           <Field.Root>
             <Field.Label>Location</Field.Label>
-            <Input name="location" required defaultValue={initialEvent?.location} />
+            <Input
+              name="location"
+              required
+              defaultValue={initialEvent?.location}
+            />
           </Field.Root>
 
           <Field.Root>
@@ -72,18 +84,32 @@ export default function EventForm({ initialValues = {}, onSubmit, cancel }) {
           </Field.Root>
 
           <Field.Root>
-            <Field.Label>Event Image</Field.Label>
-            <input
-              type="file"
-              accept="image/*"
-              onChange={(e) => {
-                const file = e.target.files[0];
-                if (file) {
-                  setImageFile(file);
-                  setImagePreview(URL.createObjectURL(file));
-                }
-              }}
-            />
+            <HStack gap={3}>
+              <Field.Label>Event Image:</Field.Label>
+              <Input
+                type="file"
+                name="image"
+                id="file-upload"
+                display="none"
+                onChange={(e) => setImageFile(e.target.files[0])}
+              />
+
+              <Button
+                as="label"
+                htmlFor="file-upload"
+                colorPalette="gray"
+                variant="outline"
+                size="sm"
+              >
+                Upload Image
+              </Button>
+            </HStack>
+
+            {imageFile && (
+              <Text mt={2} fontSize="sm" color="gray.600">
+                Gekozen: {imageFile.name}
+              </Text>
+            )}
           </Field.Root>
 
           {imagePreview && (
@@ -108,9 +134,8 @@ export default function EventForm({ initialValues = {}, onSubmit, cancel }) {
         <Button
           variant="solid"
           type="submit"
-          colorScheme="blue"
+          colorPalette="gray"
           width="inherit"
-           
         >
           {initialEvent ? "Save changes" : "Create Event"}
         </Button>

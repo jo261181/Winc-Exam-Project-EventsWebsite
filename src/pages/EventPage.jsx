@@ -16,7 +16,7 @@ import EventForm from "../components/ui/EventForm";
 import { Tooltip } from "../components/ui/tooltip";
 import { toaster } from "../components/ui/toaster";
 import Footer from "../components/ui/Footer";
-import { useColorModeValue } from "../components/ui/color-mode";
+
 
 // ⭐ JUISTE SKELETON VOOR DE DETAILPAGINA
 import EventDetailSkeleton from "../components/EventDetailSkeleton";
@@ -47,7 +47,7 @@ export default function EventPage() {
   const categories = data.categories || [];
   const event = events.find((evt) => evt.id.toString() === id);
 
-  const textColor = useColorModeValue("black", "white");
+
 
   // ⭐ Delete event
   function handleDelete() {
@@ -72,7 +72,7 @@ export default function EventPage() {
     return (
       <Box p={6}>
         <Text>Event not found</Text>
-        <Button mt={4} onClick={() => navigate("/events")}>
+        <Button mt={4} variant="outline" onClick={() => navigate("/events")}>
           Go back
         </Button>
       </Box>
@@ -100,7 +100,7 @@ export default function EventPage() {
           mx="auto"
           p={{ base: 4, md: 6 }}
           boxShadow="md"
-          color={textColor}
+   
         >
           <Image
             src={event.image}
@@ -176,9 +176,15 @@ export default function EventPage() {
             justify={{ base: "center", md: "flex-start" }}
             flexWrap="wrap"
           >
-            <Button onClick={() => setEditOpen(true)}>Edit Event</Button>
-            <Button onClick={() => setDeleteOpen(true)}>Delete</Button>
-            <Button onClick={() => navigate("/events")}>Back</Button>
+            <Button variant="surface" onClick={() => setEditOpen(true)}>
+              Edit Event
+            </Button>
+            <Button variant="outline" onClick={() => setDeleteOpen(true)}>
+              Delete
+            </Button>
+            <Button variant="outline" onClick={() => navigate("/events")}>
+              Back
+            </Button>
           </Card.Footer>
         </Card.Root>
 

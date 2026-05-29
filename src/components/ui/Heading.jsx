@@ -9,6 +9,10 @@ import {
 } from "@chakra-ui/react";
 import { Link as RouterLink } from "react-router-dom";
 
+// ✔ juiste imports
+import { useColorMode, ColorModeButton } from "./color-mode";
+
+
 export default function HeadingExample({
   data,
   onCreate,
@@ -17,6 +21,8 @@ export default function HeadingExample({
   rightContent,
   noSticky = false,
 }) {
+  const { toggleColorMode } = useColorMode(); // ✔ werkt nu
+
   const searchEnabled =
     typeof searchTerm === "string" && typeof setSearchTerm === "function";
 
@@ -31,7 +37,7 @@ export default function HeadingExample({
           const eventCategoryNames =
             event.categoryIds
               ?.map((id) =>
-                categories.find((c) => c.id === id)?.name?.toLowerCase()
+                categories.find((c) => c.id === id)?.name?.toLowerCase(),
               )
               .filter(Boolean) || [];
 
@@ -109,6 +115,9 @@ export default function HeadingExample({
                 <Button as={RouterLink} to="/about-us" colorScheme="teal">
                   About Us
                 </Button>
+
+                {/* ✔ Mooie toggle button */}
+                <ColorModeButton />
               </ButtonGroup>
             )}
           </Box>

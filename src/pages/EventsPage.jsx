@@ -17,7 +17,7 @@ import { useNavigate, useOutletContext } from "react-router-dom";
 import SimpleModal from "../components/ui/modal";
 import EventForm from "../components/ui/EventForm";
 import Footer from "../components/ui/Footer";
-import { useColorModeValue } from "../components/ui/color-mode";
+
 import { toaster } from "../components/ui/toaster";
 
 // ⭐ Skeleton voor EventsPage
@@ -75,8 +75,8 @@ export const EventsPage = () => {
   const [createOpen, setCreateOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
 
-  const cardBg = useColorModeValue("whiteAlpha.800", "gray.800");
-  const textColor = useColorModeValue("black", "white");
+
+
 
   // ⬇️ Skeleton tonen zolang data nog niet geladen is
   if (!data) return <EventsPageSkeleton />;
@@ -161,7 +161,7 @@ export const EventsPage = () => {
         bgSize="cover"
         bgPosition="center"
         backgroundColor={{ base: "gray.400", _dark: "gray.700" }}
-        color={textColor}
+   
         opacity="0.4"
         zIndex="-1"
       />
@@ -173,7 +173,7 @@ export const EventsPage = () => {
               key={evt.id}
               w="100%"
               borderRadius="lg"
-              bg={cardBg}
+      
               alignItems="center"
               mb={5}
               cursor="pointer"
