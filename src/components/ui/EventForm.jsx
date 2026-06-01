@@ -10,31 +10,32 @@ import {
   HStack,
 } from "@chakra-ui/react";
 
-export default function EventForm({ initialValues = {}, onSubmit, cancel }) {
+export default function EventForm({ initialValues = {}, onSubmit, cancel, allCategories }) {
+
   const initialEvent = initialValues;
   const [imagePreview, setImagePreview] = useState(null);
   const [imageFile, setImageFile] = useState(null);
 
   function handleSubmit(e) {
-  e.preventDefault();
+    e.preventDefault();
 
-  const formData = new FormData(e.target);
-  const values = Object.fromEntries(formData.entries());
+    const formData = new FormData(e.target);
+    const values = Object.fromEntries(formData.entries());
 
-  // Convert datetime-local → ISO
-  values.startTime = toISO(values.startTime);
-  values.endTime = toISO(values.endTime);
+    // Convert datetime-local → ISO
+    values.startTime = toISO(values.startTime);
+    values.endTime = toISO(values.endTime);
 
-  if (imageFile) {
-    values.image = imageFile;
+    if (imageFile) {
+      values.image = imageFile;
+    }
+
+    onSubmit(values);
   }
 
-  onSubmit(values);
-}
-
-function toISO(value) {
-  return new Date(value).toISOString();
-}
+  function toISO(value) {
+    return new Date(value).toISOString();
+  }
 
   function toDateTimeLocal(value) {
     if (!value) return "";
@@ -53,7 +54,6 @@ function toISO(value) {
 
       <input type="hidden" name="id" value={initialEvent?.id} />
 
-
       <Card.Body>
         <Stack gap="4" w="full">
           <Field.Root>
@@ -62,22 +62,26 @@ function toISO(value) {
           </Field.Root>
 
           <Field.Root>
-            <div
-              style={{ display: "flex", flexDirection: "column", gap: "4px" }}
-            >
-              <label>
-                <input type="checkbox" name="categoryIds" value="1"  defaultChecked={initialEvent?.categoryIds?.includes(1)}/> Music
-              </label>
-              <label>
-                <input type="checkbox" name="categoryIds" value="2" defaultChecked={initialEvent?.categoryIds?.includes(2)} /> Art
-              </label>
-              <label>
-                <input type="checkbox" name="categoryIds" value="3" defaultChecked={initialEvent?.categoryIds?.includes(3)} /> Tech
-              </label>
-              <label>
-                <input type="checkbox" name="categoryIds" value="4" defaultChecked={initialEvent?.categoryIds?.includes(4)} /> Sports
-              </label>
-            </div>
+            <Text fontWeight="medium" mb={2}>
+              Categories
+            </Text>
+
+            <Stack gap="2">
+              {allCategories?.map((cat) => (
+                <label
+                  key={cat.id}
+                  style={{ display: "flex", gap: "6px", alignItems: "center" }}
+                >
+                  <input
+                    type="checkbox"
+                    name="categoryIds"
+                    value={cat.id}
+                    defaultChecked={initialEvent?.categoryIds?.includes(cat.id)}
+                  />
+                  {cat.name}
+                </label>
+              ))}
+            </Stack>
           </Field.Root>
 
           <Field.Root>

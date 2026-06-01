@@ -127,9 +127,7 @@ export const EventsPage = () => {
 
     const newData = {
       ...data,
-      events: data.events.map((evt) =>
-        evt.id === updated.id ? updated : evt
-      ),
+      events: data.events.map((evt) => (evt.id === updated.id ? updated : evt)),
     };
 
     setData(newData);
@@ -186,6 +184,7 @@ export const EventsPage = () => {
             setCreateOpen(false);
           }}
           cancel={() => setCreateOpen(false)}
+          allCategories={categories} // ← HIER TOEVOEGEN
         />
       </SimpleModal>
 
@@ -202,6 +201,7 @@ export const EventsPage = () => {
             setEditOpen(false);
           }}
           cancel={() => setEditOpen(false)}
+          allCategories={categories} // ← HIER TOEVOEGEN
         />
       </SimpleModal>
 
@@ -316,7 +316,8 @@ export const EventsPage = () => {
 
       <Footer>
         <Text textAlign="center" py={4} color="black.800">
-          &copy; {new Date().getFullYear()} PixelBloom Drift. All rights reserved.
+          &copy; {new Date().getFullYear()} PixelBloom Drift. All rights
+          reserved.
         </Text>
       </Footer>
     </>
