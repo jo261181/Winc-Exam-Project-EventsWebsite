@@ -89,7 +89,7 @@ export const EventsPage = () => {
     const imageUrl =
       newEvent.image instanceof File
         ? URL.createObjectURL(newEvent.image)
-        : null;
+        : newEvent.image || null;
 
     const updated = {
       ...data,
@@ -99,7 +99,11 @@ export const EventsPage = () => {
           id: crypto.randomUUID(),
           ...newEvent,
           image: imageUrl,
-          categoryIds: [],
+          categoryIds: newEvent.categoryIds
+            ? Array.isArray(newEvent.categoryIds)
+              ? newEvent.categoryIds.map(Number)
+              : [Number(newEvent.categoryIds)]
+            : [],
         },
       ],
     };
@@ -117,12 +121,20 @@ export const EventsPage = () => {
   // Update
   // -----------------------------------------------------
   const updateEvent = (values) => {
+    const imageUrl =
+      values.image instanceof File
+        ? URL.createObjectURL(values.image)
+        : values.image;
+
     const updated = {
       ...values,
       id: Number(values.id),
-      categoryIds: Array.isArray(values.categoryIds)
-        ? values.categoryIds.map(Number)
-        : [],
+      image: imageUrl,
+      categoryIds: values.categoryIds
+        ? Array.isArray(values.categoryIds)
+          ? values.categoryIds.map(Number)
+          : [Number(values.categoryIds)]
+        : editEvent.categoryIds, // behoud categorieën als niets is aangevinkt
     };
 
     const newData = {
@@ -184,7 +196,7 @@ export const EventsPage = () => {
             setCreateOpen(false);
           }}
           cancel={() => setCreateOpen(false)}
-          allCategories={categories} // ← HIER TOEVOEGEN
+          allCategories={categories}
         />
       </SimpleModal>
 
@@ -201,7 +213,7 @@ export const EventsPage = () => {
             setEditOpen(false);
           }}
           cancel={() => setEditOpen(false)}
-          allCategories={categories} // ← HIER TOEVOEGEN
+          allCategories={categories}
         />
       </SimpleModal>
 

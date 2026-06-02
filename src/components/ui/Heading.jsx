@@ -109,10 +109,23 @@ export default function HeadingExample({
               rightContent
             ) : (
               <ButtonGroup>
-                <Button  variant="surface" border="1px solid" borderColor="gray.300" onClick={onCreate} colorScheme="blue">
+                <Button
+                  variant="surface"
+                  border="1px solid"
+                  borderColor="gray.300"
+                  onClick={onCreate}
+                  colorScheme="blue"
+                >
                   Create new event
                 </Button>
-                <Button as={RouterLink} to="/about-us" variant="surface" border="1px solid" borderColor="gray.300">
+
+                <Button
+                  as={RouterLink}
+                  to="/about-us"
+                  variant="surface"
+                  border="1px solid"
+                  borderColor="gray.300"
+                >
                   About Us
                 </Button>
 

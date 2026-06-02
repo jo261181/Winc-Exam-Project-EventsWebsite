@@ -9,18 +9,43 @@ import {
   Textarea,
   HStack,
 } from "@chakra-ui/react";
+import { useEffect } from "react";
 
-export default function EventForm({ initialValues = {}, onSubmit, cancel, allCategories }) {
-
+export default function EventForm({
+  initialValues = {},
+  onSubmit,
+  cancel,
+  allCategories,
+}) {
   const initialEvent = initialValues;
+
   const [imagePreview, setImagePreview] = useState(null);
   const [imageFile, setImageFile] = useState(null);
+  const [start, setStart] = useState(toDateTimeLocal(initialEvent?.startTime));
+  const [end, setEnd] = useState(toDateTimeLocal(initialEvent?.endTime));
+
+  const today = new Date().toISOString().slice(0, 10); // YYYY-MM-DD
+  const now = new Date().toISOString().slice(0, 16); // YYYY-MM-DDTHH:MM
+
+  useEffect(() => {
+    if (initialEvent?.image && !imageFile) {
+      setImagePreview(initialEvent.image);
+    }
+  }, [initialEvent, imageFile]);
+
+  useEffect(() => {
+    if (start && end && end < start) {
+      setEnd(start); // endTime automatisch gelijk aan startTime
+    }
+  }, [start]);
 
   function handleSubmit(e) {
     e.preventDefault();
 
     const formData = new FormData(e.target);
     const values = Object.fromEntries(formData.entries());
+    console.log("FORM VALUES:", values);
+
 
     // Convert datetime-local → ISO
     values.startTime = toISO(values.startTime);
@@ -28,11 +53,13 @@ export default function EventForm({ initialValues = {}, onSubmit, cancel, allCat
 
     if (imageFile) {
       values.image = imageFile;
+    } else {
+      values.image = initialEvent?.image; // behoud originele afbeelding
     }
+    //console.log("FORM VALUES:", values);
 
     onSubmit(values);
   }
-
   function toISO(value) {
     return new Date(value).toISOString();
   }
@@ -107,18 +134,25 @@ export default function EventForm({ initialValues = {}, onSubmit, cancel, allCat
             <Input
               type="datetime-local"
               name="startTime"
-              defaultValue={toDateTimeLocal(initialEvent?.startTime)}
+              value={start}
+              onChange={(e) => setStart(e.target.value)}
+              min={new Date().toISOString().slice(0, 16)}
             />
           </Field.Root>
+
+
 
           <Field.Root>
             <Field.Label>Enddate and Time</Field.Label>
             <Input
               type="datetime-local"
               name="endTime"
-              defaultValue={toDateTimeLocal(initialEvent?.endTime)}
+              value={end}
+              onChange={(e) => setEnd(e.target.value)}
+              min={new Date().toISOString().slice(0, 16)}
             />
           </Field.Root>
+  
 
           <Field.Root>
             <HStack gap={3}>
@@ -128,7 +162,13 @@ export default function EventForm({ initialValues = {}, onSubmit, cancel, allCat
                 name="image"
                 id="file-upload"
                 display="none"
-                onChange={(e) => setImageFile(e.target.files[0])}
+                onChange={(e) => {
+                  const file = e.target.files[0];
+                  setImageFile(file);
+                  if (file) {
+                    setImagePreview(URL.createObjectURL(file)); // ← preview tonen
+                  }
+                }}
               />
 
               <Button
