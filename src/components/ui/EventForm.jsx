@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   Button,
   Card,
@@ -9,7 +9,6 @@ import {
   Textarea,
   HStack,
 } from "@chakra-ui/react";
-import { useEffect } from "react";
 
 export default function EventForm({
   initialValues = {},
@@ -21,52 +20,59 @@ export default function EventForm({
 
   const [imagePreview, setImagePreview] = useState(null);
   const [imageFile, setImageFile] = useState(null);
+
   const [start, setStart] = useState(toDateTimeLocal(initialEvent?.startTime));
   const [end, setEnd] = useState(toDateTimeLocal(initialEvent?.endTime));
 
-  const today = new Date().toISOString().slice(0, 10); // YYYY-MM-DD
-  const now = new Date().toISOString().slice(0, 16); // YYYY-MM-DDTHH:MM
+  // ⭐ foutmelding state
+  const [timeError, setTimeError] = useState("");
 
+  // ⭐ image preview
   useEffect(() => {
     if (initialEvent?.image && !imageFile) {
       setImagePreview(initialEvent.image);
     }
   }, [initialEvent, imageFile]);
 
+  // ⭐ check of end < start
   useEffect(() => {
     if (start && end && end < start) {
-      setEnd(start); // endTime automatisch gelijk aan startTime
+      setTimeError("End date cannot be earlier than start date");
+    } else {
+      setTimeError("");
     }
-  }, [start]);
+  }, [start, end]);
 
   function handleSubmit(e) {
     e.preventDefault();
 
+    // ⭐ blokkeer submit bij fout
+    if (timeError) {
+      return;
+    }
+
     const formData = new FormData(e.target);
     const values = Object.fromEntries(formData.entries());
-    console.log("FORM VALUES:", values);
 
-
-    // Convert datetime-local → ISO
     values.startTime = toISO(values.startTime);
     values.endTime = toISO(values.endTime);
 
     if (imageFile) {
       values.image = imageFile;
     } else {
-      values.image = initialEvent?.image; // behoud originele afbeelding
+      values.image = initialEvent?.image;
     }
-    //console.log("FORM VALUES:", values);
 
     onSubmit(values);
   }
+
   function toISO(value) {
     return new Date(value).toISOString();
   }
 
   function toDateTimeLocal(value) {
     if (!value) return "";
-    return value.slice(0, 16); // "2023-03-10T18:00"
+    return value.slice(0, 16);
   }
 
   return (
@@ -83,11 +89,13 @@ export default function EventForm({
 
       <Card.Body>
         <Stack gap="4" w="full">
+          {/* TITLE */}
           <Field.Root>
             <Field.Label>Event Name</Field.Label>
             <Input name="title" required defaultValue={initialEvent?.title} />
           </Field.Root>
 
+          {/* CATEGORIES */}
           <Field.Root>
             <Text fontWeight="medium" mb={2}>
               Categories
@@ -111,6 +119,7 @@ export default function EventForm({
             </Stack>
           </Field.Root>
 
+          {/* DESCRIPTION */}
           <Field.Root>
             <Field.Label>Event Description</Field.Label>
             <Textarea
@@ -120,6 +129,7 @@ export default function EventForm({
             />
           </Field.Root>
 
+          {/* LOCATION */}
           <Field.Root>
             <Field.Label>Location</Field.Label>
             <Input
@@ -129,6 +139,7 @@ export default function EventForm({
             />
           </Field.Root>
 
+          {/* START TIME */}
           <Field.Root>
             <Field.Label>Startdate and Time</Field.Label>
             <Input
@@ -140,8 +151,7 @@ export default function EventForm({
             />
           </Field.Root>
 
-
-
+          {/* END TIME */}
           <Field.Root>
             <Field.Label>Enddate and Time</Field.Label>
             <Input
@@ -152,11 +162,19 @@ export default function EventForm({
               min={new Date().toISOString().slice(0, 16)}
             />
           </Field.Root>
-  
 
+          {/* ⭐ FOUTMELDING */}
+          {timeError && (
+            <Text color="red.500" fontSize="sm">
+              {timeError}
+            </Text>
+          )}
+
+          {/* IMAGE UPLOAD */}
           <Field.Root>
             <HStack gap={3}>
               <Field.Label>Event Image:</Field.Label>
+
               <Input
                 type="file"
                 name="image"
@@ -166,7 +184,7 @@ export default function EventForm({
                   const file = e.target.files[0];
                   setImageFile(file);
                   if (file) {
-                    setImagePreview(URL.createObjectURL(file)); // ← preview tonen
+                    setImagePreview(URL.createObjectURL(file));
                   }
                 }}
               />
@@ -184,11 +202,12 @@ export default function EventForm({
 
             {imageFile && (
               <Text mt={2} fontSize="sm" color="gray.600">
-                Gekozen: {imageFile.name}
+                chosen: {imageFile.name}
               </Text>
             )}
           </Field.Root>
 
+          {/* IMAGE PREVIEW */}
           {imagePreview && (
             <img
               src={imagePreview}
@@ -203,6 +222,7 @@ export default function EventForm({
         </Stack>
       </Card.Body>
 
+      {/* FOOTER BUTTONS */}
       <Card.Footer justifyContent="flex-end" gap={4} pt={4} mt={2}>
         <Button
           variant="surface"

@@ -146,7 +146,7 @@ export const EventsPage = () => {
 
     toaster.create({
       title: "Event updated",
-      description: "De wijzigingen zijn opgeslagen.",
+      description: "The changes have been saved.",
       type: "success",
     });
   };

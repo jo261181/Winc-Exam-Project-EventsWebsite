@@ -197,7 +197,7 @@ export default function EventPage() {
         >
           <EventForm
             initialValues={event}
-            categories={categories}
+            allCategories={categories}
             onSubmit={(values) => {
               updateEvent(event.id, values);
               setEditOpen(false);
