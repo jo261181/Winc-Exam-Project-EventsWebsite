@@ -25,7 +25,6 @@ export default function EventPage() {
   const [editOpen, setEditOpen] = useState(false);
   const [deleteOpen, setDeleteOpen] = useState(false);
 
-  // LOADING
   if (!data) {
     return (
       <Box
@@ -43,41 +42,30 @@ export default function EventPage() {
   const categories = data.categories || [];
   const event = events.find((evt) => evt.id.toString() === id);
 
-  // IMAGE HELPER
-  function getImageSrc(image) {
-    if (!image) return "";
-    if (image instanceof File) {
-      return URL.createObjectURL(image);
-    }
-    return image;
+  if (!event) {
+    return (
+      <Box p={6}>
+        <Text>Event not found</Text>
+        <Button mt={4} variant="outline" onClick={() => navigate("/events")}>
+          Go back
+        </Button>
+      </Box>
+    );
   }
 
-  // ⭐ UPDATE EVENT — volledig gefixt
   function updateEvent(id, values) {
-    // categorieën correct ophalen
-    let catIds = values["categoryIds[]"];
-
-    if (!catIds) {
-      catIds = [];
-    } else if (!Array.isArray(catIds)) {
-      catIds = [catIds];
-    }
-
     const updatedEvent = {
       ...event,
       ...values,
       id: Number(id),
-      categoryIds: catIds.map(Number),
-      image:
-        values.image instanceof File
-          ? values.image
-          : values.image ?? event.image,
+      categoryIds: values.categoryIds || [],
+      image: values.image || event.image || "",
     };
 
     const updated = {
       ...data,
       events: data.events.map((evt) =>
-        evt.id === updatedEvent.id ? updatedEvent : evt
+        evt.id === updatedEvent.id ? updatedEvent : evt,
       ),
     };
 
@@ -90,7 +78,6 @@ export default function EventPage() {
     });
   }
 
-  // ⭐ DELETE EVENT — werkt 100%
   function handleDelete() {
     const updated = {
       ...data,
@@ -109,21 +96,9 @@ export default function EventPage() {
     navigate("/events");
   }
 
-  if (!event) {
-    return (
-      <Box p={6}>
-        <Text>Event not found</Text>
-        <Button mt={4} variant="outline" onClick={() => navigate("/events")}>
-          Go back
-        </Button>
-      </Box>
-    );
-  }
-
   return (
     <>
       <Box p={6} position="relative">
-        {/* Background */}
         <Box
           position="fixed"
           inset="0"
@@ -134,7 +109,6 @@ export default function EventPage() {
           zIndex="-1"
         />
 
-        {/* Event Card */}
         <Card.Root
           w="100%"
           maxW={{ base: "100%", sm: "500px", md: "650px", lg: "700px" }}
@@ -143,7 +117,7 @@ export default function EventPage() {
           boxShadow="md"
         >
           <Image
-            src={getImageSrc(event.image)}
+            src={event.image}
             alt={event.title}
             w="100%"
             h={{ base: "180px", sm: "220px", md: "260px" }}
@@ -250,7 +224,6 @@ export default function EventPage() {
           </Card.Footer>
         </Card.Root>
 
-        {/* ⭐ EDIT MODAL */}
         <SimpleModal
           open={editOpen}
           onClose={() => setEditOpen(false)}
@@ -271,7 +244,6 @@ export default function EventPage() {
           />
         </SimpleModal>
 
-        {/* ⭐ DELETE MODAL */}
         <SimpleModal
           open={deleteOpen}
           onClose={() => setDeleteOpen(false)}

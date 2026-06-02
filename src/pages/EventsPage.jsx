@@ -86,11 +86,7 @@ export const EventsPage = () => {
   // Create
   // -----------------------------------------------------
  const addEvent = async (newEvent) => {
-  const imageUrl =
-    newEvent.image instanceof File
-      ? URL.createObjectURL(newEvent.image)
-      : newEvent.image || null;
-
+  const imageUrl = newEvent.image || "";
   const eventToSave = {
     id: crypto.randomUUID(),
     ...newEvent,
@@ -166,6 +162,25 @@ export const EventsPage = () => {
   // -----------------------------------------------------
   // Filtering
   // -----------------------------------------------------
+
+  const deleteEvent = async (id) => {
+  await fetch(`http://localhost:3000/events/${id}`, {
+    method: "DELETE",
+  });
+
+  setData({
+    ...data,
+    events: data.events.filter((evt) => evt.id !== id),
+  });
+
+  setEditOpen(false);
+
+  toaster.create({
+    title: "Event deleted",
+    description: "The event has been removed.",
+    type: "success",
+  });
+};
   const filteredEvents = eventsArray.filter((evt) => {
     const search = searchTerm.toLowerCase();
 
@@ -219,14 +234,16 @@ export const EventsPage = () => {
         title="Edit event"
       >
         <EventForm
-          initialValues={editEvent}
-          onSubmit={(values) => {
-            updateEvent(values);
-            setEditOpen(false);
-          }}
-          cancel={() => setEditOpen(false)}
-          allCategories={categories}
-        />
+  initialValues={editEvent}
+  onSubmit={(values) => {
+    updateEvent(values);
+    setEditOpen(false);
+  }}
+  onDelete={deleteEvent}
+  cancel={() => setEditOpen(false)}
+  allCategories={categories}
+/>
+        
       </SimpleModal>
 
       {/* Background */}
