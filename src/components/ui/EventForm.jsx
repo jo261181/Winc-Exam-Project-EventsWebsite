@@ -14,6 +14,7 @@ export default function EventForm({
   initialValues = {},
   onSubmit,
   cancel,
+  onDelete,          // ⭐ NIEUW
   allCategories,
 }) {
   const initialEvent = initialValues;
@@ -24,17 +25,16 @@ export default function EventForm({
   const [start, setStart] = useState(toDateTimeLocal(initialEvent?.startTime));
   const [end, setEnd] = useState(toDateTimeLocal(initialEvent?.endTime));
 
-  // ⭐ foutmelding state
   const [timeError, setTimeError] = useState("");
 
-  // ⭐ image preview
+  // ⭐ IMAGE PREVIEW BIJ EDIT
   useEffect(() => {
     if (initialEvent?.image && !imageFile) {
       setImagePreview(initialEvent.image);
     }
   }, [initialEvent, imageFile]);
 
-  // ⭐ check of end < start
+  // ⭐ VALIDATIE: END < START
   useEffect(() => {
     if (start && end && end < start) {
       setTimeError("End date cannot be earlier than start date");
@@ -46,10 +46,7 @@ export default function EventForm({
   function handleSubmit(e) {
     e.preventDefault();
 
-    // ⭐ blokkeer submit bij fout
-    if (timeError) {
-      return;
-    }
+    if (timeError) return;
 
     const formData = new FormData(e.target);
     const values = Object.fromEntries(formData.entries());
@@ -57,11 +54,7 @@ export default function EventForm({
     values.startTime = toISO(values.startTime);
     values.endTime = toISO(values.endTime);
 
-    if (imageFile) {
-      values.image = imageFile;
-    } else {
-      values.image = initialEvent?.image;
-    }
+    values.image = imageFile ? imageFile : initialEvent?.image;
 
     onSubmit(values);
   }
@@ -79,7 +72,7 @@ export default function EventForm({
     <Card.Root maxW="sm" as="form" onSubmit={handleSubmit}>
       <Card.Header>
         <Card.Description>
-          {initialEvent
+          {initialEvent?.id
             ? "Update the event details below"
             : "Fill in the form below to create an event"}
         </Card.Description>
@@ -109,7 +102,7 @@ export default function EventForm({
                 >
                   <input
                     type="checkbox"
-                    name="categoryIds"
+                    name="categoryIds[]"
                     value={cat.id}
                     defaultChecked={initialEvent?.categoryIds?.includes(cat.id)}
                   />
@@ -163,7 +156,7 @@ export default function EventForm({
             />
           </Field.Root>
 
-          {/* ⭐ FOUTMELDING */}
+          {/* ERROR */}
           {timeError && (
             <Text color="red.500" fontSize="sm">
               {timeError}
@@ -224,16 +217,31 @@ export default function EventForm({
 
       {/* FOOTER BUTTONS */}
       <Card.Footer justifyContent="center" gap={6} pt={4} mt={2}>
+        {/* DELETE BUTTON (alleen bij edit) */}
+       {initialEvent?.id && (
+  <Button
+    variant="surface"
+    outline="1px solid"
+    outlineColor="gray.300"
+    colorPalette="red"
+    width="inherit"
+    onClick={() => onDelete(initialEvent.id)}
+  >
+    Delete
+  </Button>
+)}
+        
+
+        {/* SAVE / CREATE */}
         <Button
           variant="surface"
           outline="1px solid"
           outlineColor="gray.300"
-          _dark={{ outlineColor: "gray.100" }}
           type="submit"
           colorPalette="gray"
           width="inherit"
         >
-          {initialEvent ? "Save changes" : "Create Event"}
+          {initialEvent?.id ? "Save changes" : "Create Event"}
         </Button>
       </Card.Footer>
     </Card.Root>

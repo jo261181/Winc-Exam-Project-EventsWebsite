@@ -85,71 +85,83 @@ export const EventsPage = () => {
   // -----------------------------------------------------
   // Create
   // -----------------------------------------------------
-  const addEvent = (newEvent) => {
-    const imageUrl =
-      newEvent.image instanceof File
-        ? URL.createObjectURL(newEvent.image)
-        : newEvent.image || null;
+ const addEvent = async (newEvent) => {
+  const imageUrl =
+    newEvent.image instanceof File
+      ? URL.createObjectURL(newEvent.image)
+      : newEvent.image || null;
 
-    const updated = {
-      ...data,
-      events: [
-        ...data.events,
-        {
-          id: crypto.randomUUID(),
-          ...newEvent,
-          image: imageUrl,
-          categoryIds: newEvent.categoryIds
-            ? Array.isArray(newEvent.categoryIds)
-              ? newEvent.categoryIds.map(Number)
-              : [Number(newEvent.categoryIds)]
-            : [],
-        },
-      ],
-    };
-
-    setData(updated);
-
-    toaster.create({
-      title: "Event created",
-      description: "Your event has been successfully added.",
-      type: "success",
-    });
+  const eventToSave = {
+    id: crypto.randomUUID(),
+    ...newEvent,
+    image: imageUrl,
+    categoryIds: newEvent.categoryIds
+      ? Array.isArray(newEvent.categoryIds)
+        ? newEvent.categoryIds.map(Number)
+        : [Number(newEvent.categoryIds)]
+      : [],
   };
 
+  // ⭐ schrijf naar json-server
+  await fetch("http://localhost:3000/events", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(eventToSave),
+  });
+
+  // ⭐ update UI state
+  setData({
+    ...data,
+    events: [...data.events, eventToSave],
+  });
+
+  toaster.create({
+    title: "Event created",
+    description: "Your event has been successfully added.",
+    type: "success",
+  });
+};
   // -----------------------------------------------------
   // Update
   // -----------------------------------------------------
-  const updateEvent = (values) => {
-    const imageUrl =
-      values.image instanceof File
-        ? URL.createObjectURL(values.image)
-        : values.image;
+  const updateEvent = async (values) => {
+  const imageUrl =
+    values.image instanceof File
+      ? URL.createObjectURL(values.image)
+      : values.image;
 
-    const updated = {
-      ...values,
-      id: Number(values.id),
-      image: imageUrl,
-      categoryIds: values.categoryIds
-        ? Array.isArray(values.categoryIds)
-          ? values.categoryIds.map(Number)
-          : [Number(values.categoryIds)]
-        : editEvent.categoryIds, // behoud categorieën als niets is aangevinkt
-    };
-
-    const newData = {
-      ...data,
-      events: data.events.map((evt) => (evt.id === updated.id ? updated : evt)),
-    };
-
-    setData(newData);
-
-    toaster.create({
-      title: "Event updated",
-      description: "The changes have been saved.",
-      type: "success",
-    });
+  const updatedEvent = {
+    ...values,
+    id: Number(values.id),
+    image: imageUrl,
+    categoryIds: values.categoryIds
+      ? Array.isArray(values.categoryIds)
+        ? values.categoryIds.map(Number)
+        : [Number(values.categoryIds)]
+      : [],
   };
+
+  // ⭐ schrijf naar json-server
+  await fetch(`http://localhost:3000/events/${updatedEvent.id}`, {
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(updatedEvent),
+  });
+
+  // ⭐ update UI state
+  setData({
+    ...data,
+    events: data.events.map((evt) =>
+      evt.id === updatedEvent.id ? updatedEvent : evt
+    ),
+  });
+
+  toaster.create({
+    title: "Event updated",
+    description: "The changes have been saved.",
+    type: "success",
+  });
+};
 
   // -----------------------------------------------------
   // Filtering

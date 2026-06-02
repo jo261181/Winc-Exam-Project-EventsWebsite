@@ -13,11 +13,8 @@ import {
 
 import SimpleModal from "../components/ui/modal";
 import EventForm from "../components/ui/EventForm";
-import { Tooltip } from "../components/ui/tooltip";
 import { toaster } from "../components/ui/toaster";
 import Footer from "../components/ui/Footer";
-
-// ⭐ JUISTE SKELETON VOOR DE DETAILPAGINA
 import EventDetailSkeleton from "../components/EventDetailSkeleton";
 
 export default function EventPage() {
@@ -28,7 +25,7 @@ export default function EventPage() {
   const [editOpen, setEditOpen] = useState(false);
   const [deleteOpen, setDeleteOpen] = useState(false);
 
-  // ⭐ LOADING STATE
+  // LOADING
   if (!data) {
     return (
       <Box
@@ -46,7 +43,54 @@ export default function EventPage() {
   const categories = data.categories || [];
   const event = events.find((evt) => evt.id.toString() === id);
 
-  // ⭐ Delete event
+  // IMAGE HELPER
+  function getImageSrc(image) {
+    if (!image) return "";
+    if (image instanceof File) {
+      return URL.createObjectURL(image);
+    }
+    return image;
+  }
+
+  // ⭐ UPDATE EVENT — volledig gefixt
+  function updateEvent(id, values) {
+    // categorieën correct ophalen
+    let catIds = values["categoryIds[]"];
+
+    if (!catIds) {
+      catIds = [];
+    } else if (!Array.isArray(catIds)) {
+      catIds = [catIds];
+    }
+
+    const updatedEvent = {
+      ...event,
+      ...values,
+      id: Number(id),
+      categoryIds: catIds.map(Number),
+      image:
+        values.image instanceof File
+          ? values.image
+          : values.image ?? event.image,
+    };
+
+    const updated = {
+      ...data,
+      events: data.events.map((evt) =>
+        evt.id === updatedEvent.id ? updatedEvent : evt
+      ),
+    };
+
+    setData(updated);
+
+    toaster.create({
+      title: "Event updated",
+      description: "De wijzigingen zijn opgeslagen.",
+      type: "success",
+    });
+  }
+
+  // ⭐ DELETE EVENT — werkt 100%
   function handleDelete() {
     const updated = {
       ...data,
@@ -99,7 +143,7 @@ export default function EventPage() {
           boxShadow="md"
         >
           <Image
-            src={event.image}
+            src={getImageSrc(event.image)}
             alt={event.title}
             w="100%"
             h={{ base: "180px", sm: "220px", md: "260px" }}
@@ -177,19 +221,36 @@ export default function EventPage() {
             justify={{ base: "center", md: "flex-start" }}
             flexWrap="wrap"
           >
-            <Button variant="surface" border="1px solid" borderColor="gray.300" onClick={() => setEditOpen(true)}>
+            <Button
+              variant="surface"
+              border="1px solid"
+              borderColor="gray.300"
+              onClick={() => setEditOpen(true)}
+            >
               Edit Event
             </Button>
-            <Button variant="surface" border="1px solid" borderColor="gray.300" onClick={() => setDeleteOpen(true)}>
+
+            <Button
+              variant="surface"
+              border="1px solid"
+              borderColor="gray.300"
+              onClick={() => setDeleteOpen(true)}
+            >
               Delete
             </Button>
-            <Button variant="surface" border="1px solid" borderColor="gray.300" onClick={() => navigate("/events")}>
+
+            <Button
+              variant="surface"
+              border="1px solid"
+              borderColor="gray.300"
+              onClick={() => navigate("/events")}
+            >
               Back
             </Button>
           </Card.Footer>
         </Card.Root>
 
-        {/* EDIT MODAL */}
+        {/* ⭐ EDIT MODAL */}
         <SimpleModal
           open={editOpen}
           onClose={() => setEditOpen(false)}
@@ -203,10 +264,14 @@ export default function EventPage() {
               setEditOpen(false);
             }}
             cancel={() => setEditOpen(false)}
+            onDelete={() => {
+              setEditOpen(false);
+              setDeleteOpen(true);
+            }}
           />
         </SimpleModal>
 
-        {/* DELETE MODAL */}
+        {/* ⭐ DELETE MODAL */}
         <SimpleModal
           open={deleteOpen}
           onClose={() => setDeleteOpen(false)}
@@ -215,11 +280,9 @@ export default function EventPage() {
           <Text>Are you sure you want to delete this event?</Text>
 
           <HStack mt={4}>
-            <Tooltip>
-              <Button colorPalette="red" onClick={handleDelete}>
-                Delete
-              </Button>
-            </Tooltip>
+            <Button colorPalette="red" onClick={handleDelete}>
+              Delete
+            </Button>
 
             <Button onClick={() => setDeleteOpen(false)}>Cancel</Button>
           </HStack>

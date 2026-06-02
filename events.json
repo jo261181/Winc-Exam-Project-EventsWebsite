@@ -10,11 +10,11 @@
       "name": "Sophia Collins",
       "image": "https://wincacademy.github.io/webpages/media/article-author.png"
     },
-	{
+    {
       "id": 3,
       "name": "Emily Carter",
       "image": "https://wincacademy.github.io/webpages/media/person9.jpeg"
-	}
+    }
   ],
   "events": [
     {
@@ -59,16 +59,14 @@
     },
     {
       "id": 4,
-      "createdBy": 2,
       "title": "Yoga",
+      "categoryIds[]": "3",
       "description": "It's a bit of a stretch.",
-      "image": "https://wincacademy.github.io/webpages/media/pexels-gabby-k-5384538.jpg",
-      "categoryIds": [
-        3
-      ],
       "location": "Shavasana Yoga School",
-      "startTime": "2023-03-09T06:00:00.000Z",
-      "endTime": "2023-03-09T07:00:00.000Z"
+      "startTime": "2026-06-09T12:00:00.000Z",
+      "endTime": "2026-06-09T13:00:00.000Z",
+      "image": "https://wincacademy.github.io/webpages/media/pexels-gabby-k-5384538.jpg",
+      "categoryIds": []
     },
     {
       "id": 5,
@@ -122,18 +120,29 @@
       "startTime": "2023-03-16T07:00:00.000Z",
       "endTime": "2023-03-16T09:30:00.000Z"
     },
-	{
+    {
       "id": 9,
       "createdBy": 3,
       "title": "Bowling night",
       "description": "Strike up some fun with friends at the lanes!",
       "image": "https://wincacademy.github.io/webpages/media/pexels-rnnzeravac-9273055.jpg",
-      "categoryIds": [2],
+      "categoryIds": [
+        2
+      ],
       "location": "Downtown Bowling Alley",
       "startTime": "2023-03-19T18:00:00.000Z",
       "endTime": "2023-03-19T21:00:00.000Z"
-	}
-	
+    },
+    {
+      "id": 10,
+      "title": "super mario run",
+      "description": "play super mario",
+      "location": "My back yard",
+      "startTime": "2026-06-02T11:50:00.000Z",
+      "endTime": "2026-06-02T12:50:00.000Z",
+      "image": "blob:http://localhost:5173/afbb3fab-6c17-42da-a408-9d1998e41f05",
+      "categoryIds": []
+    }
   ],
   "categories": [
     {
