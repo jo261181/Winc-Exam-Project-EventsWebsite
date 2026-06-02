@@ -223,18 +223,12 @@ export default function EventForm({
       </Card.Body>
 
       {/* FOOTER BUTTONS */}
-      <Card.Footer justifyContent="flex-end" gap={4} pt={4} mt={2}>
+      <Card.Footer justifyContent="center" gap={6} pt={4} mt={2}>
         <Button
           variant="surface"
-          border="1px solid"
-          borderColor="gray.300"
-          onClick={cancel}
-        >
-          Cancel
-        </Button>
-
-        <Button
-          variant="solid"
+          outline="1px solid"
+          outlineColor="gray.300"
+          _dark={{ outlineColor: "gray.100" }}
           type="submit"
           colorPalette="gray"
           width="inherit"
