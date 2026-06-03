@@ -19,8 +19,11 @@ export default function EventForm({
   const initialEvent = initialValues;
 
   const [imagePreview, setImagePreview] = useState(initialEvent?.image || "");
+
   const [start, setStart] = useState(toDateTimeLocal(initialEvent?.startTime));
+
   const [end, setEnd] = useState(toDateTimeLocal(initialEvent?.endTime));
+
   const [timeError, setTimeError] = useState("");
 
   useEffect(() => {
@@ -31,56 +34,41 @@ export default function EventForm({
     }
   }, [start, end]);
 
-  function handleSubmit(e) {
-    e.preventDefault();
-    if (timeError) return;
+function handleSubmit(e) {
+  e.preventDefault();
+  if (timeError) return;
 
-    const formData = new FormData(e.target);
+  const formData = new FormData(e.target);
 
-    const values = {
-      id: initialEvent?.id || crypto.randomUUID(),
-      title: formData.get("title"),
-      description: formData.get("description"),
-      location: formData.get("location"),
-      startTime: toISO(start),
-      endTime: toISO(end),
-      image: imagePreview || initialEvent?.image || "",
-      categoryIds: formData.getAll("categoryIds").map(Number),
-    };
+  const values = {
+    // FIX: bij nieuw event een nieuwe UUID maken
+    id: initialEvent?.id || crypto.randomUUID(),
 
-    onSubmit(values);
-  }
+    title: formData.get("title"),
+    description: formData.get("description"),
+    location: formData.get("location"),
+
+    // FIX: controlled inputs → altijd state gebruiken
+    startTime: toISO(start),
+    endTime: toISO(end),
+
+    image: imagePreview || initialEvent?.image || "",
+
+    // FIX: altijd array
+    categoryIds: formData.getAll("categoryIds").map(Number),
+  };
+
+  onSubmit(values);
+}
+
 
   function toISO(value) {
-    if (!value) return "";
     return new Date(value).toISOString();
   }
 
   function toDateTimeLocal(value) {
     if (!value) return "";
     return value.slice(0, 16);
-  }
-
-  // ⭐ Mini compressie voor betere performance
-  function compressImage(base64, maxWidth = 900, quality = 0.7) {
-    return new Promise((resolve) => {
-      const img = new Image();
-      img.onload = () => {
-        const canvas = document.createElement("canvas");
-        const scale = maxWidth / img.width;
-        const width = img.width > maxWidth ? maxWidth : img.width;
-        const height = img.width > maxWidth ? img.height * scale : img.height;
-
-        canvas.width = width;
-        canvas.height = height;
-
-        const ctx = canvas.getContext("2d");
-        ctx.drawImage(img, 0, 0, width, height);
-
-        resolve(canvas.toDataURL("image/jpeg", quality));
-      };
-      img.src = base64;
-    });
   }
 
   return (
@@ -193,14 +181,13 @@ export default function EventForm({
             <Input
               type="file"
               accept="image/*"
-              onChange={async (e) => {
+              onChange={(e) => {
                 const file = e.target.files?.[0];
                 if (!file) return;
 
                 const reader = new FileReader();
-                reader.onloadend = async () => {
-                  const compressed = await compressImage(reader.result);
-                  setImagePreview(compressed);
+                reader.onloadend = () => {
+                  setImagePreview(reader.result); // Base64 opslaan
                 };
                 reader.readAsDataURL(file);
               }}

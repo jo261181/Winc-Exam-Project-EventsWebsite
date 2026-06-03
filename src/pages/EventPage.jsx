@@ -40,8 +40,6 @@ export default function EventPage() {
 
   const events = data.events || [];
   const categories = data.categories || [];
-  const categoryMap = Object.fromEntries(categories.map(c => [c.id, c.name]));
-
   const event = events.find((evt) => evt.id.toString() === id);
 
   if (!event) {
@@ -55,16 +53,6 @@ export default function EventPage() {
     );
   }
 
-  const start = new Date(event.startTime).toLocaleString("nl-NL", {
-    dateStyle: "medium",
-    timeStyle: "short",
-  });
-
-  const end = new Date(event.endTime).toLocaleString("nl-NL", {
-    dateStyle: "medium",
-    timeStyle: "short",
-  });
-
   function updateEvent(id, values) {
     const updatedEvent = {
       ...event,
@@ -77,7 +65,7 @@ export default function EventPage() {
     const updated = {
       ...data,
       events: data.events.map((evt) =>
-        evt.id === updatedEvent.id ? updatedEvent : evt
+        evt.id === updatedEvent.id ? updatedEvent : evt,
       ),
     };
 
@@ -111,7 +99,6 @@ export default function EventPage() {
   return (
     <>
       <Box p={6} position="relative">
-        {/* ⭐ Achtergrond sneller maken */}
         <Box
           position="fixed"
           inset="0"
@@ -120,7 +107,6 @@ export default function EventPage() {
           bgPosition="center"
           opacity="0.4"
           zIndex="-1"
-          bgAttachment="fixed"
         />
 
         <Card.Root
@@ -171,7 +157,15 @@ export default function EventPage() {
               fontSize={{ base: "sm", sm: "md" }}
               textAlign={{ base: "center", md: "left" }}
             >
-              {start} – {end}
+              {new Date(event.startTime).toLocaleString("nl-NL", {
+                dateStyle: "medium",
+                timeStyle: "short",
+              })}
+              {" – "}
+              {new Date(event.endTime).toLocaleString("nl-NL", {
+                dateStyle: "medium",
+                timeStyle: "short",
+              })}
             </Text>
 
             <HStack
@@ -180,16 +174,19 @@ export default function EventPage() {
               flexWrap="wrap"
               gap={2}
             >
-              {event.categoryIds?.map((id) => (
-                <Badge
-                  key={id}
-                  size="lg"
-                  variant="solid"
-                  colorPalette="orange"
-                >
-                  {categoryMap[id]}
-                </Badge>
-              ))}
+              {event.categoryIds?.map((id) => {
+                const category = categories.find((c) => c.id === id);
+                return (
+                  <Badge
+                    key={id}
+                    size="lg"
+                    variant="solid"
+                    colorPalette="orange"
+                  >
+                    {category?.name}
+                  </Badge>
+                );
+              })}
             </HStack>
           </Card.Body>
 
@@ -227,46 +224,41 @@ export default function EventPage() {
           </Card.Footer>
         </Card.Root>
 
-        {/* ⭐ Render EventForm alleen als modal open is */}
-        {editOpen && (
-          <SimpleModal
-            open={true}
-            onClose={() => setEditOpen(false)}
-            title="Edit event"
-          >
-            <EventForm
-              initialValues={event}
-              allCategories={categories}
-              onSubmit={(values) => {
-                updateEvent(event.id, values);
-                setEditOpen(false);
-              }}
-              cancel={() => setEditOpen(false)}
-              onDelete={() => {
-                setEditOpen(false);
-                setDeleteOpen(true);
-              }}
-            />
-          </SimpleModal>
-        )}
+        <SimpleModal
+          open={editOpen}
+          onClose={() => setEditOpen(false)}
+          title="Edit event"
+        >
+          <EventForm
+            initialValues={event}
+            allCategories={categories}
+            onSubmit={(values) => {
+              updateEvent(event.id, values);
+              setEditOpen(false);
+            }}
+            cancel={() => setEditOpen(false)}
+            onDelete={() => {
+              setEditOpen(false);
+              setDeleteOpen(true);
+            }}
+          />
+        </SimpleModal>
 
-        {deleteOpen && (
-          <SimpleModal
-            open={true}
-            onClose={() => setDeleteOpen(false)}
-            title="Delete event"
-          >
-            <Text>Are you sure you want to delete this event?</Text>
+        <SimpleModal
+          open={deleteOpen}
+          onClose={() => setDeleteOpen(false)}
+          title="Delete event"
+        >
+          <Text>Are you sure you want to delete this event?</Text>
 
-            <HStack mt={4}>
-              <Button colorPalette="red" onClick={handleDelete}>
-                Delete
-              </Button>
+          <HStack mt={4}>
+            <Button colorPalette="red" onClick={handleDelete}>
+              Delete
+            </Button>
 
-              <Button onClick={() => setDeleteOpen(false)}>Cancel</Button>
-            </HStack>
-          </SimpleModal>
-        )}
+            <Button onClick={() => setDeleteOpen(false)}>Cancel</Button>
+          </HStack>
+        </SimpleModal>
       </Box>
 
       <Footer />

@@ -7,19 +7,17 @@ export const Root = () => {
   const [data, setData] = useState(null);
 
   useEffect(() => {
-    fetch("/Events.json")
-      .then((res) => res.json())
-      .then((json) => {
-        setData({
-          events: json.events,
-          categories: json.categories
-        });
-      });
+    Promise.all([
+      fetch("http://localhost:3000/events").then((res) => res.json()),
+      fetch("http://localhost:3000/categories").then((res) => res.json()),
+    ]).then(([events, categories]) => {
+      setData({ events, categories });
+    });
   }, []);
 
   return (
     <>
-      {data && <Navigation categories={data.categories} />}
+      <Navigation />
       <Toaster />
       <Outlet context={{ data, setData }} />
     </>

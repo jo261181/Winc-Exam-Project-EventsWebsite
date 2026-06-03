@@ -117,11 +117,6 @@ export const EventsPage = () => {
   const eventsArray = data.events || [];
   const categories = data.categories || [];
 
-  // ⭐ Snelle category lookup (nodig voor performance)
-  const categoryMap = Object.fromEntries(
-    categories.map((c) => [c.id, c.name])
-  );
-
   function save(updated) {
     localStorage.setItem("eventsData", JSON.stringify(updated));
     setData(updated);
@@ -158,7 +153,7 @@ export const EventsPage = () => {
     const updated = {
       ...data,
       events: data.events.map((evt) =>
-        String(evt.id) === String(updatedEvent.id) ? updatedEvent : evt
+        String(evt.id) === String(updatedEvent.id) ? updatedEvent : evt,
       ),
     };
 
@@ -190,9 +185,10 @@ export const EventsPage = () => {
   const filteredEvents = eventsArray.filter((evt) => {
     const search = searchTerm.toLowerCase();
 
-    const categoryMatch = evt.categoryIds?.some((id) =>
-      categoryMap[id]?.toLowerCase().includes(search)
-    );
+    const categoryMatch = evt.categoryIds?.some((id) => {
+      const category = categories.find((c) => c.id === id);
+      return category?.name.toLowerCase().includes(search);
+    });
 
     return (
       evt.title.toLowerCase().includes(search) ||
@@ -213,45 +209,39 @@ export const EventsPage = () => {
         noSticky
       />
 
-      {/* ⭐ Render EventForm alleen als modal open is */}
-      {createOpen && (
-        <SimpleModal
-          open={true}
-          onClose={() => setCreateOpen(false)}
-          title="Create new event"
-        >
-          <EventForm
-            onSubmit={(values) => {
-              addEvent(values);
-              setCreateOpen(false);
-            }}
-            cancel={() => setCreateOpen(false)}
-            allCategories={categories}
-          />
-        </SimpleModal>
-      )}
+      <SimpleModal
+        open={createOpen}
+        onClose={() => setCreateOpen(false)}
+        title="Create new event"
+      >
+        <EventForm
+          onSubmit={(values) => {
+            addEvent(values);
+            setCreateOpen(false);
+          }}
+          cancel={() => setCreateOpen(false)}
+          allCategories={categories}
+        />
+      </SimpleModal>
 
-      {editOpen && (
-        <SimpleModal
-          open={true}
-          onClose={() => setEditOpen(false)}
-          title="Edit event"
-        >
-          <EventForm
-            key={editEvent?.id}
-            initialValues={editEvent}
-            onSubmit={(values) => {
-              updateEvent(values);
-              setEditOpen(false);
-            }}
-            onDelete={deleteEvent}
-            cancel={() => setEditOpen(false)}
-            allCategories={categories}
-          />
-        </SimpleModal>
-      )}
+      <SimpleModal
+        open={editOpen}
+        onClose={() => setEditOpen(false)}
+        title="Edit event"
+      >
+        <EventForm
+          key={editEvent?.id}
+          initialValues={editEvent}
+          onSubmit={(values) => {
+            updateEvent(values);
+            setEditOpen(false);
+          }}
+          onDelete={deleteEvent}
+          cancel={() => setEditOpen(false)}
+          allCategories={categories}
+        />
+      </SimpleModal>
 
-      {/* ⭐ Achtergrond sneller maken */}
       <Box
         position="fixed"
         inset="0"
@@ -260,116 +250,114 @@ export const EventsPage = () => {
         bgPosition="center"
         opacity="0.4"
         zIndex="-1"
-        bgAttachment="fixed"
       />
 
       <Box position="relative" zIndex="1" p={6}>
         <SimpleGrid columns={[1, 2, 3, 4]} spacing={6} gap="30px">
-          {filteredEvents.map((evt) => {
-            const start = new Date(evt.startTime).toLocaleString("nl-NL", {
-              dateStyle: "medium",
-              timeStyle: "short",
-            });
+          {filteredEvents.map((evt) => (
+            <Card.Root
+              key={evt.id}
+              w="100%"
+              borderRadius="lg"
+              alignItems="center"
+              mb={5}
+              cursor="pointer"
+              onClick={() => navigate(`/events/${evt.id}`)}
+              boxShadow="md"
+              _hover={{ transform: "scale(1.03)", boxShadow: "lg" }}
+              transition="0.2s"
+            >
+              <Card.Header p={6} w="100%">
+                <Image
+                  src={evt.image}
+                  alt={evt.title}
+                  w="100%"
+                  h={{ base: "120px", md: "130px", lg: "170px" }}
+                  objectFit="cover"
+                  borderRadius="md"
+                  mb={4}
+                />
 
-            const end = new Date(evt.endTime).toLocaleString("nl-NL", {
-              dateStyle: "medium",
-              timeStyle: "short",
-            });
+                <Card.Title fontSize={{ base: "md", md: "lg", lg: "2xl" }}>
+                  {evt.title}
+                </Card.Title>
 
-            return (
-              <Card.Root
-                key={evt.id}
-                w="100%"
-                borderRadius="lg"
-                alignItems="center"
-                mb={5}
-                cursor="pointer"
-                onClick={() => navigate(`/events/${evt.id}`)}
-                boxShadow="md"
-                _hover={{ transform: "scale(1.03)", boxShadow: "lg" }}
-                transition="0.2s"
-                willChange="transform"
-              >
-                <Card.Header p={6} w="100%">
-                  <Image
-                    src={evt.image}
-                    alt={evt.title}
-                    w="100%"
-                    h={{ base: "120px", md: "130px", lg: "170px" }}
-                    objectFit="cover"
-                    borderRadius="md"
-                    mb={4}
-                  />
+                <Card.Description fontSize={{ base: "sx", md: "sm", lg: "md" }}>
+                  {evt.description}
+                </Card.Description>
+              </Card.Header>
 
-                  <Card.Title fontSize={{ base: "md", md: "lg", lg: "2xl" }}>
-                    {evt.title}
-                  </Card.Title>
+              <Card.Body>
+                <Text mt={1} fontWeight="medium">
+                  {evt.location}
+                </Text>
 
-                  <Card.Description fontSize={{ base: "sx", md: "sm", lg: "md" }}>
-                    {evt.description}
-                  </Card.Description>
-                </Card.Header>
+                <Text mt={1}>
+                  {new Date(evt.startTime).toLocaleString("nl-NL", {
+                    dateStyle: "medium",
+                    timeStyle: "short",
+                  })}
+                  {" – "}
+                  {new Date(evt.endTime).toLocaleString("nl-NL", {
+                    dateStyle: "medium",
+                    timeStyle: "short",
+                  })}
+                </Text>
 
-                <Card.Body>
-                  <Text mt={1} fontWeight="medium">
-                    {evt.location}
-                  </Text>
-
-                  <Text mt={1}>
-                    {start} – {end}
-                  </Text>
-
-                  <HStack mt={4} gap={2}>
-                    {(evt.categoryIds || []).map((id) => (
+                <HStack mt={4} gap={2}>
+                  {(evt.categoryIds || []).map((id) => {
+                    const category = categories.find((c) => c.id === id);
+                    return (
                       <Badge
                         key={id}
                         size="lg"
                         variant="solid"
                         colorPalette="orange"
                       >
-                        {categoryMap[id]}
+                        {category?.name}
                       </Badge>
-                    ))}
-                  </HStack>
-                </Card.Body>
+                    );
+                  })}
+                </HStack>
+              </Card.Body>
 
-                <Card.Footer gap={3}>
-                  <Button
-                    variant="surface"
-                    border="1px solid"
-                    borderColor="gray.300"
-                    onClick={() => navigate(`/events/${evt.id}`)}
-                  >
-                    View details
-                  </Button>
+              <Card.Footer gap={3}>
+                <Button
+                  variant="surface"
+                  border="1px solid"
+                  borderColor="gray.300"
+                  onClick={() => navigate(`/events/${evt.id}`)}
+                >
+                  View details
+                </Button>
 
-                  <Button
-                    variant="surface"
-                    border="1px solid"
-                    borderColor="gray.300"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      setEditEvent({
-                        ...evt,
-                        categoryIds: Array.isArray(evt.categoryIds)
-                          ? evt.categoryIds
-                          : [Number(evt.categoryIds)],
-                      });
-                      setEditOpen(true);
-                    }}
-                  >
-                    Edit
-                  </Button>
-                </Card.Footer>
-              </Card.Root>
-            );
-          })}
+                <Button
+                  variant="surface"
+                  border="1px solid"
+                  borderColor="gray.300"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setEditEvent({
+                      ...evt,
+                      categoryIds: Array.isArray(evt.categoryIds)
+                        ? evt.categoryIds
+                        : [Number(evt.categoryIds)],
+                    });
+                    setEditOpen(true);
+                  }}
+                >
+                  Edit
+                </Button>
+              </Card.Footer>
+            </Card.Root>
+          ))}
         </SimpleGrid>
       </Box>
 
       <Footer>
         <Text textAlign="center" py={4} color="black.800">
-          &copy; {new Date().getFullYear()} PixelBloom Drift. All rights reserved.
+          &copy; {new Date().getFullYear()} PixelBloom Drift. All rights
+          reserved.
         </Text>
       </Footer>
     </>
