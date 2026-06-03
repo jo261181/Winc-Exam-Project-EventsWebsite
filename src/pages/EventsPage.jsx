@@ -12,7 +12,7 @@ import {
 } from "@chakra-ui/react";
 
 import HeadingExample from "../components/ui/Heading";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate, useOutletContext } from "react-router-dom";
 import SimpleModal from "../components/ui/modal";
 import EventForm from "../components/ui/EventForm";
@@ -71,97 +71,111 @@ export const EventsPage = () => {
   const [editEvent, setEditEvent] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
 
+  function normalizeEvents(data) {
+    return {
+      ...data,
+      events: data.events.map((evt) => {
+        let ids = evt.categoryIds;
+
+        if (!ids) ids = [];
+        if (typeof ids === "string") ids = [Number(ids)];
+        if (typeof ids === "number") ids = [ids];
+        if (!Array.isArray(ids)) ids = [];
+
+        return { ...evt, categoryIds: ids };
+      }),
+    };
+  }
+
+  useEffect(() => {
+    const saved = localStorage.getItem("eventsData");
+
+    if (saved) {
+      const parsed = JSON.parse(saved);
+      const normalized = normalizeEvents(parsed);
+      setData(normalized);
+      localStorage.setItem("eventsData", JSON.stringify(normalized));
+    } else {
+      fetch("/events.json")
+        .then((res) => res.json())
+        .then((json) => {
+          const normalized = normalizeEvents(json);
+          setData(normalized);
+          localStorage.setItem("eventsData", JSON.stringify(normalized));
+        });
+    }
+  }, []);
+
   if (!data) return <EventsPageSkeleton />;
 
   const eventsArray = data.events || [];
   const categories = data.categories || [];
 
- const addEvent = async (newEvent) => {
-  const imageUrl = newEvent.image || "";
-  const eventToSave = {
-    id: crypto.randomUUID(),
-    ...newEvent,
-    image: imageUrl,
-    categoryIds: newEvent.categoryIds
-      ? Array.isArray(newEvent.categoryIds)
-        ? newEvent.categoryIds.map(Number)
-        : [Number(newEvent.categoryIds)]
-      : [],
+  function save(updated) {
+    localStorage.setItem("eventsData", JSON.stringify(updated));
+    setData(updated);
+  }
+
+  const addEvent = (newEvent) => {
+    const eventToSave = {
+      id: crypto.randomUUID(),
+      ...newEvent,
+      categoryIds: newEvent.categoryIds || [],
+    };
+
+    const updated = {
+      ...data,
+      events: [...data.events, eventToSave],
+    };
+
+    save(updated);
+
+    toaster.create({
+      title: "Event created",
+      description: "Your event has been successfully added.",
+      type: "success",
+    });
   };
 
-  await fetch("http://localhost:3000/events", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(eventToSave),
-  });
+  const updateEvent = (values) => {
+    const updatedEvent = {
+      ...values,
+      id: values.id,
+      categoryIds: values.categoryIds || [],
+    };
 
-  setData({
-    ...data,
-    events: [...data.events, eventToSave],
-  });
+    const updated = {
+      ...data,
+      events: data.events.map((evt) =>
+        evt.id === updatedEvent.id ? updatedEvent : evt,
+      ),
+    };
 
-  toaster.create({
-    title: "Event created",
-    description: "Your event has been successfully added.",
-    type: "success",
-  });
-};
-  const updateEvent = async (values) => {
-  const imageUrl =
-    values.image instanceof File
-      ? URL.createObjectURL(values.image)
-      : values.image;
+    save(updated);
 
-  const updatedEvent = {
-    ...values,
-    id: Number(values.id),
-    image: imageUrl,
-    categoryIds: values.categoryIds
-      ? Array.isArray(values.categoryIds)
-        ? values.categoryIds.map(Number)
-        : [Number(values.categoryIds)]
-      : [],
+    toaster.create({
+      title: "Event updated",
+      description: "The changes have been saved.",
+      type: "success",
+    });
   };
 
-  await fetch(`http://localhost:3000/events/${updatedEvent.id}`, {
-    method: "PUT",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(updatedEvent),
-  });
+  const deleteEvent = (id) => {
+    const updated = {
+      ...data,
+      events: data.events.filter((evt) => evt.id !== id),
+    };
 
-  setData({
-    ...data,
-    events: data.events.map((evt) =>
-      evt.id === updatedEvent.id ? updatedEvent : evt
-    ),
-  });
+    save(updated);
+    setEditOpen(false);
 
-  toaster.create({
-    title: "Event updated",
-    description: "The changes have been saved.",
-    type: "success",
-  });
-};
+    toaster.create({
+      title: "Event deleted",
+      description: "The event has been removed.",
+      type: "success",
+    });
+  };
 
-
-  const deleteEvent = async (id) => {
-  await fetch(`http://localhost:3000/events/${id}`, {
-    method: "DELETE",
-  });
-
-  setData({
-    ...data,
-    events: data.events.filter((evt) => evt.id !== id),
-  });
-
-  setEditOpen(false);
-
-  toaster.create({
-    title: "Event deleted",
-    description: "The event has been removed.",
-    type: "success",
-  });
-};
   const filteredEvents = eventsArray.filter((evt) => {
     const search = searchTerm.toLowerCase();
 
@@ -210,16 +224,15 @@ export const EventsPage = () => {
         title="Edit event"
       >
         <EventForm
-  initialValues={editEvent}
-  onSubmit={(values) => {
-    updateEvent(values);
-    setEditOpen(false);
-  }}
-  onDelete={deleteEvent}
-  cancel={() => setEditOpen(false)}
-  allCategories={categories}
-/>
-        
+          initialValues={editEvent}
+          onSubmit={(values) => {
+            updateEvent(values);
+            setEditOpen(false);
+          }}
+          onDelete={deleteEvent}
+          cancel={() => setEditOpen(false)}
+          allCategories={categories}
+        />
       </SimpleModal>
 
       <Box
@@ -284,8 +297,8 @@ export const EventsPage = () => {
                   })}
                 </Text>
 
-                <HStack mt={4}>
-                  {evt.categoryIds?.map((id) => {
+                <HStack mt={4} gap={2}>
+                  {(evt.categoryIds || []).map((id) => {
                     const category = categories.find((c) => c.id === id);
                     return (
                       <Badge

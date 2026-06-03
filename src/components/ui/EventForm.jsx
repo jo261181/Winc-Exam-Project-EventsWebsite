@@ -18,17 +18,11 @@ export default function EventForm({
 }) {
   const initialEvent = initialValues;
 
-  const [imagePreview, setImagePreview] = useState(
-    initialEvent?.image || ""
-  );
+  const [imagePreview, setImagePreview] = useState(initialEvent?.image || "");
 
-  const [start, setStart] = useState(
-    toDateTimeLocal(initialEvent?.startTime)
-  );
+  const [start, setStart] = useState(toDateTimeLocal(initialEvent?.startTime));
 
-  const [end, setEnd] = useState(
-    toDateTimeLocal(initialEvent?.endTime)
-  );
+  const [end, setEnd] = useState(toDateTimeLocal(initialEvent?.endTime));
 
   const [timeError, setTimeError] = useState("");
 
@@ -45,7 +39,9 @@ export default function EventForm({
     if (timeError) return;
 
     const formData = new FormData(e.target);
-    const values = Object.fromEntries(formData.entries());
+  const values = Object.fromEntries(formData.entries());
+values.categoryIds = formData.getAll("categoryIds").map(Number);
+
 
     values.categoryIds = formData.getAll("categoryIds").map(Number);
 
@@ -80,18 +76,15 @@ export default function EventForm({
 
       <Card.Body>
         <Stack gap="4" w="full">
-
           <Field.Root>
             <Field.Label>Event Name</Field.Label>
-            <Input
-              name="title"
-              required
-              defaultValue={initialEvent?.title}
-            />
+            <Input name="title" required defaultValue={initialEvent?.title} />
           </Field.Root>
 
           <Field.Root>
-            <Text fontWeight="medium" mb={2}>Categories</Text>
+            <Text fontWeight="medium" mb={2}>
+              Categories
+            </Text>
 
             <Stack gap="2">
               {allCategories.map((cat) => (
@@ -154,7 +147,9 @@ export default function EventForm({
           </Field.Root>
 
           {timeError && (
-            <Text color="red.500" fontSize="sm">{timeError}</Text>
+            <Text color="red.500" fontSize="sm">
+              {timeError}
+            </Text>
           )}
 
           <Field.Root>
@@ -183,18 +178,16 @@ export default function EventForm({
 
                 const reader = new FileReader();
                 reader.onloadend = () => {
-                  setImagePreview(reader.result); // Base64 opslaan
+                  setImagePreview(reader.result); 
                 };
                 reader.readAsDataURL(file);
               }}
             />
           </Field.Root>
-
         </Stack>
       </Card.Body>
 
       <Card.Footer justifyContent="center" gap={6} pt={4} mt={2}>
-
         {initialEvent?.id && (
           <Button
             variant="surface"
