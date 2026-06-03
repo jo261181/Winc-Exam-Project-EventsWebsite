@@ -12,13 +12,16 @@ export default function SimpleModal({ open, onClose, title, children }) {
                 {/* BACK BUTTON */}
                 <Button
                   variant="surface"
-                  pl={2}
+                   pl={2}  
                   size="sm"
-                  border="1px solid"
-                  borderColor="gray.300"
-                  _dark={{ borderColor: "gray.100" }}
+                  
+                  outline="1px solid"
+                  outlineColor="gray.300"
+                  _dark={{ outlineColor: "gray.100" }}
+                  type="submit"
                   colorPalette="gray"
                   onClick={onClose}
+                 
                 >
                   ← Back
                 </Button>
@@ -36,15 +39,9 @@ export default function SimpleModal({ open, onClose, title, children }) {
             <Dialog.Body>{children}</Dialog.Body>
 
             <Dialog.Footer>
-              <Button
-                onClick={onClose}
-                rounded="full"
-                variant="surface"
-                border="1px solid"
-                borderColor="gray.300"
-              >
+              {/* <Button onClick={onClose}  rounded="full" variant="surface" border="1px solid" borderColor="gray.300">
                 Close
-              </Button>
+              </Button> */}
             </Dialog.Footer>
           </Dialog.Content>
         </Dialog.Positioner>

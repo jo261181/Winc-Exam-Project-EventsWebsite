@@ -13,7 +13,6 @@ import {
 
 import SimpleModal from "../components/ui/modal";
 import EventForm from "../components/ui/EventForm";
-import { Tooltip } from "../components/ui/tooltip";
 import { toaster } from "../components/ui/toaster";
 import Footer from "../components/ui/Footer";
 import EventDetailSkeleton from "../components/EventDetailSkeleton";
@@ -26,7 +25,6 @@ export default function EventPage() {
   const [editOpen, setEditOpen] = useState(false);
   const [deleteOpen, setDeleteOpen] = useState(false);
 
-  // ⭐ Loading state
   if (!data) {
     return (
       <Box
@@ -55,7 +53,6 @@ export default function EventPage() {
     );
   }
 
-  // ⭐ Update event
   function updateEvent(id, values) {
     const updatedEvent = {
       ...event,
@@ -68,7 +65,7 @@ export default function EventPage() {
     const updated = {
       ...data,
       events: data.events.map((evt) =>
-        evt.id === updatedEvent.id ? updatedEvent : evt
+        evt.id === updatedEvent.id ? updatedEvent : evt,
       ),
     };
 
@@ -81,7 +78,6 @@ export default function EventPage() {
     });
   }
 
-  // ⭐ Delete event
   function handleDelete() {
     const updated = {
       ...data,
@@ -103,7 +99,6 @@ export default function EventPage() {
   return (
     <>
       <Box p={6} position="relative">
-        {/* Background */}
         <Box
           position="fixed"
           inset="0"
@@ -114,7 +109,6 @@ export default function EventPage() {
           zIndex="-1"
         />
 
-        {/* Event Card */}
         <Card.Root
           w="100%"
           maxW={{ base: "100%", sm: "500px", md: "650px", lg: "700px" }}
@@ -230,7 +224,6 @@ export default function EventPage() {
           </Card.Footer>
         </Card.Root>
 
-        {/* EDIT MODAL */}
         <SimpleModal
           open={editOpen}
           onClose={() => setEditOpen(false)}
@@ -244,10 +237,13 @@ export default function EventPage() {
               setEditOpen(false);
             }}
             cancel={() => setEditOpen(false)}
+            onDelete={() => {
+              setEditOpen(false);
+              setDeleteOpen(true);
+            }}
           />
         </SimpleModal>
 
-        {/* DELETE MODAL */}
         <SimpleModal
           open={deleteOpen}
           onClose={() => setDeleteOpen(false)}
@@ -256,11 +252,9 @@ export default function EventPage() {
           <Text>Are you sure you want to delete this event?</Text>
 
           <HStack mt={4}>
-            <Tooltip>
-              <Button colorPalette="red" onClick={handleDelete}>
-                Delete
-              </Button>
-            </Tooltip>
+            <Button colorPalette="red" onClick={handleDelete}>
+              Delete
+            </Button>
 
             <Button onClick={() => setDeleteOpen(false)}>Cancel</Button>
           </HStack>

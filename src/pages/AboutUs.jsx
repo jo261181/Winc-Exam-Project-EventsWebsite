@@ -2,7 +2,7 @@ import { Box, Text, Heading, Button } from "@chakra-ui/react";
 import { useNavigate } from "react-router-dom";
 import HeadingExample from "../components/ui/Heading";
 import Footer from "../components/ui/Footer";
-import { useColorMode } from "../components/ui/color-mode";
+import { useColorMode, ColorModeButton } from "../components/ui/color-mode";
 
 export const AboutUs = () => {
   const navigate = useNavigate();
@@ -10,7 +10,6 @@ export const AboutUs = () => {
 
   return (
     <>
-      {/* Background */}
       <Box
         position="fixed"
         inset="0"
@@ -21,25 +20,23 @@ export const AboutUs = () => {
         zIndex="-1"
       />
 
-      {/* Header */}
       <HeadingExample
         rightContent={
-          <Button
-            onClick={() => navigate("/")}
-            variant="surface"
-            pl={2}
-            size="sm"
-            border="1px solid"
-            borderColor="gray.300"
-            _dark={{ borderColor: "gray.100" }}
-            colorPalette="gray"
-          >
+          <Button onClick={() => navigate("/")}
+                            variant="surface"
+                   pl={2}  
+                  size="sm"
+                  
+                  outline="1px solid"
+                  outlineColor="gray.300"
+                  _dark={{ outlineColor: "gray.100" }}
+                  type="submit"
+                  colorPalette="gray">
             Back to events
           </Button>
         }
       />
 
-      {/* Content */}
       <Box
         maxW="900px"
         mx="auto"
@@ -89,7 +86,6 @@ export const AboutUs = () => {
           talking about.
         </Text>
       </Box>
-
       <Footer />
     </>
   );

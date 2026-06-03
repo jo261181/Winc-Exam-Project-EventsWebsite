@@ -7,7 +7,6 @@ import {
   Stack,
   Text,
   Textarea,
-  HStack,
 } from "@chakra-ui/react";
 
 export default function EventForm({
@@ -15,30 +14,27 @@ export default function EventForm({
   onSubmit,
   cancel,
   onDelete = () => {},
-  allCategories = [],
+  allCategories,
 }) {
   const initialEvent = initialValues;
 
-  // -----------------------------
-  // STATE
-  // -----------------------------
   const [imagePreview, setImagePreview] = useState(
     initialEvent?.image || ""
   );
-  const [imageFile, setImageFile] = useState(null);
 
   const [start, setStart] = useState(
     toDateTimeLocal(initialEvent?.startTime)
   );
+
   const [end, setEnd] = useState(
     toDateTimeLocal(initialEvent?.endTime)
   );
 
   const [timeError, setTimeError] = useState("");
 
-  // -----------------------------
-  // VALIDATE DATES
-  // -----------------------------
+  // -----------------------------------
+  // Validate dates
+  // -----------------------------------
   useEffect(() => {
     if (start && end && end < start) {
       setTimeError("End date cannot be earlier than start date");
@@ -47,9 +43,9 @@ export default function EventForm({
     }
   }, [start, end]);
 
-  // -----------------------------
-  // CLEANUP BLOB URLS
-  // -----------------------------
+  // -----------------------------------
+  // Cleanup blob URLs
+  // -----------------------------------
   useEffect(() => {
     return () => {
       if (imagePreview?.startsWith("blob:")) {
@@ -58,36 +54,35 @@ export default function EventForm({
     };
   }, [imagePreview]);
 
-  // -----------------------------
-  // SUBMIT
-  // -----------------------------
+  // -----------------------------------
+  // Submit
+  // -----------------------------------
   function handleSubmit(e) {
     e.preventDefault();
+
     if (timeError) return;
 
     const formData = new FormData(e.target);
+
     const values = Object.fromEntries(formData.entries());
 
-    // Categories
-    values.categoryIds = formData.getAll("categoryIds").map(Number);
+    // Alle categorieën ophalen
+    values.categoryIds = formData
+      .getAll("categoryIds")
+      .map(Number);
 
-    // Convert datetime-local → ISO
     values.startTime = toISO(values.startTime);
     values.endTime = toISO(values.endTime);
 
-    // Image
-    if (imageFile) {
-      values.image = imagePreview;
-    } else {
-      values.image = initialEvent?.image || "";
-    }
+    // Afbeelding bewaren
+    values.image = imagePreview || initialEvent?.image || "";
 
     onSubmit(values);
   }
 
-  // -----------------------------
-  // HELPERS
-  // -----------------------------
+  // -----------------------------------
+  // Helpers
+  // -----------------------------------
   function toISO(value) {
     return new Date(value).toISOString();
   }
@@ -97,9 +92,9 @@ export default function EventForm({
     return value.slice(0, 16);
   }
 
-  // -----------------------------
-  // RENDER
-  // -----------------------------
+  // -----------------------------------
+  // Render
+  // -----------------------------------
   return (
     <Card.Root maxW="sm" as="form" onSubmit={handleSubmit}>
       <Card.Header>
@@ -110,18 +105,19 @@ export default function EventForm({
         </Card.Description>
       </Card.Header>
 
+      <input
+        type="hidden"
+        name="id"
+        value={initialEvent?.id || ""}
+      />
+
       <Card.Body>
         <Stack gap="4" w="full">
-          {/* ID (hidden) */}
-          <input
-            type="hidden"
-            name="id"
-            value={initialEvent?.id || ""}
-          />
 
           {/* TITLE */}
           <Field.Root>
             <Field.Label>Event Name</Field.Label>
+
             <Input
               name="title"
               required
@@ -129,9 +125,41 @@ export default function EventForm({
             />
           </Field.Root>
 
+          {/* CATEGORIES */}
+          <Field.Root>
+            <Text fontWeight="medium" mb={2}>
+              Categories
+            </Text>
+
+            <Stack gap="2">
+              {allCategories.map((cat) => (
+                <label
+                  key={cat.id}
+                  style={{
+                    display: "flex",
+                    gap: "6px",
+                    alignItems: "center",
+                  }}
+                >
+                  <input
+                    type="checkbox"
+                    name="categoryIds"
+                    value={cat.id}
+                    defaultChecked={initialEvent?.categoryIds?.includes(
+                      cat.id
+                    )}
+                  />
+
+                  {cat.name}
+                </label>
+              ))}
+            </Stack>
+          </Field.Root>
+
           {/* DESCRIPTION */}
           <Field.Root>
-            <Field.Label>Description</Field.Label>
+            <Field.Label>Event Description</Field.Label>
+
             <Textarea
               name="description"
               required
@@ -142,6 +170,7 @@ export default function EventForm({
           {/* LOCATION */}
           <Field.Root>
             <Field.Label>Location</Field.Label>
+
             <Input
               name="location"
               required
@@ -149,37 +178,10 @@ export default function EventForm({
             />
           </Field.Root>
 
-          {/* CATEGORIES */}
-          <Field.Root>
-            <Text fontWeight="medium" mb={2}>
-              Categories
-            </Text>
-          </Field.Root>
-
-          <Stack gap="2">
-            {allCategories.map((cat) => (
-              <label
-                key={cat.id}
-                style={{
-                  display: "flex",
-                  gap: "6px",
-                  alignItems: "center",
-                }}
-              >
-                <input
-                  type="checkbox"
-                  name="categoryIds"
-                  value={cat.id}
-                  defaultChecked={initialEvent?.categoryIds?.includes(cat.id)}
-                />
-                {cat.name}
-              </label>
-            ))}
-          </Stack>
-
           {/* START TIME */}
           <Field.Root>
             <Field.Label>Startdate and Time</Field.Label>
+
             <Input
               type="datetime-local"
               name="startTime"
@@ -191,6 +193,7 @@ export default function EventForm({
           {/* END TIME */}
           <Field.Root>
             <Field.Label>Enddate and Time</Field.Label>
+
             <Input
               type="datetime-local"
               name="endTime"
@@ -206,41 +209,51 @@ export default function EventForm({
             </Text>
           )}
 
-          {/* IMAGE PREVIEW */}
+          {/* EVENT IMAGE */}
           <Field.Root>
             <Field.Label>Event Image</Field.Label>
 
+            {/* Bestaande of nieuwe afbeelding tonen */}
             {imagePreview && (
               <img
                 src={imagePreview}
                 alt="Event Preview"
                 style={{
                   width: "100%",
-                  maxWidth: "100%",
+                  maxHeight: "220px",
+                  objectFit: "cover",
                   borderRadius: "8px",
-                  marginTop: "10px",
+                  marginBottom: "12px",
                 }}
               />
             )}
 
-            {/* NEW IMAGE */}
+            {/* Nieuwe afbeelding kiezen */}
             <Input
               type="file"
               accept="image/*"
               onChange={(e) => {
                 const file = e.target.files?.[0];
+
                 if (file) {
-                  setImageFile(file);
-                  const previewUrl = URL.createObjectURL(file);
+                  const previewUrl =
+                    URL.createObjectURL(file);
+
                   setImagePreview(previewUrl);
                 }
               }}
             />
           </Field.Root>
+
         </Stack>
       </Card.Body>
 
-      <Card.Footer gap={3}>
+      <Card.Footer
+        justifyContent="center"
+        gap={6}
+        pt={4}
+        mt={2}
+      >
         {/* DELETE BUTTON */}
         {initialEvent?.id && (
           <Button
@@ -256,24 +269,18 @@ export default function EventForm({
           </Button>
         )}
 
-        {/* CANCEL */}
-        <Button
-          variant="surface"
-          outline="1px solid"
-          outlineColor="gray.300"
-          onClick={cancel}
-        >
-          Cancel
-        </Button>
-
-        {/* SUBMIT */}
+        {/* SUBMIT BUTTON */}
         <Button
           variant="surface"
           outline="1px solid"
           outlineColor="gray.300"
           type="submit"
+          colorPalette="gray"
+          width="inherit"
         >
-          {initialEvent?.id ? "Save changes" : "Create Event"}
+          {initialEvent?.id
+            ? "Save changes"
+            : "Create Event"}
         </Button>
       </Card.Footer>
     </Card.Root>
