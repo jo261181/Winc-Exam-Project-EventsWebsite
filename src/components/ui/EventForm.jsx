@@ -34,35 +34,33 @@ export default function EventForm({
     }
   }, [start, end]);
 
-  useEffect(() => {
-  setImagePreview(initialEvent?.image || "");
-  setStart(toDateTimeLocal(initialEvent?.startTime));
-  setEnd(toDateTimeLocal(initialEvent?.endTime));
-}, [initialEvent]);
-
-  function handleSubmit(e) {
+function handleSubmit(e) {
   e.preventDefault();
-
   if (timeError) return;
 
   const formData = new FormData(e.target);
 
   const values = {
-    id: formData.get("id"),
+    // FIX: bij nieuw event een nieuwe UUID maken
+    id: initialEvent?.id || crypto.randomUUID(),
+
     title: formData.get("title"),
     description: formData.get("description"),
     location: formData.get("location"),
 
-    startTime: toISO(formData.get("startTime")),
-    endTime: toISO(formData.get("endTime")),
+    // FIX: controlled inputs → altijd state gebruiken
+    startTime: toISO(start),
+    endTime: toISO(end),
 
     image: imagePreview || initialEvent?.image || "",
 
+    // FIX: altijd array
     categoryIds: formData.getAll("categoryIds").map(Number),
   };
 
   onSubmit(values);
-  }
+}
+
 
   function toISO(value) {
     return new Date(value).toISOString();
@@ -189,7 +187,7 @@ export default function EventForm({
 
                 const reader = new FileReader();
                 reader.onloadend = () => {
-                  setImagePreview(reader.result);
+                  setImagePreview(reader.result); // Base64 opslaan
                 };
                 reader.readAsDataURL(file);
               }}
