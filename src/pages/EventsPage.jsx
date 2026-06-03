@@ -95,15 +95,12 @@ export const EventsPage = () => {
     };
   }
 
-  // -----------------------------
-  // INITIAL LOAD (FIXED)
-  // -----------------------------
   useEffect(() => {
     const saved = localStorage.getItem("eventsData");
 
     if (saved) {
       const parsed = JSON.parse(saved);
-      setData(parsed); // <-- NIET normalizen
+      setData(parsed);
     } else {
       fetch("/events.json")
         .then((res) => res.json())
@@ -114,7 +111,6 @@ export const EventsPage = () => {
         });
     }
   }, []);
-  // -----------------------------
 
   if (!data) return <EventsPageSkeleton />;
 
@@ -126,9 +122,6 @@ export const EventsPage = () => {
     setData(updated);
   }
 
-  // -----------------------------
-  // CREATE EVENT (werkt goed)
-  // -----------------------------
   const addEvent = (newEvent) => {
     const eventToSave = {
       id: crypto.randomUUID(),
@@ -150,9 +143,6 @@ export const EventsPage = () => {
     });
   };
 
-  // -----------------------------
-  // UPDATE EVENT (FIXED)
-  // -----------------------------
   const updateEvent = (values) => {
     const updatedEvent = {
       ...values,
@@ -163,7 +153,7 @@ export const EventsPage = () => {
     const updated = {
       ...data,
       events: data.events.map((evt) =>
-        String(evt.id) === String(updatedEvent.id) ? updatedEvent : evt
+        String(evt.id) === String(updatedEvent.id) ? updatedEvent : evt,
       ),
     };
 
@@ -176,9 +166,6 @@ export const EventsPage = () => {
     });
   };
 
-  // -----------------------------
-  // DELETE EVENT
-  // -----------------------------
   const deleteEvent = (id) => {
     const updated = {
       ...data,
@@ -195,9 +182,6 @@ export const EventsPage = () => {
     });
   };
 
-  // -----------------------------
-  // FILTER
-  // -----------------------------
   const filteredEvents = eventsArray.filter((evt) => {
     const search = searchTerm.toLowerCase();
 
@@ -225,7 +209,6 @@ export const EventsPage = () => {
         noSticky
       />
 
-      {/* CREATE MODAL */}
       <SimpleModal
         open={createOpen}
         onClose={() => setCreateOpen(false)}
@@ -241,7 +224,6 @@ export const EventsPage = () => {
         />
       </SimpleModal>
 
-      {/* EDIT MODAL */}
       <SimpleModal
         open={editOpen}
         onClose={() => setEditOpen(false)}
@@ -260,7 +242,6 @@ export const EventsPage = () => {
         />
       </SimpleModal>
 
-      {/* BACKGROUND */}
       <Box
         position="fixed"
         inset="0"
@@ -271,7 +252,6 @@ export const EventsPage = () => {
         zIndex="-1"
       />
 
-      {/* EVENTS GRID */}
       <Box position="relative" zIndex="1" p={6}>
         <SimpleGrid columns={[1, 2, 3, 4]} spacing={6} gap="30px">
           {filteredEvents.map((evt) => (
@@ -376,7 +356,8 @@ export const EventsPage = () => {
 
       <Footer>
         <Text textAlign="center" py={4} color="black.800">
-          &copy; {new Date().getFullYear()} PixelBloom Drift. All rights reserved.
+          &copy; {new Date().getFullYear()} PixelBloom Drift. All rights
+          reserved.
         </Text>
       </Footer>
     </>
