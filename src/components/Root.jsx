@@ -7,21 +7,20 @@ export const Root = () => {
   const [data, setData] = useState(null);
 
   useEffect(() => {
-    Promise.all([
-      fetch("/events.json").then((res) => res.json()),
-      fetch("/categories.json").then((res) => res.json()),
-    ]).then(([events, categories]) => {
-      setData({ events, categories });
-    });
+    fetch("/Events.json")
+      .then((res) => res.json())
+      .then((json) => {
+        setData({
+          events: json.events,
+          categories: json.categories
+        });
+      });
   }, []);
 
   return (
     <>
-      {/* Render Navigation pas als data geladen is */}
       {data && <Navigation categories={data.categories} />}
-
       <Toaster />
-
       <Outlet context={{ data, setData }} />
     </>
   );
