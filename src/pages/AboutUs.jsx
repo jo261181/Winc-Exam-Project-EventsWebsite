@@ -22,6 +22,7 @@ export const AboutUs = () => {
 
       <HeadingExample
         rightContent={
+<<<<<<< HEAD
           <Button onClick={() => navigate("/")}
                             variant="surface"
                    pl={2}  
@@ -32,6 +33,9 @@ export const AboutUs = () => {
                   _dark={{ outlineColor: "gray.100" }}
                   type="submit"
                   colorPalette="gray">
+=======
+          <Button onClick={() => navigate("/")} colorScheme="blue">
+>>>>>>> dc6d5f5818e7193db03cf0e40a3a3b151a2dc2d9
             Back to events
           </Button>
         }

@@ -85,6 +85,7 @@ export const EventsPage = () => {
   // -----------------------------------------------------
   // Create
   // -----------------------------------------------------
+<<<<<<< HEAD
  const addEvent = async (newEvent) => {
   const imageUrl = newEvent.image || "";
   const eventToSave = {
@@ -181,6 +182,65 @@ export const EventsPage = () => {
     type: "success",
   });
 };
+=======
+  const addEvent = (newEvent) => {
+    const imageUrl =
+      newEvent.image instanceof File
+        ? URL.createObjectURL(newEvent.image)
+        : null;
+
+    const updated = {
+      ...data,
+      events: [
+        ...data.events,
+        {
+          id: crypto.randomUUID(),
+          ...newEvent,
+          image: imageUrl,
+          categoryIds: [],
+        },
+      ],
+    };
+
+    setData(updated);
+
+    toaster.create({
+      title: "Event created",
+      description: "Your event has been successfully added.",
+      type: "success",
+    });
+  };
+
+  // -----------------------------------------------------
+  // Update
+  // -----------------------------------------------------
+  const updateEvent = (values) => {
+    const updated = {
+      ...values,
+      id: Number(values.id),
+      categoryIds: Array.isArray(values.categoryIds)
+        ? values.categoryIds.map(Number)
+        : [],
+    };
+
+    const newData = {
+      ...data,
+      events: data.events.map((evt) => (evt.id === updated.id ? updated : evt)),
+    };
+
+    setData(newData);
+
+    toaster.create({
+      title: "Event updated",
+      description: "De wijzigingen zijn opgeslagen.",
+      type: "success",
+    });
+  };
+
+  // -----------------------------------------------------
+  // Filtering
+  // -----------------------------------------------------
+>>>>>>> dc6d5f5818e7193db03cf0e40a3a3b151a2dc2d9
   const filteredEvents = eventsArray.filter((evt) => {
     const search = searchTerm.toLowerCase();
 
@@ -223,7 +283,11 @@ export const EventsPage = () => {
             setCreateOpen(false);
           }}
           cancel={() => setCreateOpen(false)}
+<<<<<<< HEAD
           allCategories={categories}
+=======
+          allCategories={categories} // ← HIER TOEVOEGEN
+>>>>>>> dc6d5f5818e7193db03cf0e40a3a3b151a2dc2d9
         />
       </SimpleModal>
 
@@ -234,6 +298,7 @@ export const EventsPage = () => {
         title="Edit event"
       >
         <EventForm
+<<<<<<< HEAD
   initialValues={editEvent}
   onSubmit={(values) => {
     updateEvent(values);
@@ -244,6 +309,16 @@ export const EventsPage = () => {
   allCategories={categories}
 />
         
+=======
+          initialValues={editEvent}
+          onSubmit={(values) => {
+            updateEvent(values);
+            setEditOpen(false);
+          }}
+          cancel={() => setEditOpen(false)}
+          allCategories={categories} // ← HIER TOEVOEGEN
+        />
+>>>>>>> dc6d5f5818e7193db03cf0e40a3a3b151a2dc2d9
       </SimpleModal>
 
       {/* Background */}

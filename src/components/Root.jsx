@@ -18,8 +18,16 @@ export const Root = () => {
   return (
     <>
       <Navigation />
+<<<<<<< HEAD
       <Toaster />
       <Outlet context={{ data, setData }} />
+=======
+
+      {/* ⬇️ Belangrijk: GEEN skeleton hier */}
+      <Outlet context={{ data, setData }} />
+
+      <Toaster />
+>>>>>>> dc6d5f5818e7193db03cf0e40a3a3b151a2dc2d9
     </>
   );
 };
