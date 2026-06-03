@@ -10,16 +10,6 @@ import HeadingExample from "./ui/Heading";
 export default function EventsPageSkeleton() {
   return (
     <>
-      {/* HEADER
-      <HeadingExample
-        data={{ events: [], categories: [] }}
-        searchTerm=" "          // searchEnabled = true
-        setSearchTerm={() => {}}
-        onCreate={() => {}}
-        noSticky
-      /> */}
-
-      {/* BACKGROUND */}
       <Box
         position="fixed"
         inset="0"
@@ -30,7 +20,6 @@ export default function EventsPageSkeleton() {
         zIndex="-1"
       />
 
-      {/* CONTENT */}
       <Box position="relative" zIndex="1" p={6}>
         <SimpleGrid columns={[1, 2, 3, 4]} spacing={6} gap="30px">
           {[1, 2, 3, 4, 5, 6].map((i) => (

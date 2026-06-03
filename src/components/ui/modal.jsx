@@ -9,7 +9,6 @@ export default function SimpleModal({ open, onClose, title, children }) {
           <Dialog.Content maxW="450px" w="100%">
             <Dialog.Header>
               <HStack justify="space-between" align="center" w="100%">
-                {/* BACK BUTTON */}
                 <Button
                   variant="surface"
                    pl={2}  
@@ -26,12 +25,10 @@ export default function SimpleModal({ open, onClose, title, children }) {
                   ← Back
                 </Button>
 
-                {/* TITLE */}
                 <Dialog.Title style={{ margin: "0 auto" }}>
                   {title}
                 </Dialog.Title>
 
-                {/* Lege box om titel te centreren */}
                 <Box w="40px" />
               </HStack>
             </Dialog.Header>
@@ -39,9 +36,6 @@ export default function SimpleModal({ open, onClose, title, children }) {
             <Dialog.Body>{children}</Dialog.Body>
 
             <Dialog.Footer>
-              {/* <Button onClick={onClose}  rounded="full" variant="surface" border="1px solid" borderColor="gray.300">
-                Close
-              </Button> */}
             </Dialog.Footer>
           </Dialog.Content>
         </Dialog.Positioner>

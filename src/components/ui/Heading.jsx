@@ -9,7 +9,6 @@ import {
 } from "@chakra-ui/react";
 import { Link as RouterLink } from "react-router-dom";
 
-// ✔ juiste imports
 import { useColorMode, ColorModeButton } from "./color-mode";
 
 export default function HeadingExample({
@@ -20,7 +19,7 @@ export default function HeadingExample({
   rightContent,
   noSticky = false,
 }) {
-  const { toggleColorMode } = useColorMode(); // ✔ werkt nu
+  const { toggleColorMode } = useColorMode(); 
   const { colorMode } = useColorMode();
 
   const searchEnabled =
@@ -69,7 +68,6 @@ export default function HeadingExample({
         gap={4}
         mb={2}
       >
-        {/* LOGO */}
         <Box
           display="flex"
           alignItems="center"
@@ -83,7 +81,6 @@ export default function HeadingExample({
           />
         </Box>
 
-        {/* SEARCH */}
         {searchEnabled && (
           <Input
             width="100%"
@@ -98,7 +95,6 @@ export default function HeadingExample({
           />
         )}
 
-        {/* BUTTONS */}
         {(rightContent || onCreate) && (
           <Box
             display="flex"
@@ -129,7 +125,6 @@ export default function HeadingExample({
                   About Us
                 </Button>
 
-                {/* ✔ Mooie toggle button */}
                 <ColorModeButton />
               </ButtonGroup>
             )}
@@ -137,7 +132,6 @@ export default function HeadingExample({
         )}
       </Grid>
 
-      {/* NO RESULTS */}
       {searchEnabled &&
         searchTerm.trim() !== "" &&
         filteredEvents.length === 0 && (

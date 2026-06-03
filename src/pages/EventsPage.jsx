@@ -19,9 +19,6 @@ import EventForm from "../components/ui/EventForm";
 import Footer from "../components/ui/Footer";
 import { toaster } from "../components/ui/toaster";
 
-// -----------------------------------------------------
-// Skeleton
-// -----------------------------------------------------
 export const EventsPageSkeleton = () => (
   <Box p={6}>
     <SimpleGrid columns={[1, 2, 3, 4]} spacing={6} gap="30px">
@@ -65,9 +62,6 @@ export const EventsPageSkeleton = () => (
   </Box>
 );
 
-// -----------------------------------------------------
-// EventsPage
-// -----------------------------------------------------
 export const EventsPage = () => {
   const { data, setData } = useOutletContext();
   const navigate = useNavigate();
@@ -82,9 +76,6 @@ export const EventsPage = () => {
   const eventsArray = data.events || [];
   const categories = data.categories || [];
 
-  // -----------------------------------------------------
-  // Create
-  // -----------------------------------------------------
  const addEvent = async (newEvent) => {
   const imageUrl = newEvent.image || "";
   const eventToSave = {
@@ -98,14 +89,12 @@ export const EventsPage = () => {
       : [],
   };
 
-  // ⭐ schrijf naar json-server
   await fetch("http://localhost:3000/events", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(eventToSave),
   });
 
-  // ⭐ update UI state
   setData({
     ...data,
     events: [...data.events, eventToSave],
@@ -117,9 +106,6 @@ export const EventsPage = () => {
     type: "success",
   });
 };
-  // -----------------------------------------------------
-  // Update
-  // -----------------------------------------------------
   const updateEvent = async (values) => {
   const imageUrl =
     values.image instanceof File
@@ -137,14 +123,12 @@ export const EventsPage = () => {
       : [],
   };
 
-  // ⭐ schrijf naar json-server
   await fetch(`http://localhost:3000/events/${updatedEvent.id}`, {
     method: "PUT",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(updatedEvent),
   });
 
-  // ⭐ update UI state
   setData({
     ...data,
     events: data.events.map((evt) =>
@@ -159,9 +143,6 @@ export const EventsPage = () => {
   });
 };
 
-  // -----------------------------------------------------
-  // Filtering
-  // -----------------------------------------------------
 
   const deleteEvent = async (id) => {
   await fetch(`http://localhost:3000/events/${id}`, {
@@ -197,9 +178,6 @@ export const EventsPage = () => {
     );
   });
 
-  // -----------------------------------------------------
-  // Render
-  // -----------------------------------------------------
   return (
     <>
       <HeadingExample
@@ -211,7 +189,6 @@ export const EventsPage = () => {
         noSticky
       />
 
-      {/* Create Modal */}
       <SimpleModal
         open={createOpen}
         onClose={() => setCreateOpen(false)}
@@ -227,7 +204,6 @@ export const EventsPage = () => {
         />
       </SimpleModal>
 
-      {/* Edit Modal */}
       <SimpleModal
         open={editOpen}
         onClose={() => setEditOpen(false)}
@@ -246,7 +222,6 @@ export const EventsPage = () => {
         
       </SimpleModal>
 
-      {/* Background */}
       <Box
         position="fixed"
         inset="0"
@@ -257,7 +232,6 @@ export const EventsPage = () => {
         zIndex="-1"
       />
 
-      {/* Events Grid */}
       <Box position="relative" zIndex="1" p={6}>
         <SimpleGrid columns={[1, 2, 3, 4]} spacing={6} gap="30px">
           {filteredEvents.map((evt) => (

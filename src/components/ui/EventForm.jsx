@@ -18,16 +18,10 @@ export default function EventForm({
 }) {
   const initialEvent = initialValues;
 
-  // -----------------------------
-  // IMAGE (Base64)
-  // -----------------------------
   const [imagePreview, setImagePreview] = useState(
     initialEvent?.image || ""
   );
 
-  // -----------------------------
-  // DATE/TIME
-  // -----------------------------
   const [start, setStart] = useState(
     toDateTimeLocal(initialEvent?.startTime)
   );
@@ -38,9 +32,6 @@ export default function EventForm({
 
   const [timeError, setTimeError] = useState("");
 
-  // -----------------------------
-  // Validate dates
-  // -----------------------------
   useEffect(() => {
     if (start && end && end < start) {
       setTimeError("End date cannot be earlier than start date");
@@ -49,9 +40,6 @@ export default function EventForm({
     }
   }, [start, end]);
 
-  // -----------------------------
-  // Submit
-  // -----------------------------
   function handleSubmit(e) {
     e.preventDefault();
     if (timeError) return;
@@ -59,21 +47,16 @@ export default function EventForm({
     const formData = new FormData(e.target);
     const values = Object.fromEntries(formData.entries());
 
-    // Alle categorieën ophalen
     values.categoryIds = formData.getAll("categoryIds").map(Number);
 
     values.startTime = toISO(values.startTime);
     values.endTime = toISO(values.endTime);
 
-    // Base64 afbeelding opslaan
     values.image = imagePreview || initialEvent?.image || "";
 
     onSubmit(values);
   }
 
-  // -----------------------------
-  // Helpers
-  // -----------------------------
   function toISO(value) {
     return new Date(value).toISOString();
   }
@@ -83,9 +66,6 @@ export default function EventForm({
     return value.slice(0, 16);
   }
 
-  // -----------------------------
-  // Render
-  // -----------------------------
   return (
     <Card.Root maxW="sm" as="form" onSubmit={handleSubmit}>
       <Card.Header>
@@ -101,7 +81,6 @@ export default function EventForm({
       <Card.Body>
         <Stack gap="4" w="full">
 
-          {/* TITLE */}
           <Field.Root>
             <Field.Label>Event Name</Field.Label>
             <Input
@@ -111,7 +90,6 @@ export default function EventForm({
             />
           </Field.Root>
 
-          {/* CATEGORIES */}
           <Field.Root>
             <Text fontWeight="medium" mb={2}>Categories</Text>
 
@@ -137,7 +115,6 @@ export default function EventForm({
             </Stack>
           </Field.Root>
 
-          {/* DESCRIPTION */}
           <Field.Root>
             <Field.Label>Event Description</Field.Label>
             <Textarea
@@ -147,7 +124,6 @@ export default function EventForm({
             />
           </Field.Root>
 
-          {/* LOCATION */}
           <Field.Root>
             <Field.Label>Location</Field.Label>
             <Input
@@ -157,7 +133,6 @@ export default function EventForm({
             />
           </Field.Root>
 
-          {/* START TIME */}
           <Field.Root>
             <Field.Label>Startdate and Time</Field.Label>
             <Input
@@ -168,7 +143,6 @@ export default function EventForm({
             />
           </Field.Root>
 
-          {/* END TIME */}
           <Field.Root>
             <Field.Label>Enddate and Time</Field.Label>
             <Input
@@ -179,16 +153,13 @@ export default function EventForm({
             />
           </Field.Root>
 
-          {/* TIME ERROR */}
           {timeError && (
             <Text color="red.500" fontSize="sm">{timeError}</Text>
           )}
 
-          {/* EVENT IMAGE */}
           <Field.Root>
             <Field.Label>Event Image</Field.Label>
 
-            {/* Preview */}
             {imagePreview && (
               <img
                 src={imagePreview}
@@ -203,7 +174,6 @@ export default function EventForm({
               />
             )}
 
-            {/* Upload */}
             <Input
               type="file"
               accept="image/*"
@@ -224,7 +194,7 @@ export default function EventForm({
       </Card.Body>
 
       <Card.Footer justifyContent="center" gap={6} pt={4} mt={2}>
-        {/* DELETE BUTTON */}
+
         {initialEvent?.id && (
           <Button
             variant="surface"
@@ -239,7 +209,6 @@ export default function EventForm({
           </Button>
         )}
 
-        {/* SUBMIT BUTTON */}
         <Button
           variant="surface"
           outline="1px solid"
