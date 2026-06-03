@@ -13,16 +13,9 @@ import {
 
 import SimpleModal from "../components/ui/modal";
 import EventForm from "../components/ui/EventForm";
-<<<<<<< HEAD
-import { toaster } from "../components/ui/toaster";
-import Footer from "../components/ui/Footer";
-=======
 import { Tooltip } from "../components/ui/tooltip";
 import { toaster } from "../components/ui/toaster";
 import Footer from "../components/ui/Footer";
-
-// ⭐ JUISTE SKELETON VOOR DE DETAILPAGINA
->>>>>>> dc6d5f5818e7193db03cf0e40a3a3b151a2dc2d9
 import EventDetailSkeleton from "../components/EventDetailSkeleton";
 
 export default function EventPage() {
@@ -33,10 +26,7 @@ export default function EventPage() {
   const [editOpen, setEditOpen] = useState(false);
   const [deleteOpen, setDeleteOpen] = useState(false);
 
-<<<<<<< HEAD
-=======
-  // ⭐ LOADING STATE
->>>>>>> dc6d5f5818e7193db03cf0e40a3a3b151a2dc2d9
+  // ⭐ Loading state
   if (!data) {
     return (
       <Box
@@ -54,7 +44,6 @@ export default function EventPage() {
   const categories = data.categories || [];
   const event = events.find((evt) => evt.id.toString() === id);
 
-<<<<<<< HEAD
   if (!event) {
     return (
       <Box p={6}>
@@ -66,6 +55,7 @@ export default function EventPage() {
     );
   }
 
+  // ⭐ Update event
   function updateEvent(id, values) {
     const updatedEvent = {
       ...event,
@@ -78,7 +68,7 @@ export default function EventPage() {
     const updated = {
       ...data,
       events: data.events.map((evt) =>
-        evt.id === updatedEvent.id ? updatedEvent : evt,
+        evt.id === updatedEvent.id ? updatedEvent : evt
       ),
     };
 
@@ -91,9 +81,7 @@ export default function EventPage() {
     });
   }
 
-=======
   // ⭐ Delete event
->>>>>>> dc6d5f5818e7193db03cf0e40a3a3b151a2dc2d9
   function handleDelete() {
     const updated = {
       ...data,
@@ -112,27 +100,10 @@ export default function EventPage() {
     navigate("/events");
   }
 
-<<<<<<< HEAD
-  return (
-    <>
-      <Box p={6} position="relative">
-=======
-  if (!event) {
-    return (
-      <Box p={6}>
-        <Text>Event not found</Text>
-        <Button mt={4} variant="outline" onClick={() => navigate("/events")}>
-          Go back
-        </Button>
-      </Box>
-    );
-  }
-
   return (
     <>
       <Box p={6} position="relative">
         {/* Background */}
->>>>>>> dc6d5f5818e7193db03cf0e40a3a3b151a2dc2d9
         <Box
           position="fixed"
           inset="0"
@@ -143,10 +114,7 @@ export default function EventPage() {
           zIndex="-1"
         />
 
-<<<<<<< HEAD
-=======
         {/* Event Card */}
->>>>>>> dc6d5f5818e7193db03cf0e40a3a3b151a2dc2d9
         <Card.Root
           w="100%"
           maxW={{ base: "100%", sm: "500px", md: "650px", lg: "700px" }}
@@ -233,7 +201,6 @@ export default function EventPage() {
             justify={{ base: "center", md: "flex-start" }}
             flexWrap="wrap"
           >
-<<<<<<< HEAD
             <Button
               variant="surface"
               border="1px solid"
@@ -258,24 +225,12 @@ export default function EventPage() {
               borderColor="gray.300"
               onClick={() => navigate("/events")}
             >
-=======
-            <Button variant="surface" border="1px solid" borderColor="gray.300" onClick={() => setEditOpen(true)}>
-              Edit Event
-            </Button>
-            <Button variant="surface" border="1px solid" borderColor="gray.300" onClick={() => setDeleteOpen(true)}>
-              Delete
-            </Button>
-            <Button variant="surface" border="1px solid" borderColor="gray.300" onClick={() => navigate("/events")}>
->>>>>>> dc6d5f5818e7193db03cf0e40a3a3b151a2dc2d9
               Back
             </Button>
           </Card.Footer>
         </Card.Root>
 
-<<<<<<< HEAD
-=======
         {/* EDIT MODAL */}
->>>>>>> dc6d5f5818e7193db03cf0e40a3a3b151a2dc2d9
         <SimpleModal
           open={editOpen}
           onClose={() => setEditOpen(false)}
@@ -283,30 +238,16 @@ export default function EventPage() {
         >
           <EventForm
             initialValues={event}
-<<<<<<< HEAD
             allCategories={categories}
-=======
-            categories={categories}
->>>>>>> dc6d5f5818e7193db03cf0e40a3a3b151a2dc2d9
             onSubmit={(values) => {
               updateEvent(event.id, values);
               setEditOpen(false);
             }}
             cancel={() => setEditOpen(false)}
-<<<<<<< HEAD
-            onDelete={() => {
-              setEditOpen(false);
-              setDeleteOpen(true);
-            }}
-          />
-        </SimpleModal>
-
-=======
           />
         </SimpleModal>
 
         {/* DELETE MODAL */}
->>>>>>> dc6d5f5818e7193db03cf0e40a3a3b151a2dc2d9
         <SimpleModal
           open={deleteOpen}
           onClose={() => setDeleteOpen(false)}
@@ -315,17 +256,11 @@ export default function EventPage() {
           <Text>Are you sure you want to delete this event?</Text>
 
           <HStack mt={4}>
-<<<<<<< HEAD
-            <Button colorPalette="red" onClick={handleDelete}>
-              Delete
-            </Button>
-=======
             <Tooltip>
               <Button colorPalette="red" onClick={handleDelete}>
                 Delete
               </Button>
             </Tooltip>
->>>>>>> dc6d5f5818e7193db03cf0e40a3a3b151a2dc2d9
 
             <Button onClick={() => setDeleteOpen(false)}>Cancel</Button>
           </HStack>
