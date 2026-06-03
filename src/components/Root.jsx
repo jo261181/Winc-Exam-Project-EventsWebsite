@@ -7,12 +7,33 @@ export const Root = () => {
   const [data, setData] = useState(null);
 
   useEffect(() => {
-    Promise.all([
-      fetch("http://localhost:3000/events").then((res) => res.json()),
-      fetch("http://localhost:3000/categories").then((res) => res.json()),
-    ]).then(([events, categories]) => {
-      setData({ events, categories });
-    });
+    async function loadData() {
+      try {
+        // Probeer eerst JSON-server lokaal
+        const [eventsRes, categoriesRes] = await Promise.all([
+          fetch("http://localhost:3000/events"),
+          fetch("http://localhost:3000/categories"),
+        ]);
+
+        if (eventsRes.ok && categoriesRes.ok) {
+          const events = await eventsRes.json();
+          const categories = await categoriesRes.json();
+          setData({ events, categories });
+          return; // klaar, geen fallback nodig
+        }
+      } catch (error) {
+        // JSON-server bestaat niet → ga naar fallback
+      }
+
+      // FALLBACK voor Netlify: laad Events.json uit public/
+      const fallback = await fetch("/Events.json").then((res) => res.json());
+      setData({
+        events: fallback.events,
+        categories: fallback.categories,
+      });
+    }
+
+    loadData();
   }, []);
 
   return (
