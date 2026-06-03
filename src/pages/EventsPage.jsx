@@ -137,28 +137,28 @@ export const EventsPage = () => {
     });
   };
 
-  const updateEvent = (values) => {
-    const updatedEvent = {
-      ...values,
-      id: values.id,
-      categoryIds: values.categoryIds || [], 
-    };
-
-    const updated = {
-      ...data,
-      events: data.events.map((evt) =>
-        evt.id === updatedEvent.id ? updatedEvent : evt,
-      ),
-    };
-
-    save(updated);
-
-    toaster.create({
-      title: "Event updated",
-      description: "The changes have been saved.",
-      type: "success",
-    });
+ const updateEvent = (values) => {
+  const updatedEvent = {
+    ...values,
+    id: values.id,
+    categoryIds: values.categoryIds || [],   // <-- BELANGRIJK
   };
+
+  const updated = {
+    ...data,
+    events: data.events.map((evt) =>
+      evt.id === updatedEvent.id ? updatedEvent : evt
+    ),
+  };
+
+  save(updated);
+
+  toaster.create({
+    title: "Event updated",
+    description: "The changes have been saved.",
+    type: "success",
+  });
+};
 
   const deleteEvent = (id) => {
     const updated = {
