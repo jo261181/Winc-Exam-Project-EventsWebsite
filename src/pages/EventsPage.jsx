@@ -72,20 +72,29 @@ export const EventsPage = () => {
   const [searchTerm, setSearchTerm] = useState("");
 
   function normalizeEvents(data) {
-    return {
-      ...data,
-      events: data.events.map((evt) => {
-        let ids = evt.categoryIds;
+  return {
+    ...data,
+    events: data.events.map((evt) => {
+      let ids = evt.categoryIds;
 
-        if (!ids) ids = [];
-        if (typeof ids === "string") ids = [Number(ids)];
-        if (typeof ids === "number") ids = [ids];
-        if (!Array.isArray(ids)) ids = [];
+      if (!ids) ids = [];
 
-        return { ...evt, categoryIds: ids };
-      }),
-    };
-  }
+      if (typeof ids === "string") {
+        ids = ids
+          .split(",")
+          .map((x) => Number(x.trim()))
+          .filter((n) => !isNaN(n));
+      }
+
+      if (typeof ids === "number") ids = [ids];
+
+      if (!Array.isArray(ids)) ids = [];
+
+      return { ...evt, categoryIds: ids };
+    }),
+  };
+}
+
 
   useEffect(() => {
     const saved = localStorage.getItem("eventsData");
