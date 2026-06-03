@@ -141,7 +141,7 @@ export const EventsPage = () => {
     const updatedEvent = {
       ...values,
       id: values.id,
-      categoryIds: values.categoryIds || [], // <-- gewoon gebruiken wat EventForm geeft
+      categoryIds: values.categoryIds || [], 
     };
 
     const updated = {

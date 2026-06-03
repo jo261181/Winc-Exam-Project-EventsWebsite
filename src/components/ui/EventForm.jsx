@@ -41,9 +41,6 @@ export default function EventForm({
     const formData = new FormData(e.target);
     const values = Object.fromEntries(formData.entries());
 
-    // BELANGRIJK: ALTIJD ALLE categorieën ophalen
-    values.categoryIds = formData.getAll("categoryIds").map(Number);
-
     values.categoryIds = formData.getAll("categoryIds").map(Number);
 
     values.startTime = toISO(values.startTime);
