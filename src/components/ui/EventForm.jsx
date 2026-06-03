@@ -47,20 +47,15 @@ function handleSubmit(e) {
     title: formData.get("title"),
     description: formData.get("description"),
     location: formData.get("location"),
-
-    // FIX: controlled inputs → altijd state gebruiken
     startTime: toISO(start),
     endTime: toISO(end),
 
     image: imagePreview || initialEvent?.image || "",
-
-    // FIX: altijd array
     categoryIds: formData.getAll("categoryIds").map(Number),
   };
 
   onSubmit(values);
 }
-
 
   function toISO(value) {
     return new Date(value).toISOString();
@@ -187,7 +182,7 @@ function handleSubmit(e) {
 
                 const reader = new FileReader();
                 reader.onloadend = () => {
-                  setImagePreview(reader.result); // Base64 opslaan
+                  setImagePreview(reader.result); 
                 };
                 reader.readAsDataURL(file);
               }}
