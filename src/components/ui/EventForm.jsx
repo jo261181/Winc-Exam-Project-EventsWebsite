@@ -35,20 +35,27 @@ export default function EventForm({
   }, [start, end]);
 
   function handleSubmit(e) {
-    e.preventDefault();
-    if (timeError) return;
+  e.preventDefault();
 
-    const formData = new FormData(e.target);
-const values = Object.fromEntries(formData.entries());
+  if (timeError) return;
 
-values.categoryIds = formData.getAll("categoryIds").map(Number);
+  const formData = new FormData(e.target);
 
-    values.startTime = toISO(values.startTime);
-    values.endTime = toISO(values.endTime);
+  const values = {
+    id: formData.get("id"),
+    title: formData.get("title"),
+    description: formData.get("description"),
+    location: formData.get("location"),
 
-    values.image = imagePreview || initialEvent?.image || "";
+    startTime: toISO(formData.get("startTime")),
+    endTime: toISO(formData.get("endTime")),
 
-    onSubmit(values);
+    image: imagePreview || initialEvent?.image || "",
+
+    categoryIds: formData.getAll("categoryIds").map(Number),
+  };
+
+  onSubmit(values);
   }
 
   function toISO(value) {
