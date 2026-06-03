@@ -8,8 +8,6 @@ import {
   ButtonGroup,
 } from "@chakra-ui/react";
 import { Link as RouterLink } from "react-router-dom";
-
-// ✔ juiste imports
 import { useColorMode, ColorModeButton } from "./color-mode";
 
 export default function HeadingExample({
@@ -20,7 +18,6 @@ export default function HeadingExample({
   rightContent,
   noSticky = false,
 }) {
-  const { toggleColorMode } = useColorMode(); // ✔ werkt nu
   const { colorMode } = useColorMode();
 
   const searchEnabled =
@@ -37,7 +34,7 @@ export default function HeadingExample({
           const eventCategoryNames =
             event.categoryIds
               ?.map((id) =>
-                categories.find((c) => c.id === id)?.name?.toLowerCase(),
+                categories.find((c) => c.id === id)?.name?.toLowerCase()
               )
               .filter(Boolean) || [];
 
@@ -109,7 +106,6 @@ export default function HeadingExample({
               rightContent
             ) : (
               <ButtonGroup>
-<<<<<<< HEAD
                 <Button
                   variant="surface"
                   border="1px solid"
@@ -127,16 +123,9 @@ export default function HeadingExample({
                   border="1px solid"
                   borderColor="gray.300"
                 >
-=======
-                <Button  variant="surface" border="1px solid" borderColor="gray.300" onClick={onCreate} colorScheme="blue">
-                  Create new event
-                </Button>
-                <Button as={RouterLink} to="/about-us" variant="surface" border="1px solid" borderColor="gray.300">
->>>>>>> dc6d5f5818e7193db03cf0e40a3a3b151a2dc2d9
                   About Us
                 </Button>
 
-                {/* ✔ Mooie toggle button */}
                 <ColorModeButton />
               </ButtonGroup>
             )}
