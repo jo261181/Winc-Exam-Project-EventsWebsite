@@ -1,441 +1,187 @@
+import { useState } from "react";
 import {
-  Image,
-  HStack,
-  Badge,
   Button,
-  Box,
-  Text,
   Card,
-  SimpleGrid,
+  Field,
+  Input,
   Stack,
-  Skeleton,
+  Text,
+  Textarea,
+  HStack,
 } from "@chakra-ui/react";
 
-import HeadingExample from "../components/ui/Heading";
-import { useState } from "react";
-import { useNavigate, useOutletContext } from "react-router-dom";
-import SimpleModal from "../components/ui/modal";
-import EventForm from "../components/ui/EventForm";
-import Footer from "../components/ui/Footer";
-import { toaster } from "../components/ui/toaster";
+export default function EventForm({ initialValues = {}, onSubmit, cancel, allCategories }) {
 
-// -----------------------------------------------------
-// Skeleton
-// -----------------------------------------------------
-export const EventsPageSkeleton = () => (
-  <Box p={6}>
-    <SimpleGrid columns={[1, 2, 3, 4]} spacing={6} gap="30px">
-      {[...Array(6)].map((_, i) => (
-        <Card.Root
-          key={i}
-          w="100%"
-          borderRadius="lg"
-          bg="whiteAlpha.800"
-          alignItems="center"
-          boxShadow="md"
-          p={4}
-        >
-          <Skeleton
-            height={{ base: "120px", md: "130px", lg: "170px" }}
-            w="100%"
-            borderRadius="md"
-            mb={4}
-          />
+  const initialEvent = initialValues;
+  const [imagePreview, setImagePreview] = useState(null);
+  const [imageFile, setImageFile] = useState(null);
 
-          <Stack w="100%" gap={3}>
-            <Skeleton height="24px" width="70%" />
-            <Skeleton height="16px" width="90%" />
-            <Skeleton height="16px" width="50%" />
-          </Stack>
+  function handleSubmit(e) {
+    e.preventDefault();
 
-          <Stack w="100%" mt={4} gap={2}>
-            <Skeleton height="16px" width="60%" />
-            <Skeleton height="16px" width="50%" />
-          </Stack>
+    const formData = new FormData(e.target);
+    const values = Object.fromEntries(formData.entries());
 
-          <HStack mt={4} w="100%" gap={2}>
-            <Skeleton height="20px" width="60px" borderRadius="md" />
-            <Skeleton height="20px" width="80px" borderRadius="md" />
-          </HStack>
+    // Convert datetime-local → ISO
+    values.startTime = toISO(values.startTime);
+    values.endTime = toISO(values.endTime);
 
-          <Skeleton height="36px" width="120px" mt={4} borderRadius="md" />
-        </Card.Root>
-      ))}
-    </SimpleGrid>
-  </Box>
-);
+    if (imageFile) {
+      values.image = imageFile;
+    }
 
-// -----------------------------------------------------
-// EventsPage
-// -----------------------------------------------------
-export const EventsPage = () => {
-  const { data, setData } = useOutletContext();
-  const navigate = useNavigate();
+    onSubmit(values);
+  }
 
-  const [createOpen, setCreateOpen] = useState(false);
-  const [editOpen, setEditOpen] = useState(false);
-  const [editEvent, setEditEvent] = useState(null);
-  const [searchTerm, setSearchTerm] = useState("");
+  function toISO(value) {
+    return new Date(value).toISOString();
+  }
 
-  if (!data) return <EventsPageSkeleton />;
+  function toDateTimeLocal(value) {
+    if (!value) return "";
+    return value.slice(0, 16); // "2023-03-10T18:00"
+  }
 
-  const eventsArray = data.events || [];
-  const categories = data.categories || [];
-
-  // -----------------------------------------------------
-  // Create
-  // -----------------------------------------------------
-<<<<<<< HEAD
- const addEvent = async (newEvent) => {
-  const imageUrl = newEvent.image || "";
-  const eventToSave = {
-    id: crypto.randomUUID(),
-    ...newEvent,
-    image: imageUrl,
-    categoryIds: newEvent.categoryIds
-      ? Array.isArray(newEvent.categoryIds)
-        ? newEvent.categoryIds.map(Number)
-        : [Number(newEvent.categoryIds)]
-      : [],
-  };
-
-  // ⭐ schrijf naar json-server
-  await fetch("http://localhost:3000/events", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(eventToSave),
-  });
-
-  // ⭐ update UI state
-  setData({
-    ...data,
-    events: [...data.events, eventToSave],
-  });
-
-  toaster.create({
-    title: "Event created",
-    description: "Your event has been successfully added.",
-    type: "success",
-  });
-};
-  // -----------------------------------------------------
-  // Update
-  // -----------------------------------------------------
-  const updateEvent = async (values) => {
-  const imageUrl =
-    values.image instanceof File
-      ? URL.createObjectURL(values.image)
-      : values.image;
-
-  const updatedEvent = {
-    ...values,
-    id: Number(values.id),
-    image: imageUrl,
-    categoryIds: values.categoryIds
-      ? Array.isArray(values.categoryIds)
-        ? values.categoryIds.map(Number)
-        : [Number(values.categoryIds)]
-      : [],
-  };
-
-  // ⭐ schrijf naar json-server
-  await fetch(`http://localhost:3000/events/${updatedEvent.id}`, {
-    method: "PUT",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(updatedEvent),
-  });
-
-  // ⭐ update UI state
-  setData({
-    ...data,
-    events: data.events.map((evt) =>
-      evt.id === updatedEvent.id ? updatedEvent : evt
-    ),
-  });
-
-  toaster.create({
-    title: "Event updated",
-    description: "The changes have been saved.",
-    type: "success",
-  });
-};
-
-  // -----------------------------------------------------
-  // Filtering
-  // -----------------------------------------------------
-
-  const deleteEvent = async (id) => {
-  await fetch(`http://localhost:3000/events/${id}`, {
-    method: "DELETE",
-  });
-
-  setData({
-    ...data,
-    events: data.events.filter((evt) => evt.id !== id),
-  });
-
-  setEditOpen(false);
-
-  toaster.create({
-    title: "Event deleted",
-    description: "The event has been removed.",
-    type: "success",
-  });
-};
-=======
-  const addEvent = (newEvent) => {
-    const imageUrl =
-      newEvent.image instanceof File
-        ? URL.createObjectURL(newEvent.image)
-        : null;
-
-    const updated = {
-      ...data,
-      events: [
-        ...data.events,
-        {
-          id: crypto.randomUUID(),
-          ...newEvent,
-          image: imageUrl,
-          categoryIds: [],
-        },
-      ],
-    };
-
-    setData(updated);
-
-    toaster.create({
-      title: "Event created",
-      description: "Your event has been successfully added.",
-      type: "success",
-    });
-  };
-
-  // -----------------------------------------------------
-  // Update
-  // -----------------------------------------------------
-  const updateEvent = (values) => {
-    const updated = {
-      ...values,
-      id: Number(values.id),
-      categoryIds: Array.isArray(values.categoryIds)
-        ? values.categoryIds.map(Number)
-        : [],
-    };
-
-    const newData = {
-      ...data,
-      events: data.events.map((evt) => (evt.id === updated.id ? updated : evt)),
-    };
-
-    setData(newData);
-
-    toaster.create({
-      title: "Event updated",
-      description: "De wijzigingen zijn opgeslagen.",
-      type: "success",
-    });
-  };
-
-  // -----------------------------------------------------
-  // Filtering
-  // -----------------------------------------------------
->>>>>>> dc6d5f5818e7193db03cf0e40a3a3b151a2dc2d9
-  const filteredEvents = eventsArray.filter((evt) => {
-    const search = searchTerm.toLowerCase();
-
-    const categoryMatch = evt.categoryIds?.some((id) => {
-      const category = categories.find((c) => c.id === id);
-      return category?.name.toLowerCase().includes(search);
-    });
-
-    return (
-      evt.title.toLowerCase().includes(search) ||
-      evt.description.toLowerCase().includes(search) ||
-      evt.location.toLowerCase().includes(search) ||
-      categoryMatch
-    );
-  });
-
-  // -----------------------------------------------------
-  // Render
-  // -----------------------------------------------------
   return (
-    <>
-      <HeadingExample
-        data={data}
-        searchTerm={searchTerm}
-        setSearchTerm={setSearchTerm}
-        onCreate={() => setCreateOpen(true)}
-        rightContent={null}
-        noSticky
-      />
+    <Card.Root maxW="sm" as="form" onSubmit={handleSubmit}>
+      <Card.Header>
+        <Card.Description>
+          {initialEvent
+            ? "Update the event details below"
+            : "Fill in the form below to create an event"}
+        </Card.Description>
+      </Card.Header>
 
-      {/* Create Modal */}
-      <SimpleModal
-        open={createOpen}
-        onClose={() => setCreateOpen(false)}
-        title="Create new event"
-      >
-        <EventForm
-          onSubmit={(values) => {
-            addEvent(values);
-            setCreateOpen(false);
-          }}
-          cancel={() => setCreateOpen(false)}
-<<<<<<< HEAD
-          allCategories={categories}
-=======
-          allCategories={categories} // ← HIER TOEVOEGEN
->>>>>>> dc6d5f5818e7193db03cf0e40a3a3b151a2dc2d9
-        />
-      </SimpleModal>
+      <input type="hidden" name="id" value={initialEvent?.id} />
 
-      {/* Edit Modal */}
-      <SimpleModal
-        open={editOpen}
-        onClose={() => setEditOpen(false)}
-        title="Edit event"
-      >
-        <EventForm
-<<<<<<< HEAD
-  initialValues={editEvent}
-  onSubmit={(values) => {
-    updateEvent(values);
-    setEditOpen(false);
-  }}
-  onDelete={deleteEvent}
-  cancel={() => setEditOpen(false)}
-  allCategories={categories}
-/>
-        
-=======
-          initialValues={editEvent}
-          onSubmit={(values) => {
-            updateEvent(values);
-            setEditOpen(false);
-          }}
-          cancel={() => setEditOpen(false)}
-          allCategories={categories} // ← HIER TOEVOEGEN
-        />
->>>>>>> dc6d5f5818e7193db03cf0e40a3a3b151a2dc2d9
-      </SimpleModal>
+      <Card.Body>
+        <Stack gap="4" w="full">
+          <Field.Root>
+            <Field.Label>Event Name</Field.Label>
+            <Input name="title" required defaultValue={initialEvent?.title} />
+          </Field.Root>
 
-      {/* Background */}
-      <Box
-        position="fixed"
-        inset="0"
-        bgImage="url('/images/pexels-diva-34731924.jpg')"
-        bgSize="cover"
-        bgPosition="center"
-        opacity="0.4"
-        zIndex="-1"
-      />
+          <Field.Root>
+            <Text fontWeight="medium" mb={2}>
+              Categories
+            </Text>
 
-      {/* Events Grid */}
-      <Box position="relative" zIndex="1" p={6}>
-        <SimpleGrid columns={[1, 2, 3, 4]} spacing={6} gap="30px">
-          {filteredEvents.map((evt) => (
-            <Card.Root
-              key={evt.id}
-              w="100%"
-              borderRadius="lg"
-              alignItems="center"
-              mb={5}
-              cursor="pointer"
-              onClick={() => navigate(`/events/${evt.id}`)}
-              boxShadow="md"
-              _hover={{ transform: "scale(1.03)", boxShadow: "lg" }}
-              transition="0.2s"
-            >
-              <Card.Header p={6} w="100%">
-                <Image
-                  src={evt.image}
-                  alt={evt.title}
-                  w="100%"
-                  h={{ base: "120px", md: "130px", lg: "170px" }}
-                  objectFit="cover"
-                  borderRadius="md"
-                  mb={4}
-                />
-
-                <Card.Title fontSize={{ base: "md", md: "lg", lg: "2xl" }}>
-                  {evt.title}
-                </Card.Title>
-
-                <Card.Description fontSize={{ base: "sx", md: "sm", lg: "md" }}>
-                  {evt.description}
-                </Card.Description>
-              </Card.Header>
-
-              <Card.Body>
-                <Text mt={1} fontWeight="medium">
-                  {evt.location}
-                </Text>
-
-                <Text mt={1}>
-                  {new Date(evt.startTime).toLocaleString("nl-NL", {
-                    dateStyle: "medium",
-                    timeStyle: "short",
-                  })}
-                  {" – "}
-                  {new Date(evt.endTime).toLocaleString("nl-NL", {
-                    dateStyle: "medium",
-                    timeStyle: "short",
-                  })}
-                </Text>
-
-                <HStack mt={4}>
-                  {evt.categoryIds?.map((id) => {
-                    const category = categories.find((c) => c.id === id);
-                    return (
-                      <Badge
-                        key={id}
-                        size="lg"
-                        variant="solid"
-                        colorPalette="orange"
-                      >
-                        {category?.name}
-                      </Badge>
-                    );
-                  })}
-                </HStack>
-              </Card.Body>
-
-              <Card.Footer gap={3}>
-                <Button
-                  variant="surface"
-                  border="1px solid"
-                  borderColor="gray.300"
-                  onClick={() => navigate(`/events/${evt.id}`)}
+            <Stack gap="2">
+              {allCategories?.map((cat) => (
+                <label
+                  key={cat.id}
+                  style={{ display: "flex", gap: "6px", alignItems: "center" }}
                 >
-                  View details
-                </Button>
+                  <input
+                    type="checkbox"
+                    name="categoryIds"
+                    value={cat.id}
+                    defaultChecked={initialEvent?.categoryIds?.includes(cat.id)}
+                  />
+                  {cat.name}
+                </label>
+              ))}
+            </Stack>
+          </Field.Root>
 
-                <Button
-                  variant="surface"
-                  border="1px solid"
-                  borderColor="gray.300"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    setEditEvent(evt);
-                    setEditOpen(true);
-                  }}
-                >
-                  Edit
-                </Button>
-              </Card.Footer>
-            </Card.Root>
-          ))}
-        </SimpleGrid>
-      </Box>
+          <Field.Root>
+            <Field.Label>Event Description</Field.Label>
+            <Textarea
+              name="description"
+              required
+              defaultValue={initialEvent?.description}
+            />
+          </Field.Root>
 
-      <Footer>
-        <Text textAlign="center" py={4} color="black.800">
-          &copy; {new Date().getFullYear()} PixelBloom Drift. All rights
-          reserved.
-        </Text>
-      </Footer>
-    </>
+          <Field.Root>
+            <Field.Label>Location</Field.Label>
+            <Input
+              name="location"
+              required
+              defaultValue={initialEvent?.location}
+            />
+          </Field.Root>
+
+          <Field.Root>
+            <Field.Label>Startdate and Time</Field.Label>
+            <Input
+              type="datetime-local"
+              name="startTime"
+              defaultValue={toDateTimeLocal(initialEvent?.startTime)}
+            />
+          </Field.Root>
+
+          <Field.Root>
+            <Field.Label>Enddate and Time</Field.Label>
+            <Input
+              type="datetime-local"
+              name="endTime"
+              defaultValue={toDateTimeLocal(initialEvent?.endTime)}
+            />
+          </Field.Root>
+
+          <Field.Root>
+            <HStack gap={3}>
+              <Field.Label>Event Image:</Field.Label>
+              <Input
+                type="file"
+                name="image"
+                id="file-upload"
+                display="none"
+                onChange={(e) => setImageFile(e.target.files[0])}
+              />
+
+              <Button
+                as="label"
+                htmlFor="file-upload"
+                colorPalette="gray"
+                variant="outline"
+                size="sm"
+              >
+                Upload Image
+              </Button>
+            </HStack>
+
+            {imageFile && (
+              <Text mt={2} fontSize="sm" color="gray.600">
+                Gekozen: {imageFile.name}
+              </Text>
+            )}
+          </Field.Root>
+
+          {imagePreview && (
+            <img
+              src={imagePreview}
+              alt="Event Preview"
+              style={{
+                maxWidth: "100%",
+                borderRadius: "8px",
+                marginTop: "10px",
+              }}
+            />
+          )}
+        </Stack>
+      </Card.Body>
+
+      <Card.Footer justifyContent="flex-end" gap={4} pt={4} mt={2}>
+        <Button
+          variant="surface"
+          border="1px solid"
+          borderColor="gray.300"
+          onClick={cancel}
+        >
+          Cancel
+        </Button>
+
+        <Button
+          variant="solid"
+          type="submit"
+          colorPalette="gray"
+          width="inherit"
+        >
+          {initialEvent ? "Save changes" : "Create Event"}
+        </Button>
+      </Card.Footer>
+    </Card.Root>
   );
-};
+}
