@@ -39,9 +39,10 @@ export default function EventForm({
     if (timeError) return;
 
     const formData = new FormData(e.target);
-  const values = Object.fromEntries(formData.entries());
-values.categoryIds = formData.getAll("categoryIds").map(Number);
+    const values = Object.fromEntries(formData.entries());
 
+    // BELANGRIJK: ALTIJD ALLE categorieën ophalen
+    values.categoryIds = formData.getAll("categoryIds").map(Number);
 
     values.categoryIds = formData.getAll("categoryIds").map(Number);
 
@@ -178,7 +179,7 @@ values.categoryIds = formData.getAll("categoryIds").map(Number);
 
                 const reader = new FileReader();
                 reader.onloadend = () => {
-                  setImagePreview(reader.result); 
+                  setImagePreview(reader.result);
                 };
                 reader.readAsDataURL(file);
               }}
