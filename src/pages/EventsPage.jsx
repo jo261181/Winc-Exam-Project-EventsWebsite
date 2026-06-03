@@ -224,6 +224,7 @@ export const EventsPage = () => {
         title="Edit event"
       >
         <EventForm
+          key={editEvent?.id}
           initialValues={editEvent}
           onSubmit={(values) => {
             updateEvent(values);

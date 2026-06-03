@@ -34,6 +34,12 @@ export default function EventForm({
     }
   }, [start, end]);
 
+  useEffect(() => {
+  setImagePreview(initialEvent?.image || "");
+  setStart(toDateTimeLocal(initialEvent?.startTime));
+  setEnd(toDateTimeLocal(initialEvent?.endTime));
+}, [initialEvent]);
+
   function handleSubmit(e) {
   e.preventDefault();
 
