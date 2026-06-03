@@ -12,15 +12,34 @@ export const Navigation = ({ categories, addEvent }) => {
         <Heading>
           <Flex align="center"></Flex>
         </Heading>
+
+        <Button
+          variant="surface"
+          border="1px solid"
+          borderColor="gray.300"
+          onClick={() => setModalOpen(true)}
+        >
+          Create Event
+        </Button>
       </Flex>
 
-      <SimpleModal
-        open={modalOpen}
-        onClose={() => setModalOpen(false)}
-        title="Create a new event"
-      >
-        <EventForm categories={categories} addEvent={addEvent} />
-      </SimpleModal>
+      {/* Render EventForm alleen als modal open is */}
+      {modalOpen && (
+        <SimpleModal
+          open={true}
+          onClose={() => setModalOpen(false)}
+          title="Create a new event"
+        >
+          <EventForm
+            allCategories={categories}
+            onSubmit={(values) => {
+              addEvent(values);
+              setModalOpen(false);
+            }}
+            cancel={() => setModalOpen(false)}
+          />
+        </SimpleModal>
+      )}
     </>
   );
 };

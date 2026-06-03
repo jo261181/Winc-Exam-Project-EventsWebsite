@@ -8,8 +8,8 @@ export const Root = () => {
 
   useEffect(() => {
     Promise.all([
-      fetch("http://localhost:3000/events").then((res) => res.json()),
-      fetch("http://localhost:3000/categories").then((res) => res.json()),
+      fetch("/events.json").then((res) => res.json()),
+      fetch("/categories.json").then((res) => res.json()),
     ]).then(([events, categories]) => {
       setData({ events, categories });
     });
@@ -17,8 +17,11 @@ export const Root = () => {
 
   return (
     <>
-      <Navigation />
+      {/* Render Navigation pas als data geladen is */}
+      {data && <Navigation categories={data.categories} />}
+
       <Toaster />
+
       <Outlet context={{ data, setData }} />
     </>
   );

@@ -23,10 +23,10 @@ const router = createBrowserRouter([
 
 ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>
-    <ColorModeProvider>
-      <Provider>
+    <Provider>
+      <ColorModeProvider>
         <RouterProvider router={router} />
-      </Provider>
-    </ColorModeProvider>
+      </ColorModeProvider>
+    </Provider>
   </React.StrictMode>
 );
