@@ -19,7 +19,7 @@ export default function HeadingExample({
   rightContent,
   noSticky = false,
 }) {
-  const { toggleColorMode } = useColorMode(); 
+  const { toggleColorMode } = useColorMode();
   const { colorMode } = useColorMode();
 
   const searchEnabled =
@@ -89,6 +89,7 @@ export default function HeadingExample({
             _placeholder={{ color: "gray.800" }}
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
+            color="black"
             bg="white"
             boxShadow="sm"
             justifySelf="center"
