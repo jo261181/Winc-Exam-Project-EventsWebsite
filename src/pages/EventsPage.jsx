@@ -12,12 +12,38 @@ import {
 } from "@chakra-ui/react";
 
 import HeadingExample from "../components/ui/Heading";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useNavigate, useOutletContext } from "react-router-dom";
 import SimpleModal from "../components/ui/modal";
 import EventForm from "../components/ui/EventForm";
 import Footer from "../components/ui/Footer";
 import { toaster } from "../components/ui/toaster";
+
+const API = "http://localhost:3000";
+
+async function apiGet(path) {
+  return fetch(`${API}${path}`).then((res) => res.json());
+}
+
+async function apiPost(path, data) {
+  return fetch(`${API}${path}`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(data),
+  }).then((res) => res.json());
+}
+
+async function apiPut(path, data) {
+  return fetch(`${API}${path}`, {
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(data),
+  }).then((res) => res.json());
+}
+
+async function apiDelete(path) {
+  return fetch(`${API}${path}`, { method: "DELETE" });
+}
 
 export const EventsPageSkeleton = () => (
   <Box p={6}>
@@ -71,70 +97,25 @@ export const EventsPage = () => {
   const [editEvent, setEditEvent] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
 
-  function normalizeEvents(data) {
-    return {
-      ...data,
-      events: data.events.map((evt) => {
-        let ids = evt.categoryIds;
-
-        if (!ids) ids = [];
-
-        if (typeof ids === "string") {
-          ids = ids
-            .split(",")
-            .map((x) => Number(x.trim()))
-            .filter((n) => !isNaN(n));
-        }
-
-        if (typeof ids === "number") ids = [ids];
-
-        if (!Array.isArray(ids)) ids = [];
-
-        return { ...evt, categoryIds: ids };
-      }),
-    };
-  }
-
-  useEffect(() => {
-    const saved = localStorage.getItem("eventsData");
-
-    if (saved) {
-      const parsed = JSON.parse(saved);
-      setData(parsed);
-    } else {
-      fetch("/events.json")
-        .then((res) => res.json())
-        .then((json) => {
-          const normalized = normalizeEvents(json);
-          setData(normalized);
-          localStorage.setItem("eventsData", JSON.stringify(normalized));
-        });
-    }
-  }, []);
-
   if (!data) return <EventsPageSkeleton />;
 
   const eventsArray = data.events || [];
   const categories = data.categories || [];
 
-  function save(updated) {
-    localStorage.setItem("eventsData", JSON.stringify(updated));
-    setData(updated);
-  }
-
-  const addEvent = (newEvent) => {
+  const addEvent = async (newEvent) => {
     const eventToSave = {
-      id: crypto.randomUUID(),
       ...newEvent,
       categoryIds: newEvent.categoryIds || [],
     };
 
+    const saved = await apiPost("/events", eventToSave);
+
     const updated = {
       ...data,
-      events: [...data.events, eventToSave],
+      events: [...data.events, saved],
     };
 
-    save(updated);
+    setData(updated);
 
     toaster.create({
       title: "Event created",
@@ -143,21 +124,22 @@ export const EventsPage = () => {
     });
   };
 
-  const updateEvent = (values) => {
+  const updateEvent = async (values) => {
     const updatedEvent = {
       ...values,
-      id: String(values.id),
       categoryIds: values.categoryIds || [],
     };
+
+    const saved = await apiPut(`/events/${values.id}`, updatedEvent);
 
     const updated = {
       ...data,
       events: data.events.map((evt) =>
-        String(evt.id) === String(updatedEvent.id) ? updatedEvent : evt,
+        String(evt.id) === String(saved.id) ? saved : evt
       ),
     };
 
-    save(updated);
+    setData(updated);
 
     toaster.create({
       title: "Event updated",
@@ -166,13 +148,15 @@ export const EventsPage = () => {
     });
   };
 
-  const deleteEvent = (id) => {
+  const deleteEvent = async (id) => {
+    await apiDelete(`/events/${id}`);
+
     const updated = {
       ...data,
       events: data.events.filter((evt) => evt.id !== id),
     };
 
-    save(updated);
+    setData(updated);
     setEditOpen(false);
 
     toaster.create({
@@ -356,7 +340,7 @@ export const EventsPage = () => {
 
       <Footer>
         <Text textAlign="center" py={4} color="black.800">
-          &copy; {new Date().getFullYear()} PixelBloom Drift. All rights
+          &copy; {new Date().getFullYear()} PixelBloom. All rights
           reserved.
         </Text>
       </Footer>
