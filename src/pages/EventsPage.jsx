@@ -91,6 +91,7 @@ export const EventsPageSkeleton = () => (
 export const EventsPage = () => {
   const { data, setData } = useOutletContext();
   const navigate = useNavigate();
+  const [selectedCategories, setSelectedCategories] = useState([]);
 
   const [createOpen, setCreateOpen] = useState(false);
   const [editOpen, setEditOpen] = useState(false);
@@ -135,7 +136,7 @@ export const EventsPage = () => {
     const updated = {
       ...data,
       events: data.events.map((evt) =>
-        String(evt.id) === String(saved.id) ? saved : evt
+        String(evt.id) === String(saved.id) ? saved : evt,
       ),
     };
 
@@ -169,17 +170,22 @@ export const EventsPage = () => {
   const filteredEvents = eventsArray.filter((evt) => {
     const search = searchTerm.toLowerCase();
 
-    const categoryMatch = evt.categoryIds?.some((id) => {
-      const category = categories.find((c) => c.id === id);
-      return category?.name.toLowerCase().includes(search);
-    });
-
-    return (
+    // SEARCH
+    const matchesSearch =
       evt.title.toLowerCase().includes(search) ||
       evt.description.toLowerCase().includes(search) ||
       evt.location.toLowerCase().includes(search) ||
-      categoryMatch
-    );
+      evt.categoryIds?.some((id) => {
+        const category = categories.find((c) => c.id === id);
+        return category?.name.toLowerCase().includes(search);
+      });
+
+    // CATEGORY FILTER
+    const matchesCategories =
+      selectedCategories.length === 0 ||
+      evt.categoryIds?.some((id) => selectedCategories.includes(id));
+
+    return matchesSearch && matchesCategories;
   });
 
   return (
@@ -189,7 +195,9 @@ export const EventsPage = () => {
         searchTerm={searchTerm}
         setSearchTerm={setSearchTerm}
         onCreate={() => setCreateOpen(true)}
-        rightContent={null}
+        selectedCategories={selectedCategories}
+        setSelectedCategories={setSelectedCategories}
+        categories={categories}
         noSticky
       />
 
@@ -237,6 +245,35 @@ export const EventsPage = () => {
       />
 
       <Box position="relative" zIndex="1" p={6}>
+        {/* CATEGORY FILTER */}
+        <Box px={6} mb={4}>
+          <HStack gap={4} flexWrap="wrap">
+            {categories.map((cat) => (
+              <label
+                key={cat.id}
+                style={{ display: "flex", alignItems: "center", gap: "6px" }}
+              >
+                <input
+                  type="checkbox"
+                  value={cat.id}
+                  checked={selectedCategories.includes(cat.id)}
+                  onChange={(e) => {
+                    const id = Number(e.target.value);
+                    if (selectedCategories.includes(id)) {
+                      setSelectedCategories(
+                        selectedCategories.filter((c) => c !== id),
+                      );
+                    } else {
+                      setSelectedCategories([...selectedCategories, id]);
+                    }
+                  }}
+                />
+                <Text>{cat.name}</Text>
+              </label>
+            ))}
+          </HStack>
+        </Box>
+
         <SimpleGrid columns={[1, 2, 3, 4]} spacing={6} gap="30px">
           {filteredEvents.map((evt) => (
             <Card.Root
@@ -340,8 +377,7 @@ export const EventsPage = () => {
 
       <Footer>
         <Text textAlign="center" py={4} color="black.800">
-          &copy; {new Date().getFullYear()} PixelBloom. All rights
-          reserved.
+          &copy; {new Date().getFullYear()} PixelBloom. All rights reserved.
         </Text>
       </Footer>
     </>

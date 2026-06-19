@@ -16,18 +16,18 @@ export default function HeadingExample({
   onCreate,
   searchTerm,
   setSearchTerm,
+  selectedCategories,
+  setSelectedCategories,
+  categories,
   rightContent,
   noSticky = false,
 }) {
-  const { toggleColorMode } = useColorMode();
   const { colorMode } = useColorMode();
 
   const searchEnabled =
     typeof searchTerm === "string" && typeof setSearchTerm === "function";
 
   const events = Array.isArray(data?.events) ? data.events : [];
-  const categories = Array.isArray(data?.categories) ? data.categories : [];
-
   const filteredEvents =
     searchEnabled && searchTerm.trim() !== ""
       ? events.filter((event) => {
@@ -36,7 +36,7 @@ export default function HeadingExample({
           const eventCategoryNames =
             event.categoryIds
               ?.map((id) =>
-                categories.find((c) => c.id === id)?.name?.toLowerCase(),
+                categories.find((c) => c.id === id)?.name?.toLowerCase()
               )
               .filter(Boolean) || [];
 
@@ -58,6 +58,7 @@ export default function HeadingExample({
       zIndex={100}
       boxShadow="sm"
     >
+      {/* HEADER GRID */}
       <Grid
         templateColumns={{
           base: rightContent ? "1fr 1fr" : "1fr",
@@ -68,6 +69,7 @@ export default function HeadingExample({
         gap={4}
         mb={2}
       >
+        {/* LOGO */}
         <Box
           display="flex"
           alignItems="center"
@@ -81,6 +83,7 @@ export default function HeadingExample({
           />
         </Box>
 
+        {/* SEARCH BAR */}
         {searchEnabled && (
           <Input
             width="100%"
@@ -96,6 +99,7 @@ export default function HeadingExample({
           />
         )}
 
+        {/* BUTTONS */}
         {(rightContent || onCreate) && (
           <Box
             display="flex"
@@ -133,6 +137,49 @@ export default function HeadingExample({
         )}
       </Grid>
 
+      {/* CATEGORY FILTERS */}
+      {categories?.length > 0 && (
+        <Box mt={1} mb={2}>
+          <Box
+            display="flex"
+            gap={3}
+            flexWrap="wrap"
+            justifyContent="center"
+          >
+            {categories.map((cat) => {
+              const active = selectedCategories.includes(cat.id);
+
+              return (
+                <Box
+                  key={cat.id}
+                  as="button"
+                  px={3}
+                  py={1}
+                  borderRadius="md"
+                  fontSize="sm"
+                  bg={active ? "orange.400" : "orange.100"}
+                  color={active ? "white" : "black"}
+                  border="1px solid"
+                  borderColor="orange.300"
+                  onClick={() => {
+                    if (active) {
+                      setSelectedCategories(
+                        selectedCategories.filter((c) => c !== cat.id)
+                      );
+                    } else {
+                      setSelectedCategories([...selectedCategories, cat.id]);
+                    }
+                  }}
+                >
+                  {cat.name}
+                </Box>
+              );
+            })}
+          </Box>
+        </Box>
+      )}
+
+      {/* NO RESULTS MESSAGE */}
       {searchEnabled &&
         searchTerm.trim() !== "" &&
         filteredEvents.length === 0 && (
