@@ -3,13 +3,14 @@ import {
   Skeleton,
   Stack,
   SimpleGrid,
-  HStack
+  HStack,
+  Card,
 } from "@chakra-ui/react";
-import HeadingExample from "./ui/Heading";
 
 export default function EventsPageSkeleton() {
   return (
     <>
+      {/* BACKGROUND */}
       <Box
         position="fixed"
         inset="0"
@@ -20,40 +21,55 @@ export default function EventsPageSkeleton() {
         zIndex="-1"
       />
 
+      {/* CONTENT */}
       <Box position="relative" zIndex="1" p={6}>
         <SimpleGrid columns={[1, 2, 3, 4]} spacing={6} gap="30px">
           {[1, 2, 3, 4, 5, 6].map((i) => (
-            <Box
+            <Card.Root
               key={i}
-              borderWidth="1px"
-              borderRadius="lg"
-              overflow="hidden"
-              p={4}
-              shadow="md"
               w="100%"
-              bg="whiteAlpha.800"
+              borderRadius="lg"
+              alignItems="center"
+              mb={5}
+              boxShadow="md"
+              p={0}
             >
-              <Skeleton
-                height={{ base: "120px", md: "130px", lg: "170px" }}
-                w="100%"
-                borderRadius="md"
-                mb={4}
-              />
+              {/* IMAGE */}
+              <Card.Header p={6} w="100%">
+                <Skeleton
+                  height={{ base: "120px", md: "130px", lg: "170px" }}
+                  w="100%"
+                  borderRadius="md"
+                  mb={4}
+                />
 
-              <Stack spacing={3}>
-                <Skeleton height="20px" width="70%" />
-                <Skeleton height="16px" width="90%" />
-                <Skeleton height="16px" width="60%" />
-                <Skeleton height="16px" width="50%" />
+                {/* TITLE */}
+                <Skeleton height="24px" width="70%" borderRadius="md" />
 
-                <HStack spacing={2} mt={2}>
+                {/* DESCRIPTION */}
+                <Skeleton height="16px" width="90%" borderRadius="md" mt={2} />
+              </Card.Header>
+
+              {/* BODY */}
+              <Card.Body w="100%" px={6}>
+                {/* LOCATION */}
+                <Skeleton height="16px" width="60%" borderRadius="md" mt={2} />
+
+                {/* DATE */}
+                <Skeleton height="16px" width="50%" borderRadius="md" mt={2} />
+
+                {/* BADGES */}
+                <HStack mt={4} gap={2}>
                   <Skeleton height="20px" width="60px" borderRadius="md" />
                   <Skeleton height="20px" width="80px" borderRadius="md" />
                 </HStack>
+              </Card.Body>
 
-                <Skeleton height="36px" width="120px" borderRadius="md" mt={2} />
-              </Stack>
-            </Box>
+              {/* FOOTER */}
+              <Card.Footer gap={3} px={6} pb={6}>
+                <Skeleton height="36px" width="120px" borderRadius="md" />
+              </Card.Footer>
+            </Card.Root>
           ))}
         </SimpleGrid>
       </Box>

@@ -1,4 +1,4 @@
-import { Skeleton, Stack, HStack, Card } from "@chakra-ui/react";
+import { Skeleton, Stack, HStack, Card, Button, Box } from "@chakra-ui/react";
 
 export default function EventDetailSkeleton() {
   return (
@@ -9,6 +9,7 @@ export default function EventDetailSkeleton() {
       p={{ base: 4, md: 6 }}
       boxShadow="md"
     >
+      {/* IMAGE */}
       <Skeleton
         height={{ base: "180px", sm: "220px", md: "260px" }}
         w="100%"
@@ -16,21 +17,40 @@ export default function EventDetailSkeleton() {
         mb={3}
       />
 
-      <Stack w="100%" gap={3}>
-        <Skeleton height="28px" width="70%" />
-        <Skeleton height="18px" width="90%" />
-        <Skeleton height="18px" width="50%" />
-      </Stack>
+      {/* HEADER */}
+      <Card.Header>
+        <Skeleton height="32px" width="70%" borderRadius="md" />
+        <Skeleton height="20px" width="90%" borderRadius="md" mt={2} />
+      </Card.Header>
 
-      <Stack w="100%" mt={4} gap={2}>
-        <Skeleton height="16px" width="60%" />
-        <Skeleton height="16px" width="50%" />
-      </Stack>
+      {/* BODY */}
+      <Card.Body>
+        <Skeleton height="20px" width="60%" borderRadius="md" mt={2} />
+        <Skeleton height="18px" width="50%" borderRadius="md" mt={2} />
 
-      <HStack mt={4} w="100%" gap={2}>
-        <Skeleton height="20px" width="60px" borderRadius="md" />
-        <Skeleton height="20px" width="80px" borderRadius="md" />
-      </HStack>
+        <HStack
+          mt={4}
+          justify={{ base: "center", md: "flex-start" }}
+          flexWrap="wrap"
+          gap={2}
+        >
+          <Skeleton height="24px" width="70px" borderRadius="md" />
+          <Skeleton height="24px" width="90px" borderRadius="md" />
+          <Skeleton height="24px" width="60px" borderRadius="md" />
+        </HStack>
+      </Card.Body>
+
+      {/* FOOTER BUTTONS */}
+      <Card.Footer
+        gap={3}
+        justify={{ base: "center", md: "flex-start" }}
+        flexWrap="wrap"
+        mt={4}
+      >
+        <Skeleton height="36px" width="120px" borderRadius="md" />
+        <Skeleton height="36px" width="100px" borderRadius="md" />
+        <Skeleton height="36px" width="100px" borderRadius="md" />
+      </Card.Footer>
     </Card.Root>
   );
 }

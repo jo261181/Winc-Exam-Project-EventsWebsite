@@ -53,48 +53,81 @@ export default function EventPage() {
     );
   }
 
-  function updateEvent(id, values) {
-    const updatedEvent = {
-      ...event,
-      ...values,
-      id: Number(id),
-      categoryIds: values.categoryIds || [],
-      image: values.image || event.image || "",
-    };
+async function updateEvent(id, values) {
+  const updatedEvent = {
+    ...event,
+    ...values,
+    id: Number(id),
+    categoryIds: values.categoryIds || [],
+    image: values.image || event.image || "",
+  };
 
-    const updated = {
-      ...data,
-      events: data.events.map((evt) =>
-        evt.id === updatedEvent.id ? updatedEvent : evt,
-      ),
-    };
+  // PUT naar JSON-server
+  const res = await fetch(`http://localhost:3000/events/${id}`, {
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(updatedEvent),
+  });
 
-    setData(updated);
-
+  if (!res.ok) {
     toaster.create({
-      title: "Event updated",
-      description: "De wijzigingen zijn opgeslagen.",
-      type: "success",
+      title: "Error",
+      description: "Het event kon niet worden opgeslagen.",
+      type: "error",
     });
+    return;
   }
 
-  function handleDelete() {
-    const updated = {
-      ...data,
-      events: data.events.filter((e) => e.id !== event.id),
-    };
+  const saved = await res.json();
 
-    setData(updated);
+  // Context updaten
+  const updated = {
+    ...data,
+    events: data.events.map((evt) =>
+      evt.id === saved.id ? saved : evt
+    ),
+  };
 
+  setData(updated);
+
+  toaster.create({
+    title: "Event updated",
+    description: "De wijzigingen zijn opgeslagen.",
+    type: "success",
+  });
+}
+
+async function handleDelete() {
+  const res = await fetch(`http://localhost:3000/events/${event.id}`, {
+    method: "DELETE",
+  });
+
+  if (!res.ok) {
     toaster.create({
-      title: "Event deleted",
-      description: "Het evenement is succesvol verwijderd.",
-      type: "success",
+      title: "Error",
+      description: "Het event kon niet worden verwijderd.",
+      type: "error",
     });
-
-    setDeleteOpen(false);
-    navigate("/events");
+    return;
   }
+
+  const updated = {
+    ...data,
+    events: data.events.filter((e) => e.id !== event.id),
+  };
+
+  setData(updated);
+
+  toaster.create({
+    title: "Event deleted",
+    description: "Het evenement is succesvol verwijderd.",
+    type: "success",
+  });
+
+  setDeleteOpen(false);
+  navigate("/events");
+}
+
 
   return (
     <>
