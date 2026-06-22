@@ -7,170 +7,125 @@ import {
   Text,
   Card,
   SimpleGrid,
-  Stack,
-  Skeleton,
 } from "@chakra-ui/react";
 
+import Footer from "../components/ui/Footer";
 import HeadingExample from "../components/ui/Heading";
+import SimpleModal from "../components/ui/modal";
 import { useState } from "react";
 import { useNavigate, useOutletContext } from "react-router-dom";
-import SimpleModal from "../components/ui/modal";
 import EventForm from "../components/ui/EventForm";
-import Footer from "../components/ui/Footer";
-import { toaster } from "../components/ui/toaster";
-
-const API = "http://localhost:3000";
-
-async function apiGet(path) {
-  return fetch(`${API}${path}`).then((res) => res.json());
-}
-
-async function apiPost(path, data) {
-  return fetch(`${API}${path}`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(data),
-  }).then((res) => res.json());
-}
-
-async function apiPut(path, data) {
-  return fetch(`${API}${path}`, {
-    method: "PUT",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(data),
-  }).then((res) => res.json());
-}
-
-async function apiDelete(path) {
-  return fetch(`${API}${path}`, { method: "DELETE" });
-}
-
-export const EventsPageSkeleton = () => (
-  <Box p={6}>
-    <SimpleGrid columns={[1, 2, 3, 4]} spacing={6} gap="30px">
-      {[...Array(6)].map((_, i) => (
-        <Card.Root
-          key={i}
-          w="100%"
-          borderRadius="lg"
-          bg="whiteAlpha.800"
-          alignItems="center"
-          boxShadow="md"
-          p={4}
-        >
-          <Skeleton
-            height={{ base: "120px", md: "130px", lg: "170px" }}
-            w="100%"
-            borderRadius="md"
-            mb={4}
-          />
-
-          <Stack w="100%" gap={3}>
-            <Skeleton height="24px" width="70%" />
-            <Skeleton height="16px" width="90%" />
-            <Skeleton height="16px" width="50%" />
-          </Stack>
-
-          <Stack w="100%" mt={4} gap={2}>
-            <Skeleton height="16px" width="60%" />
-            <Skeleton height="16px" width="50%" />
-          </Stack>
-
-          <HStack mt={4} w="100%" gap={2}>
-            <Skeleton height="20px" width="60px" borderRadius="md" />
-            <Skeleton height="20px" width="80px" borderRadius="md" />
-          </HStack>
-
-          <Skeleton height="36px" width="120px" mt={4} borderRadius="md" />
-        </Card.Root>
-      ))}
-    </SimpleGrid>
-  </Box>
-);
+import HeadingSkeleton from "../components/ui/HeadingSkeleton";
+import { EventsPageSkeleton } from "../components/ui/EventsPageSkeleton";
 
 export const EventsPage = () => {
   const { data, setData } = useOutletContext();
   const navigate = useNavigate();
   const [selectedCategories, setSelectedCategories] = useState([]);
-
   const [createOpen, setCreateOpen] = useState(false);
   const [editOpen, setEditOpen] = useState(false);
   const [editEvent, setEditEvent] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
 
-  if (!data) return <EventsPageSkeleton />;
+  // -----------------------------------------------------
+  // DECLARE FIRST (fixes ReferenceError)
+  // -----------------------------------------------------
+  const categories = data?.categories || [];
+  const eventsArray = data?.events || [];
 
-  const eventsArray = data.events || [];
-  const categories = data.categories || [];
+  // -----------------------------------------------------
+  // LOADING STATE
+  // -----------------------------------------------------
+  if (!data) {
+    return (
+      <>
+        <HeadingSkeleton
+          data={data}
+          searchTerm={searchTerm}
+          setSearchTerm={setSearchTerm}
+          selectedCategories={selectedCategories}
+          setSelectedCategories={setSelectedCategories}
+          categories={[]}   // ✔ veilig: leeg array
+          onCreate={() => {}}
+          noSticky
+        />
 
-  const addEvent = async (newEvent) => {
-    const eventToSave = {
-      ...newEvent,
-      categoryIds: newEvent.categoryIds || [],
-    };
+        <Box
+          position="fixed"
+          inset="0"
+          bgImage="url('/images/pexels-diva-34731924.jpg')"
+          bgSize="cover"
+          bgPosition="center"
+          opacity="0.4"
+          zIndex="-1"
+        />
 
-    const saved = await apiPost("/events", eventToSave);
+        <Box position="relative" zIndex="1" p={6}>
+          <EventsPageSkeleton />
+        </Box>
 
-    const updated = {
+        <Footer>
+          <Text textAlign="center" py={4} color="black.800">
+            &copy; {new Date().getFullYear()} PixelBloom. All rights reserved.
+          </Text>
+        </Footer>
+      </>
+    );
+  }
+
+  // -----------------------------------------------------
+  // CRUD FUNCTIONS
+  // -----------------------------------------------------
+
+  const addEvent = async (values) => {
+    const res = await fetch("http://localhost:3000/events", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(values),
+    });
+
+    const newEvent = await res.json();
+
+    setData({
       ...data,
-      events: [...data.events, saved],
-    };
-
-    setData(updated);
-
-    toaster.create({
-      title: "Event created",
-      description: "Your event has been successfully added.",
-      type: "success",
+      events: [...data.events, newEvent],
     });
   };
 
   const updateEvent = async (values) => {
-    const updatedEvent = {
-      ...values,
-      categoryIds: values.categoryIds || [],
-    };
+    const res = await fetch(`http://localhost:3000/events/${values.id}`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(values),
+    });
 
-    const saved = await apiPut(`/events/${values.id}`, updatedEvent);
+    const updated = await res.json();
 
-    const updated = {
+    setData({
       ...data,
-      events: data.events.map((evt) =>
-        String(evt.id) === String(saved.id) ? saved : evt,
-      ),
-    };
-
-    setData(updated);
-
-    toaster.create({
-      title: "Event updated",
-      description: "The changes have been saved.",
-      type: "success",
+      events: data.events.map((evt) => (evt.id === updated.id ? updated : evt)),
     });
   };
 
   const deleteEvent = async (id) => {
-    await apiDelete(`/events/${id}`);
+    await fetch(`http://localhost:3000/events/${id}`, {
+      method: "DELETE",
+    });
 
-    const updated = {
+    setData({
       ...data,
       events: data.events.filter((evt) => evt.id !== id),
-    };
-
-    setData(updated);
-    setEditOpen(false);
-
-    toaster.create({
-      title: "Event deleted",
-      description: "The event has been removed.",
-      type: "success",
     });
+
+    setEditOpen(false);
   };
 
+  // -----------------------------------------------------
+  // FILTERING
+  // -----------------------------------------------------
   const filteredEvents = eventsArray.filter((evt) => {
     const search = searchTerm.toLowerCase();
 
-    // SEARCH
     const matchesSearch =
       evt.title.toLowerCase().includes(search) ||
       evt.description.toLowerCase().includes(search) ||
@@ -180,7 +135,6 @@ export const EventsPage = () => {
         return category?.name.toLowerCase().includes(search);
       });
 
-    // CATEGORY FILTER
     const matchesCategories =
       selectedCategories.length === 0 ||
       evt.categoryIds?.some((id) => selectedCategories.includes(id));
@@ -188,6 +142,9 @@ export const EventsPage = () => {
     return matchesSearch && matchesCategories;
   });
 
+  // -----------------------------------------------------
+  // RENDER
+  // -----------------------------------------------------
   return (
     <>
       <HeadingExample
@@ -201,6 +158,7 @@ export const EventsPage = () => {
         noSticky
       />
 
+      {/* CREATE MODAL */}
       <SimpleModal
         open={createOpen}
         onClose={() => setCreateOpen(false)}
@@ -216,6 +174,7 @@ export const EventsPage = () => {
         />
       </SimpleModal>
 
+      {/* EDIT MODAL */}
       <SimpleModal
         open={editOpen}
         onClose={() => setEditOpen(false)}
@@ -234,6 +193,7 @@ export const EventsPage = () => {
         />
       </SimpleModal>
 
+      {/* BACKGROUND */}
       <Box
         position="fixed"
         inset="0"
@@ -244,44 +204,14 @@ export const EventsPage = () => {
         zIndex="-1"
       />
 
-      <Box position="relative" zIndex="1" p={6}>
-        {/* CATEGORY FILTER */}
-        <Box px={6} mb={4}>
-          <HStack gap={4} flexWrap="wrap">
-            {categories.map((cat) => (
-              <label
-                key={cat.id}
-                style={{ display: "flex", alignItems: "center", gap: "6px" }}
-              >
-                <input
-                  type="checkbox"
-                  value={cat.id}
-                  checked={selectedCategories.includes(cat.id)}
-                  onChange={(e) => {
-                    const id = Number(e.target.value);
-                    if (selectedCategories.includes(id)) {
-                      setSelectedCategories(
-                        selectedCategories.filter((c) => c !== id),
-                      );
-                    } else {
-                      setSelectedCategories([...selectedCategories, id]);
-                    }
-                  }}
-                />
-                <Text>{cat.name}</Text>
-              </label>
-            ))}
-          </HStack>
-        </Box>
-
-        <SimpleGrid columns={[1, 2, 3, 4]} spacing={6} gap="30px">
+      {/* CONTENT */}
+      <Box position="relative" zIndex="1" px={6} pb={6} mt={6}>
+        <SimpleGrid columns={[1, 2, 3, 4]} columnGap={6} rowGap={6}>
           {filteredEvents.map((evt) => (
             <Card.Root
               key={evt.id}
               w="100%"
               borderRadius="lg"
-              alignItems="center"
-              mb={5}
               cursor="pointer"
               onClick={() => navigate(`/events/${evt.id}`)}
               boxShadow="md"
@@ -293,22 +223,33 @@ export const EventsPage = () => {
                   src={evt.image}
                   alt={evt.title}
                   w="100%"
-                  h={{ base: "120px", md: "130px", lg: "170px" }}
+                  h={{ base: "140px", md: "160px", lg: "190px" }}
                   objectFit="cover"
                   borderRadius="md"
                   mb={4}
                 />
 
-                <Card.Title fontSize={{ base: "md", md: "lg", lg: "2xl" }}>
+                <Card.Title
+                  fontSize={{ base: "lg", md: "xl", lg: "2xl" }}
+                  fontWeight="bold"
+                  lineHeight="1.2"
+                  textAlign={{ base: "center", md: "left" }}
+                >
                   {evt.title}
                 </Card.Title>
 
-                <Card.Description fontSize={{ base: "sx", md: "sm", lg: "md" }}>
+                <Card.Description
+                  fontSize={{ base: "md", md: "lg", lg: "xl" }}
+                  lineHeight="1.3"
+                  textAlign={{ base: "center", md: "left" }}
+                  mt={2}
+                  color="gray.600"
+                >
                   {evt.description}
                 </Card.Description>
               </Card.Header>
 
-              <Card.Body>
+              <Card.Body px={6} pb={4}>
                 <Text mt={1} fontWeight="medium">
                   {evt.location}
                 </Text>
@@ -342,12 +283,15 @@ export const EventsPage = () => {
                 </HStack>
               </Card.Body>
 
-              <Card.Footer gap={3}>
+              <Card.Footer gap={3} px={6} pb={6}>
                 <Button
                   variant="surface"
                   border="1px solid"
                   borderColor="gray.300"
-                  onClick={() => navigate(`/events/${evt.id}`)}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    navigate(`/events/${evt.id}`);
+                  }}
                 >
                   View details
                 </Button>

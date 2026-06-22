@@ -15,7 +15,7 @@ import SimpleModal from "../components/ui/modal";
 import EventForm from "../components/ui/EventForm";
 import { toaster } from "../components/ui/toaster";
 import Footer from "../components/ui/Footer";
-import EventDetailSkeleton from "../components/EventDetailSkeleton";
+import EventDetailSkeleton from "../components/ui/EventDetailSkeleton";
 
 export default function EventPage() {
   const { id } = useParams();
@@ -53,81 +53,78 @@ export default function EventPage() {
     );
   }
 
-async function updateEvent(id, values) {
-  const updatedEvent = {
-    ...event,
-    ...values,
-    id: Number(id),
-    categoryIds: values.categoryIds || [],
-    image: values.image || event.image || "",
-  };
+  async function updateEvent(id, values) {
+    const updatedEvent = {
+      ...event,
+      ...values,
+      id: Number(id),
+      categoryIds: values.categoryIds || [],
+      image: values.image || event.image || "",
+    };
 
-  // PUT naar JSON-server
-  const res = await fetch(`http://localhost:3000/events/${id}`, {
-    method: "PUT",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(updatedEvent),
-  });
-
-  if (!res.ok) {
-    toaster.create({
-      title: "Error",
-      description: "Het event kon niet worden opgeslagen.",
-      type: "error",
+    // PUT naar JSON-server
+    const res = await fetch(`http://localhost:3000/events/${id}`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(updatedEvent),
     });
-    return;
+
+    if (!res.ok) {
+      toaster.create({
+        title: "Error",
+        description: "The event couldn't be saved.",
+        type: "error",
+      });
+      return;
+    }
+
+    const saved = await res.json();
+
+    // Context updaten
+    const updated = {
+      ...data,
+      events: data.events.map((evt) => (evt.id === saved.id ? saved : evt)),
+    };
+
+    setData(updated);
+
+    toaster.create({
+      title: "Event updated",
+      description: "The changes have been saved.",
+      type: "success",
+    });
   }
 
-  const saved = await res.json();
-
-  // Context updaten
-  const updated = {
-    ...data,
-    events: data.events.map((evt) =>
-      evt.id === saved.id ? saved : evt
-    ),
-  };
-
-  setData(updated);
-
-  toaster.create({
-    title: "Event updated",
-    description: "De wijzigingen zijn opgeslagen.",
-    type: "success",
-  });
-}
-
-async function handleDelete() {
-  const res = await fetch(`http://localhost:3000/events/${event.id}`, {
-    method: "DELETE",
-  });
-
-  if (!res.ok) {
-    toaster.create({
-      title: "Error",
-      description: "Het event kon niet worden verwijderd.",
-      type: "error",
+  async function handleDelete() {
+    const res = await fetch(`http://localhost:3000/events/${event.id}`, {
+      method: "DELETE",
     });
-    return;
+
+    if (!res.ok) {
+      toaster.create({
+        title: "Error",
+        description: "The event couldn't be deleted.",
+        type: "error",
+      });
+      return;
+    }
+
+    const updated = {
+      ...data,
+      events: data.events.filter((e) => e.id !== event.id),
+    };
+
+    setData(updated);
+
+    toaster.create({
+      title: "Event deleted",
+      description: "The event has been deleted.",
+      type: "success",
+    });
+
+    setDeleteOpen(false);
+    navigate("/events");
   }
-
-  const updated = {
-    ...data,
-    events: data.events.filter((e) => e.id !== event.id),
-  };
-
-  setData(updated);
-
-  toaster.create({
-    title: "Event deleted",
-    description: "Het evenement is succesvol verwijderd.",
-    type: "success",
-  });
-
-  setDeleteOpen(false);
-  navigate("/events");
-}
-
 
   return (
     <>
@@ -161,7 +158,7 @@ async function handleDelete() {
 
           <Card.Header>
             <Card.Title
-              fontSize={{ base: "xl", sm: "2xl" }}
+              fontSize={{ base: "xl", md: "2xl", lg: "3xl" }}
               fontWeight="bold"
               textAlign={{ base: "center", md: "left" }}
             >
@@ -169,14 +166,15 @@ async function handleDelete() {
             </Card.Title>
 
             <Card.Description
-              fontSize={{ base: "md", sm: "lg" }}
+              fontSize={{ base: "md", md: "lg", lg: "xl" }}
               textAlign={{ base: "center", md: "left" }}
+              color="gray.600"
             >
               {event.description}
             </Card.Description>
           </Card.Header>
 
-          <Card.Body>
+          <Card.Body px={6} pb={4}>
             <Text
               mt={2}
               fontSize={{ base: "md", sm: "lg" }}
@@ -225,6 +223,8 @@ async function handleDelete() {
 
           <Card.Footer
             gap={3}
+            px={6}
+            pb={6}
             justify={{ base: "center", md: "flex-start" }}
             flexWrap="wrap"
           >

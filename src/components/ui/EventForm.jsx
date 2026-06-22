@@ -1,226 +1,88 @@
-import { useState, useEffect } from "react";
-import {
-  Button,
-  Card,
-  Field,
-  Input,
-  Stack,
-  Text,
-  Textarea,
-} from "@chakra-ui/react";
+import { Card, Skeleton, Stack, HStack, Box } from "@chakra-ui/react";
 
-export default function EventForm({
-  initialValues = {},
-  onSubmit,
-  cancel,
-  onDelete = () => {},
-  allCategories,
-}) {
-  const initialEvent = initialValues;
-
-  const [imagePreview, setImagePreview] = useState(initialEvent?.image || "");
-
-  const [start, setStart] = useState(toDateTimeLocal(initialEvent?.startTime));
-
-  const [end, setEnd] = useState(toDateTimeLocal(initialEvent?.endTime));
-
-  const [timeError, setTimeError] = useState("");
-
-  useEffect(() => {
-    if (start && end && end < start) {
-      setTimeError("End date cannot be earlier than start date");
-    } else {
-      setTimeError("");
-    }
-  }, [start, end]);
-
-function handleSubmit(e) {
-  e.preventDefault();
-  if (timeError) return;
-
-  const formData = new FormData(e.target);
-
-  const values = {
-    // FIX: bij nieuw event een nieuwe UUID maken
-    id: initialEvent?.id || crypto.randomUUID(),
-
-    title: formData.get("title"),
-    description: formData.get("description"),
-    location: formData.get("location"),
-
-    // FIX: controlled inputs → altijd state gebruiken
-    startTime: toISO(start),
-    endTime: toISO(end),
-
-    image: imagePreview || initialEvent?.image || "",
-
-    // FIX: altijd array
-    categoryIds: formData.getAll("categoryIds").map(Number),
-  };
-
-  onSubmit(values);
-}
-
-
-  function toISO(value) {
-    return new Date(value).toISOString();
-  }
-
-  function toDateTimeLocal(value) {
-    if (!value) return "";
-    return value.slice(0, 16);
-  }
-
+export default function EventFormSkeleton() {
   return (
-    <Card.Root maxW="sm" as="form" onSubmit={handleSubmit}>
-      <Card.Header>
-        <Card.Description>
-          {initialEvent?.id
-            ? "Update the event details below"
-            : "Fill in the form below to create an event"}
-        </Card.Description>
+    <Card.Root maxW="sm" mx="auto" p={0}>
+      {/* HEADER */}
+      <Card.Header p={6}>
+        <Skeleton height="20px" width="80%" />
       </Card.Header>
 
-      <input type="hidden" name="id" value={initialEvent?.id || ""} />
+      {/* BODY */}
+      <Card.Body px={6} pb={4}>
+        <Stack gap={4} w="full">
 
-      <Card.Body>
-        <Stack gap="4" w="full">
-          <Field.Root>
-            <Field.Label>Event Name</Field.Label>
-            <Input name="title" required defaultValue={initialEvent?.title} />
-          </Field.Root>
+          {/* Event Name */}
+          <Box>
+            <Skeleton height="16px" width="120px" mb={2} />
+            <Skeleton height="40px" borderRadius="md" />
+          </Box>
 
-          <Field.Root>
-            <Text fontWeight="medium" mb={2}>
-              Categories
-            </Text>
-
-            <Stack gap="2">
-              {allCategories.map((cat) => (
-                <label
-                  key={cat.id}
-                  style={{
-                    display: "flex",
-                    gap: "6px",
-                    alignItems: "center",
-                  }}
-                >
-                  <input
-                    type="checkbox"
-                    name="categoryIds"
-                    value={cat.id}
-                    defaultChecked={initialEvent?.categoryIds?.includes(cat.id)}
-                  />
-                  {cat.name}
-                </label>
-              ))}
+          {/* Categories */}
+          <Box>
+            <Skeleton height="16px" width="100px" mb={3} />
+            <Stack gap={2}>
+              <HStack gap={2}>
+                <Skeleton height="20px" width="20px" borderRadius="sm" />
+                <Skeleton height="16px" width="80px" />
+              </HStack>
+              <HStack gap={2}>
+                <Skeleton height="20px" width="20px" borderRadius="sm" />
+                <Skeleton height="16px" width="100px" />
+              </HStack>
+              <HStack gap={2}>
+                <Skeleton height="20px" width="20px" borderRadius="sm" />
+                <Skeleton height="16px" width="90px" />
+              </HStack>
             </Stack>
-          </Field.Root>
+          </Box>
 
-          <Field.Root>
-            <Field.Label>Event Description</Field.Label>
-            <Textarea
-              name="description"
-              required
-              defaultValue={initialEvent?.description}
+          {/* Description */}
+          <Box>
+            <Skeleton height="16px" width="140px" mb={2} />
+            <Skeleton height="90px" borderRadius="md" />
+          </Box>
+
+          {/* Location */}
+          <Box>
+            <Skeleton height="16px" width="90px" mb={2} />
+            <Skeleton height="40px" borderRadius="md" />
+          </Box>
+
+          {/* Startdate */}
+          <Box>
+            <Skeleton height="16px" width="160px" mb={2} />
+            <Skeleton height="40px" borderRadius="md" />
+          </Box>
+
+          {/* Enddate */}
+          <Box>
+            <Skeleton height="16px" width="150px" mb={2} />
+            <Skeleton height="40px" borderRadius="md" />
+          </Box>
+
+          {/* Image preview */}
+          <Box>
+            <Skeleton
+              height="180px"
+              width="100%"
+              borderRadius="md"
+              mb={3}
             />
-          </Field.Root>
-
-          <Field.Root>
-            <Field.Label>Location</Field.Label>
-            <Input
-              name="location"
-              required
-              defaultValue={initialEvent?.location}
-            />
-          </Field.Root>
-
-          <Field.Root>
-            <Field.Label>Startdate and Time</Field.Label>
-            <Input
-              type="datetime-local"
-              name="startTime"
-              value={start}
-              onChange={(e) => setStart(e.target.value)}
-            />
-          </Field.Root>
-
-          <Field.Root>
-            <Field.Label>Enddate and Time</Field.Label>
-            <Input
-              type="datetime-local"
-              name="endTime"
-              value={end}
-              onChange={(e) => setEnd(e.target.value)}
-            />
-          </Field.Root>
-
-          {timeError && (
-            <Text color="red.500" fontSize="sm">
-              {timeError}
-            </Text>
-          )}
-
-          <Field.Root>
-            <Field.Label>Event Image</Field.Label>
-
-            {imagePreview && (
-              <img
-                src={imagePreview}
-                alt="Event Preview"
-                style={{
-                  width: "100%",
-                  maxHeight: "220px",
-                  objectFit: "cover",
-                  borderRadius: "8px",
-                  marginBottom: "12px",
-                }}
-              />
-            )}
-
-            <Input
-              type="file"
-              accept="image/*"
-              onChange={(e) => {
-                const file = e.target.files?.[0];
-                if (!file) return;
-
-                const reader = new FileReader();
-                reader.onloadend = () => {
-                  setImagePreview(reader.result); // Base64 opslaan
-                };
-                reader.readAsDataURL(file);
-              }}
-            />
-          </Field.Root>
+            <Skeleton height="40px" width="100%" borderRadius="md" />
+          </Box>
         </Stack>
       </Card.Body>
 
-      <Card.Footer justifyContent="center" gap={6} pt={4} mt={2}>
-        {initialEvent?.id && (
-          <Button
-            variant="surface"
-            outline="1px solid"
-            outlineColor="gray.300"
-            colorPalette="red"
-            width="inherit"
-            type="button"
-            onClick={() => onDelete(initialEvent.id)}
-          >
-            Delete
-          </Button>
-        )}
-
-        <Button
-          variant="surface"
-          outline="1px solid"
-          outlineColor="gray.300"
-          type="submit"
-          colorPalette="gray"
-          width="inherit"
-        >
-          {initialEvent?.id ? "Save changes" : "Create Event"}
-        </Button>
+      {/* FOOTER */}
+      <Card.Footer
+        justifyContent="center"
+        gap={6}
+        pt={4}
+        pb={6}
+      >
+        <Skeleton height="40px" width="120px" borderRadius="md" />
+        <Skeleton height="40px" width="160px" borderRadius="md" />
       </Card.Footer>
     </Card.Root>
   );
