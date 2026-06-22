@@ -8,7 +8,6 @@ export const EventsPageSkeleton = () => (
           key={i}
           w="100%"
           borderRadius="lg"
-          alignItems="center"
           cursor="pointer"
           boxShadow="md"
           _hover={{ transform: "scale(1.03)", boxShadow: "lg" }}
@@ -16,6 +15,7 @@ export const EventsPageSkeleton = () => (
         >
           {/* HEADER */}
           <Card.Header p={6} w="100%">
+            {/* IMAGE */}
             <Skeleton
               height={{ base: "140px", md: "160px", lg: "190px" }}
               w="100%"
@@ -23,16 +23,31 @@ export const EventsPageSkeleton = () => (
               mb={4}
             />
 
-            <Skeleton height="26px" width="70%" borderRadius="md" mb={2} />
+            {/* TITLE */}
+            <Skeleton
+              height="26px"
+              width="70%"
+              borderRadius="md"
+              mb={2}
+            />
 
-            <Skeleton height="18px" width="90%" borderRadius="md" />
+            {/* DESCRIPTION */}
+            <Skeleton
+              height="18px"
+              width="90%"
+              borderRadius="md"
+            />
           </Card.Header>
 
           {/* BODY */}
           <Card.Body px={6} pb={4}>
+            {/* LOCATION */}
             <Skeleton height="16px" width="60%" mb={1} />
+
+            {/* DATE RANGE */}
             <Skeleton height="16px" width="80%" />
 
+            {/* CATEGORY BADGES */}
             <HStack mt={4} gap={2}>
               <Skeleton height="24px" width="70px" borderRadius="md" />
               <Skeleton height="24px" width="90px" borderRadius="md" />

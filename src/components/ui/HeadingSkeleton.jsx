@@ -20,7 +20,6 @@ export default function HeadingSkeleton({
 }) {
   const { colorMode } = useColorMode();
 
-  // Zelfde logica als Heading.jsx
   const searchEnabled =
     typeof searchTerm === "string" && typeof setSearchTerm === "function";
 
@@ -29,6 +28,16 @@ export default function HeadingSkeleton({
     md: searchEnabled ? "1fr 2fr 1fr" : rightContent ? "1fr 1fr" : "1fr",
     lg: searchEnabled ? "1fr 3fr 1fr" : rightContent ? "1fr 1fr" : "1fr",
   };
+
+  // ⭐ Dummy categories zodat skeleton ALTIJD knoppen toont
+  const skeletonCategories =
+    categories.length > 0
+      ? categories
+      : [
+          { id: 1, name: "sports" },
+          { id: 2, name: "games" },
+          { id: 3, name: "relaxation" },
+        ];
 
   return (
     <Box
@@ -50,17 +59,20 @@ export default function HeadingSkeleton({
         minH={{ base: "auto", md: "90px" }}
       >
         {/* LOGO */}
+        {/* LOGO */}
         <Box
           display="flex"
           alignItems="center"
           justifyContent={{ base: "center", md: "flex-start" }}
           height="100%"
         >
-          <Skeleton
-            height="50px"
-            width={{ base: "130px", md: "160px" }}
+          <Box
+            w={{ base: "130px", md: "160px" }}
             ml={{ base: 0, md: "20px" }}
-          />
+            aspectRatio={160 / 152} // ⭐ exact jouw logo verhouding
+          >
+            <Skeleton w="100%" h="100%" borderRadius="md" />
+          </Box>
         </Box>
 
         {/* SEARCH BAR */}
@@ -94,28 +106,26 @@ export default function HeadingSkeleton({
         )}
       </Grid>
 
-      {/* CATEGORY FILTERS */}
-      {categories.length > 0 && (
-        <Box mt={{ base: 3, md: 1 }} mb={2}>
-          <Box display="flex" gap={3} flexWrap="wrap" justifyContent="center">
-            {categories.map((cat) => (
-              <Skeleton
-                key={cat.id}
-                height="32px"
-                width={`${cat.name.length * 8 + 24}px`}
-                borderRadius="md"
-              />
-            ))}
-          </Box>
-
-          {/* RESET BUTTON */}
-          <Box textAlign="center" mt={3} mb={3}>
-            <Skeleton height="32px" width="110px" borderRadius="md" mx="auto" />
-          </Box>
+      {/* CATEGORY FILTERS — ⭐ ALTIJD TONEN */}
+      <Box mt={{ base: 3, md: 1 }} mb={2}>
+        <Box display="flex" gap={3} flexWrap="wrap" justifyContent="center">
+          {skeletonCategories.map((cat) => (
+            <Skeleton
+              key={cat.id}
+              height="32px"
+              width={`${cat.name.length * 8 + 24}px`}
+              borderRadius="md"
+            />
+          ))}
         </Box>
-      )}
 
-      {/* NO RESULTS MESSAGE */}
+        {/* RESET BUTTON */}
+        <Box textAlign="center" mt={3} mb={3}>
+          <Skeleton height="32px" width="110px" borderRadius="md" mx="auto" />
+        </Box>
+      </Box>
+
+      {/* NO RESULTS */}
       {searchEnabled && searchTerm?.trim() !== "" && (
         <Box textAlign="center">
           <SkeletonText noOfLines={1} width="140px" mx="auto" />

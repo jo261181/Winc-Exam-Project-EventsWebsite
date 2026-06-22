@@ -13,23 +13,27 @@ import Footer from "../components/ui/Footer";
 import HeadingExample from "../components/ui/Heading";
 import SimpleModal from "../components/ui/modal";
 import { useState } from "react";
+import EventCardSkeleton from "../components/ui/EventCardSkeleton";
 import { useNavigate, useOutletContext } from "react-router-dom";
 import EventForm from "../components/ui/EventForm";
 import HeadingSkeleton from "../components/ui/HeadingSkeleton";
-import { EventsPageSkeleton } from "../components/ui/EventsPageSkeleton";
+
+import {
+  createEvent,
+  updateEvent,
+  deleteEvent,
+} from "../services/events";
 
 export const EventsPage = () => {
   const { data, setData } = useOutletContext();
   const navigate = useNavigate();
+
   const [selectedCategories, setSelectedCategories] = useState([]);
   const [createOpen, setCreateOpen] = useState(false);
   const [editOpen, setEditOpen] = useState(false);
   const [editEvent, setEditEvent] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
 
-  // -----------------------------------------------------
-  // DECLARE FIRST (fixes ReferenceError)
-  // -----------------------------------------------------
   const categories = data?.categories || [];
   const eventsArray = data?.events || [];
 
@@ -45,7 +49,7 @@ export const EventsPage = () => {
           setSearchTerm={setSearchTerm}
           selectedCategories={selectedCategories}
           setSelectedCategories={setSelectedCategories}
-          categories={[]}   // ✔ veilig: leeg array
+          categories={[]}
           onCreate={() => {}}
           noSticky
         />
@@ -61,12 +65,16 @@ export const EventsPage = () => {
         />
 
         <Box position="relative" zIndex="1" p={6}>
-          <EventsPageSkeleton />
+          <SimpleGrid columns={[1, 2, 3, 4]} gap={6}>
+            {[...Array(4)].map((_, i) => (
+              <EventCardSkeleton key={i} />
+            ))}
+          </SimpleGrid>
         </Box>
 
         <Footer>
           <Text textAlign="center" py={4} color="black.800">
-            &copy; {new Date().getFullYear()} PixelBloom. All rights reserved.
+            &copy; {new Date().getFullYear()} PurplePixelBloom. All rights reserved.
           </Text>
         </Footer>
       </>
@@ -74,43 +82,31 @@ export const EventsPage = () => {
   }
 
   // -----------------------------------------------------
-  // CRUD FUNCTIONS
+  // CRUD HANDLERS
   // -----------------------------------------------------
 
-  const addEvent = async (values) => {
-    const res = await fetch("http://localhost:3000/events", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(values),
-    });
-
-    const newEvent = await res.json();
+  async function handleCreate(values) {
+    const newEvent = await createEvent(values);
 
     setData({
       ...data,
       events: [...data.events, newEvent],
     });
-  };
+  }
 
-  const updateEvent = async (values) => {
-    const res = await fetch(`http://localhost:3000/events/${values.id}`, {
-      method: "PUT",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(values),
-    });
-
-    const updated = await res.json();
+  async function handleUpdate(values) {
+    const updated = await updateEvent(values.id, values);
 
     setData({
       ...data,
-      events: data.events.map((evt) => (evt.id === updated.id ? updated : evt)),
+      events: data.events.map((evt) =>
+        evt.id === updated.id ? updated : evt
+      ),
     });
-  };
+  }
 
-  const deleteEvent = async (id) => {
-    await fetch(`http://localhost:3000/events/${id}`, {
-      method: "DELETE",
-    });
+  async function handleDelete(id) {
+    await deleteEvent(id);
 
     setData({
       ...data,
@@ -118,7 +114,7 @@ export const EventsPage = () => {
     });
 
     setEditOpen(false);
-  };
+  }
 
   // -----------------------------------------------------
   // FILTERING
@@ -166,7 +162,7 @@ export const EventsPage = () => {
       >
         <EventForm
           onSubmit={(values) => {
-            addEvent(values);
+            handleCreate(values);
             setCreateOpen(false);
           }}
           cancel={() => setCreateOpen(false)}
@@ -184,10 +180,10 @@ export const EventsPage = () => {
           key={editEvent?.id}
           initialValues={editEvent}
           onSubmit={(values) => {
-            updateEvent(values);
+            handleUpdate(values);
             setEditOpen(false);
           }}
-          onDelete={deleteEvent}
+          onDelete={handleDelete}
           cancel={() => setEditOpen(false)}
           allCategories={categories}
         />
@@ -321,7 +317,7 @@ export const EventsPage = () => {
 
       <Footer>
         <Text textAlign="center" py={4} color="black.800">
-          &copy; {new Date().getFullYear()} PixelBloom. All rights reserved.
+          &copy; {new Date().getFullYear()} PurplePixelBloom. All rights reserved.
         </Text>
       </Footer>
     </>
