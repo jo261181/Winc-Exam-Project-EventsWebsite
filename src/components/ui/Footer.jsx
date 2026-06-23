@@ -15,7 +15,7 @@ export default function Footer() {
         fontWeight="semibold"
 
       >
-        © {new Date().getFullYear()} PurplePixelBloom. All rights reserved.
+        © {new Date().getFullYear()} PixelBloom. All rights reserved.
       </Text>
     </Box>
   );

@@ -74,7 +74,7 @@ export const EventsPage = () => {
 
         <Footer>
           <Text textAlign="center" py={4} color="black.800">
-            &copy; {new Date().getFullYear()} PurplePixelBloom. All rights reserved.
+            &copy; {new Date().getFullYear()} PixelBloom. All rights reserved.
           </Text>
         </Footer>
       </>
@@ -317,7 +317,7 @@ export const EventsPage = () => {
 
       <Footer>
         <Text textAlign="center" py={4} color="black.800">
-          &copy; {new Date().getFullYear()} PurplePixelBloom. All rights reserved.
+          &copy; {new Date().getFullYear()} PixelBloom. All rights reserved.
         </Text>
       </Footer>
     </>
