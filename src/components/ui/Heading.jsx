@@ -56,10 +56,10 @@ export default function HeadingExample({
   }, [events, searchEnabled, searchTerm, categories]);
 
   const toggleCategory = (catId) => {
-    if (selectedCategories.includes(catId)) {
+    if (selectedCategories.includes(Number(catId))) {
       setSelectedCategories(selectedCategories.filter((c) => c !== catId));
     } else {
-      setSelectedCategories([...selectedCategories, catId]);
+      setSelectedCategories([...selectedCategories, Number(catId)]);
     }
   };
 
@@ -190,7 +190,7 @@ export default function HeadingExample({
                     transform: "translateY(2px)",
                     boxShadow: "inset 0 0 8px rgba(0,0,0,0.35)",
                   }}
-                  onClick={() => toggleCategory(cat.id)}
+                  onClick={() => toggleCategory(Number(cat.id))}
                   aria-pressed={active}
                 >
                   {cat.name}
