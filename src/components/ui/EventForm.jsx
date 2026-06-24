@@ -1,225 +1,163 @@
-import { useState, useEffect } from "react";
 import {
-  Button,
   Card,
-  Field,
-  Input,
   Stack,
-  Text,
+  HStack,
+  Box,
+  Input,
   Textarea,
+  Checkbox,
+  Button,
+  Image,
 } from "@chakra-ui/react";
+import { useState } from "react";
 
 export default function EventForm({
   initialValues = {},
+  categories = [],
   onSubmit,
-  cancel,
-  onDelete = () => {},
-  allCategories,
+  onCancel,
+  onDelete,
 }) {
-  const initialEvent = initialValues;
+  const [formData, setFormData] = useState({
+    name: initialValues.name || "",
+    description: initialValues.description || "",
+    location: initialValues.location || "",
+    startdate: initialValues.startdate || "",
+    enddate: initialValues.enddate || "",
+    image: initialValues.image || "",
+    categoryIds: initialValues.categoryIds || [],
+  });
 
-  const [imagePreview, setImagePreview] = useState(initialEvent?.image || "");
-
-  const [start, setStart] = useState(toDateTimeLocal(initialEvent?.startTime));
-
-  const [end, setEnd] = useState(toDateTimeLocal(initialEvent?.endTime));
-
-  const [timeError, setTimeError] = useState("");
-
-  useEffect(() => {
-    if (start && end && end < start) {
-      setTimeError("End date cannot be earlier than start date");
-    } else {
-      setTimeError("");
-    }
-  }, [start, end]);
-
-function handleSubmit(e) {
-  e.preventDefault();
-  if (timeError) return;
-
-  const formData = new FormData(e.target);
-
-  const values = {
-    // FIX: bij nieuw event een nieuwe UUID maken
-    id: initialEvent?.id || crypto.randomUUID(),
-
-    title: formData.get("title"),
-    description: formData.get("description"),
-    location: formData.get("location"),
-
-    // FIX: controlled inputs → altijd state gebruiken
-    startTime: toISO(start),
-    endTime: toISO(end),
-
-    image: imagePreview || initialEvent?.image || "",
-
-    // FIX: altijd array
-    categoryIds: formData.getAll("categoryIds").map(Number),
+  const handleChange = (field) => (e) => {
+    setFormData((prev) => ({
+      ...prev,
+      [field]: e.target.value,
+    }));
   };
 
-  onSubmit(values);
-}
+  const toggleCategory = (id) => {
+    setFormData((prev) => ({
+      ...prev,
+      categoryIds: prev.categoryIds.includes(id)
+        ? prev.categoryIds.filter((c) => c !== id)
+        : [...prev.categoryIds, id],
+    }));
+  };
 
+  const handleImageUpload = (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
 
-  function toISO(value) {
-    return new Date(value).toISOString();
-  }
-
-  function toDateTimeLocal(value) {
-    if (!value) return "";
-    return value.slice(0, 16);
-  }
+    const reader = new FileReader();
+    reader.onload = () => {
+      setFormData((prev) => ({ ...prev, image: reader.result }));
+    };
+    reader.readAsDataURL(file);
+  };
 
   return (
-    <Card.Root maxW="sm" as="form" onSubmit={handleSubmit}>
-      <Card.Header>
-        <Card.Description>
-          {initialEvent?.id
-            ? "Update the event details below"
-            : "Fill in the form below to create an event"}
-        </Card.Description>
+    <Card.Root maxW="sm" mx="auto" p={0}>
+      {/* HEADER */}
+      <Card.Header p={6}>
+        {initialValues.id ? "Event bewerken" : "Nieuw event"}
       </Card.Header>
 
-      <input type="hidden" name="id" value={initialEvent?.id || ""} />
+      {/* BODY */}
+      <Card.Body px={6} pb={4}>
+        <Stack gap={4} w="full">
+          {/* Event Name */}
+          <Box>
+            <Input
+              placeholder="Event naam"
+              value={formData.name}
+              onChange={handleChange("name")}
+            />
+          </Box>
 
-      <Card.Body>
-        <Stack gap="4" w="full">
-          <Field.Root>
-            <Field.Label>Event Name</Field.Label>
-            <Input name="title" required defaultValue={initialEvent?.title} />
-          </Field.Root>
-
-          <Field.Root>
-            <Text fontWeight="medium" mb={2}>
-              Categories
-            </Text>
-
-            <Stack gap="2">
-              {allCategories.map((cat) => (
-                <label
-                  key={cat.id}
-                  style={{
-                    display: "flex",
-                    gap: "6px",
-                    alignItems: "center",
-                  }}
-                >
-                  <input
-                    type="checkbox"
-                    name="categoryIds"
-                    value={cat.id}
-                    defaultChecked={initialEvent?.categoryIds?.includes(cat.id)}
+          {/* Categories */}
+          <Box>
+            <Stack gap={2}>
+              {categories.map((cat) => (
+                <HStack key={cat.id} gap={2}>
+                  <Checkbox
+                    isChecked={formData.categoryIds.includes(cat.id)}
+                    onChange={() => toggleCategory(cat.id)}
                   />
-                  {cat.name}
-                </label>
+                  <Box>{cat.name}</Box>
+                </HStack>
               ))}
             </Stack>
-          </Field.Root>
+          </Box>
 
-          <Field.Root>
-            <Field.Label>Event Description</Field.Label>
+          {/* Description */}
+          <Box>
             <Textarea
-              name="description"
-              required
-              defaultValue={initialEvent?.description}
+              placeholder="Beschrijving"
+              value={formData.description}
+              onChange={handleChange("description")}
             />
-          </Field.Root>
+          </Box>
 
-          <Field.Root>
-            <Field.Label>Location</Field.Label>
+          {/* Location */}
+          <Box>
             <Input
-              name="location"
-              required
-              defaultValue={initialEvent?.location}
+              placeholder="Locatie"
+              value={formData.location}
+              onChange={handleChange("location")}
             />
-          </Field.Root>
+          </Box>
 
-          <Field.Root>
-            <Field.Label>Startdate and Time</Field.Label>
-            <Input
-              type="datetime-local"
-              name="startTime"
-              value={start}
-              onChange={(e) => setStart(e.target.value)}
-            />
-          </Field.Root>
-
-          <Field.Root>
-            <Field.Label>Enddate and Time</Field.Label>
+          {/* Startdate */}
+          <Box>
             <Input
               type="datetime-local"
-              name="endTime"
-              value={end}
-              onChange={(e) => setEnd(e.target.value)}
+              value={formData.startdate}
+              onChange={handleChange("startdate")}
             />
-          </Field.Root>
+          </Box>
 
-          {timeError && (
-            <Text color="red.500" fontSize="sm">
-              {timeError}
-            </Text>
-          )}
+          {/* Enddate */}
+          <Box>
+            <Input
+              type="datetime-local"
+              value={formData.enddate}
+              onChange={handleChange("enddate")}
+            />
+          </Box>
 
-          <Field.Root>
-            <Field.Label>Event Image</Field.Label>
-
-            {imagePreview && (
-              <img
-                src={imagePreview}
-                alt="Event Preview"
-                style={{
-                  width: "100%",
-                  maxHeight: "220px",
-                  objectFit: "cover",
-                  borderRadius: "8px",
-                  marginBottom: "12px",
-                }}
+          {/* Image preview + upload */}
+          <Box>
+            {formData.image && (
+              <Image
+                src={formData.image}
+                alt="Preview"
+                borderRadius="md"
+                mb={3}
+                height="180px"
+                width="100%"
+                objectFit="cover"
               />
             )}
 
-            <Input
-              type="file"
-              accept="image/*"
-              onChange={(e) => {
-                const file = e.target.files?.[0];
-                if (!file) return;
-
-                const reader = new FileReader();
-                reader.onloadend = () => {
-                  setImagePreview(reader.result); // Base64 opslaan
-                };
-                reader.readAsDataURL(file);
-              }}
-            />
-          </Field.Root>
+            <Input type="file" accept="image/*" onChange={handleImageUpload} />
+          </Box>
         </Stack>
       </Card.Body>
 
-      <Card.Footer justifyContent="center" gap={6} pt={4} mt={2}>
-        {initialEvent?.id && (
-          <Button
-            variant="surface"
-            outline="1px solid"
-            outlineColor="gray.300"
-            colorPalette="red"
-            width="inherit"
-            type="button"
-            onClick={() => onDelete(initialEvent.id)}
-          >
+      {/* FOOTER */}
+      <Card.Footer justifyContent="center" gap={6} pt={4} pb={6}>
+        {initialValues.id && (
+          <Button colorScheme="red" variant="outline" onClick={onDelete}>
             Delete
           </Button>
         )}
 
-        <Button
-          variant="surface"
-          outline="1px solid"
-          outlineColor="gray.300"
-          type="submit"
-          colorPalette="gray"
-          width="inherit"
-        >
-          {initialEvent?.id ? "Save changes" : "Create Event"}
+        <Button colorScheme="blue" onClick={() => onSubmit(formData)}>
+          {initialValues.id ? "Save" : "Create"}
+        </Button>
+
+        <Button variant="ghost" onClick={onCancel}>
+          Cancel
         </Button>
       </Card.Footer>
     </Card.Root>

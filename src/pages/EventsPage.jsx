@@ -74,7 +74,7 @@ export const EventsPage = () => {
 
         <Footer>
           <Text textAlign="center" py={4} color="black.800">
-            &copy; {new Date().getFullYear()} PurplePixelBloom. All rights reserved.
+            &copy; {new Date().getFullYear()} PixelWave. All rights reserved.
           </Text>
         </Footer>
       </>
@@ -117,31 +117,23 @@ export const EventsPage = () => {
   }
 
   // -----------------------------------------------------
-  // NORMALIZE CATEGORY IDS (FIX)
+  // FILTERING
   // -----------------------------------------------------
-  const normalizedEvents = eventsArray.map(evt => ({
-    ...evt,
-    categoryIds: (evt.categoryIds || []).map(Number)
-  }));
-
-  // -----------------------------------------------------
-  // FILTERING (FIXED)
-  // -----------------------------------------------------
-  const filteredEvents = normalizedEvents.filter((evt) => {
+  const filteredEvents = eventsArray.filter((evt) => {
     const search = searchTerm.toLowerCase();
 
     const matchesSearch =
       evt.title.toLowerCase().includes(search) ||
       evt.description.toLowerCase().includes(search) ||
       evt.location.toLowerCase().includes(search) ||
-      evt.categoryIds.some((id) => {
+      evt.categoryIds?.some((id) => {
         const category = categories.find((c) => c.id === id);
         return category?.name.toLowerCase().includes(search);
       });
 
     const matchesCategories =
       selectedCategories.length === 0 ||
-      evt.categoryIds.some((id) => selectedCategories.includes(id));
+      evt.categoryIds?.some((id) => selectedCategories.includes(id));
 
     return matchesSearch && matchesCategories;
   });
@@ -325,7 +317,7 @@ export const EventsPage = () => {
 
       <Footer>
         <Text textAlign="center" py={4} color="black.800">
-          &copy; {new Date().getFullYear()} PurplePixelBloom. All rights reserved.
+          &copy; {new Date().getFullYear()} PixelWave. All rights reserved.
         </Text>
       </Footer>
     </>
