@@ -18,15 +18,16 @@ export default function EventForm({
   onCancel,
   onDelete,
 }) {
-  const [formData, setFormData] = useState({
-    name: initialValues.name || "",
-    description: initialValues.description || "",
-    location: initialValues.location || "",
-    startdate: initialValues.startdate || "",
-    enddate: initialValues.enddate || "",
-    image: initialValues.image || "",
-    categoryIds: initialValues.categoryIds || [],
-  });
+const [formData, setFormData] = useState({
+  name: initialValues.title || "",
+  description: initialValues.description || "",
+  location: initialValues.location || "",
+  startdate: initialValues.startTime || "",
+  enddate: initialValues.endTime || "",
+  image: initialValues.image || "",
+  categoryIds: initialValues.categoryIds || [],
+});
+
 
   const handleChange = (field) => (e) => {
     setFormData((prev) => ({
@@ -59,7 +60,7 @@ export default function EventForm({
     <Card.Root maxW="sm" mx="auto" p={0}>
       {/* HEADER */}
       <Card.Header p={6}>
-        {initialValues.id ? "Event bewerken" : "Nieuw event"}
+        {initialValues.id ? "Edit Event" : "Create Event"}
       </Card.Header>
 
       {/* BODY */}
@@ -68,7 +69,7 @@ export default function EventForm({
           {/* Event Name */}
           <Box>
             <Input
-              placeholder="Event naam"
+              placeholder="Event name"
               value={formData.name}
               onChange={handleChange("name")}
             />
@@ -92,7 +93,7 @@ export default function EventForm({
           {/* Description */}
           <Box>
             <Textarea
-              placeholder="Beschrijving"
+              placeholder="Description"
               value={formData.description}
               onChange={handleChange("description")}
             />
@@ -101,7 +102,7 @@ export default function EventForm({
           {/* Location */}
           <Box>
             <Input
-              placeholder="Locatie"
+              placeholder="Location"
               value={formData.location}
               onChange={handleChange("location")}
             />
@@ -147,17 +148,22 @@ export default function EventForm({
       {/* FOOTER */}
       <Card.Footer justifyContent="center" gap={6} pt={4} pb={6}>
         {initialValues.id && (
-          <Button colorScheme="red" variant="outline" onClick={onDelete}>
+          <Button
+            colorScheme="red"
+            variant="outline"
+            onClick={onDelete}
+            bg="red.500"
+            color="white"
+          >
             Delete
           </Button>
         )}
 
-        <Button colorScheme="blue" onClick={() => onSubmit(formData)}>
+        <Button
+          colorScheme="blue"
+          onClick={() => onSubmit({ ...formData, id: initialValues.id })}
+        >
           {initialValues.id ? "Save" : "Create"}
-        </Button>
-
-        <Button variant="ghost" onClick={onCancel}>
-          Cancel
         </Button>
       </Card.Footer>
     </Card.Root>

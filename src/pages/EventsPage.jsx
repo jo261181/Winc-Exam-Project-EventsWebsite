@@ -122,14 +122,15 @@ export const EventsPage = () => {
   const filteredEvents = eventsArray.filter((evt) => {
     const search = searchTerm.toLowerCase();
 
-    const matchesSearch =
-      evt.title.toLowerCase().includes(search) ||
-      evt.description.toLowerCase().includes(search) ||
-      evt.location.toLowerCase().includes(search) ||
-      evt.categoryIds?.some((id) => {
-        const category = categories.find((c) => c.id === id);
-        return category?.name.toLowerCase().includes(search);
-      });
+const matchesSearch =
+  (evt.title || "").toLowerCase().includes(search) ||
+  (evt.description || "").toLowerCase().includes(search) ||
+  (evt.location || "").toLowerCase().includes(search) ||
+  evt.categoryIds?.some((id) => {
+    const category = categories.find((c) => c.id === id);
+    return (category?.name || "").toLowerCase().includes(search);
+  });
+
 
     const matchesCategories =
       selectedCategories.length === 0 ||
@@ -283,7 +284,7 @@ export const EventsPage = () => {
                 <Button
                   variant="surface"
                   border="1px solid"
-                  borderColor="gray.300"
+                  borderColor="gray.500"
                   onClick={(e) => {
                     e.stopPropagation();
                     navigate(`/events/${evt.id}`);
@@ -295,7 +296,7 @@ export const EventsPage = () => {
                 <Button
                   variant="surface"
                   border="1px solid"
-                  borderColor="gray.300"
+                  borderColor="gray.500"
                   onClick={(e) => {
                     e.stopPropagation();
                     setEditEvent({

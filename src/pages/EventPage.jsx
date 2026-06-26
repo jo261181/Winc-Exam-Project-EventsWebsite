@@ -25,18 +25,18 @@ export default function EventPage() {
   const [editOpen, setEditOpen] = useState(false);
   const [deleteOpen, setDeleteOpen] = useState(false);
 
-  if (!data) {
-    return (
-      <Box
-        height="100vh"
-        display="flex"
-        alignItems="center"
-        justifyContent="center"
-      >
+if (!data) {
+  return (
+    <>
+      <Box p={6} position="relative">
         <EventDetailSkeleton />
       </Box>
-    );
-  }
+
+      <Footer />
+    </>
+  );
+}
+
 
   const events = data.events || [];
   const categories = data.categories || [];
@@ -177,10 +177,11 @@ export default function EventPage() {
           <Card.Body px={6} pb={4}>
             <Text
               mt={2}
+              fontWeight="semibold"
               fontSize={{ base: "md", sm: "lg" }}
               textAlign={{ base: "center", md: "left" }}
             >
-              {event.location}
+              Location: {event.location}
             </Text>
 
             <Text
@@ -188,6 +189,7 @@ export default function EventPage() {
               fontSize={{ base: "sm", sm: "md" }}
               textAlign={{ base: "center", md: "left" }}
             >
+              Date: {" "}
               {new Date(event.startTime).toLocaleString("nl-NL", {
                 dateStyle: "medium",
                 timeStyle: "short",
@@ -231,7 +233,9 @@ export default function EventPage() {
             <Button
               variant="surface"
               border="1px solid"
-              borderColor="gray.300"
+              color=" black"
+              bg="white"
+              borderColor="gray.500"
               onClick={() => setEditOpen(true)}
             >
               Edit Event
@@ -240,16 +244,19 @@ export default function EventPage() {
             <Button
               variant="surface"
               border="1px solid"
-              borderColor="gray.300"
+              bg="red.500"
+              color="white"
+              borderColor="red.500"
               onClick={() => setDeleteOpen(true)}
             >
-              Delete
+              Delete Event
             </Button>
 
             <Button
               variant="surface"
               border="1px solid"
-              borderColor="gray.300"
+              ml="auto"
+              borderColor="gray.500"
               onClick={() => navigate("/events")}
             >
               Back

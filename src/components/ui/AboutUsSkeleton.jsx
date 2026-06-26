@@ -6,6 +6,7 @@ export default function AboutUsSkeleton() {
 
   return (
     <>
+      {/* Background */}
       <Box
         position="fixed"
         inset="0"
@@ -16,19 +17,20 @@ export default function AboutUsSkeleton() {
         zIndex="-1"
       />
 
+      {/* HeadingExample skeleton */}
       <Box
         maxW="900px"
         mx="auto"
         mt={6}
         px={4}
         display="flex"
-        justifyContent="space-between"
-        alignItems="center"
+        justifyContent="flex-end"
       >
-        <Skeleton height="40px" width="200px" borderRadius="md" />
+        {/* Back to events button */}
         <Skeleton height="32px" width="120px" borderRadius="md" />
       </Box>
 
+      {/* Main content box */}
       <Box
         maxW="900px"
         mx="auto"
@@ -39,12 +41,23 @@ export default function AboutUsSkeleton() {
         borderRadius="md"
         boxShadow="md"
       >
-        <Skeleton height="36px" width="200px" mx="auto" mb={6} />
+        {/* Title */}
+        <Skeleton height="40px" width="220px" mx="auto" mb={6} />
 
-        <SkeletonText mt="4" noOfLines={4} spacing="4" mx={5} />
-        <SkeletonText mt="6" noOfLines={4} spacing="4" mx={5} />
-        <SkeletonText mt="6" noOfLines={4} spacing="4" mx={5} />
-        <SkeletonText mt="6" noOfLines={4} spacing="4" mx={5} />
+        {/* Paragraph 1 */}
+        <SkeletonText mt="4" noOfLines={5} spacing="4" mx={5} />
+
+        {/* Paragraph 2 */}
+        <SkeletonText mt="6" noOfLines={5} spacing="4" mx={5} />
+
+        {/* Paragraph 3 */}
+        <SkeletonText mt="6" noOfLines={5} spacing="4" mx={5} />
+
+        {/* Paragraph 4 */}
+        <SkeletonText mt="6" noOfLines={5} spacing="4" mx={5} />
+
+        {/* Paragraph 5 */}
+        <SkeletonText mt="6" noOfLines={5} spacing="4" mx={5} />
       </Box>
     </>
   );

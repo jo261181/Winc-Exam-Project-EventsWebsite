@@ -11,18 +11,19 @@ export default function SimpleModal({ open, onClose, title, children }) {
               <HStack justify="space-between" align="center" w="100%">
                 <Button
                   variant="surface"
-                   pl={2}  
-                  size="sm"
                   
+                  size="sm"
+                  justifyContent="center"                  
                   outline="1px solid"
                   outlineColor="gray.300"
                   _dark={{ outlineColor: "gray.100" }}
                   type="submit"
                   colorPalette="gray"
                   onClick={onClose}
+                  
                  
                 >
-                  ← Back
+                 Back
                 </Button>
 
                 <Dialog.Title style={{ margin: "0 auto" }}>

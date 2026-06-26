@@ -136,7 +136,7 @@ export default function HeadingExample({
                 <Button
                   variant="outline"
                   border="1px solid"
-                  borderColor="gray.300"
+                  borderColor="gray.500"
                   onClick={onCreate}
                   colorScheme="blue"
                 >
@@ -148,7 +148,7 @@ export default function HeadingExample({
                   to="/about-us"
                   variant="outline"
                   border="1px solid"
-                  borderColor="gray.300"
+                  borderColor="gray.500"
                 >
                   About Us
                 </Button>
