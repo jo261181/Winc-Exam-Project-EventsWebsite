@@ -6,7 +6,6 @@ import {
   Text,
   Image,
   Grid,
-  ButtonGroup,
 } from "@chakra-ui/react";
 import { Link as RouterLink } from "react-router-dom";
 
@@ -69,7 +68,7 @@ export default function HeadingExample({
   };
 
   const templateColumns = {
-    base: rightContent ? "1fr 1fr" : "1fr",
+    base: "1fr",
     md: searchEnabled ? "1fr 2fr 1fr" : rightContent ? "1fr 1fr" : "1fr",
     lg: searchEnabled ? "1fr 3fr 1fr" : rightContent ? "1fr 1fr" : "1fr",
   };
@@ -78,7 +77,7 @@ export default function HeadingExample({
     <Box
       pt={5}
       pb={3}
-      px={3}
+      px={4}
       bg={colorMode === "dark" ? "black" : "white"}
       position={noSticky ? "relative" : "sticky"}
       top={noSticky ? "auto" : "0"}
@@ -91,54 +90,95 @@ export default function HeadingExample({
         gap={4}
         mb={2}
         minH={{ base: "auto", md: "90px" }}
+        justifyItems="center"
       >
+        {/* LOGO BOX */}
         <Box
           display="flex"
           alignItems="center"
           justifyContent={{ base: "center", md: "flex-start" }}
+          justifySelf={{ base: "center", md: "flex-start" }}
           height="100%"
+          w="100%"
         >
           <Image
             src="/images/logo.png"
             alt="Winc Events Logo"
-            w={{ base: "130px", md: "160px" }}
-            ml={{ base: 0, md: "20px" }}
+            w={{ base: "140px", md: "160px" }}
           />
         </Box>
 
-        {searchEnabled && (
-          <Input
-            width="100%"
-            maxW={{ base: "100%", md: "500px", lg: "700px" }}
-            placeholder="Search events..."
-            _placeholder={{ color: "gray.800" }}
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            color="black"
-            bg="white"
-            boxShadow="sm"
-            justifySelf="center"
-            aria-label="Search events"
-          />
-        )}
+       {/* SEARCH INPUT + NO EVENT FOUND MELDING */}
+{searchEnabled && (
+  <Box 
+    width="100%" 
+    maxW={{ base: "100%", md: "500px", lg: "700px" }}
+    display="flex"
+    flexDirection="column"
+    alignItems="center"
+    position="relative" // Zorgt dat de absolute melding hierbinnen blijft
+  >
+    <Input
+      width="100%"
+      placeholder="Search events..."
+      _placeholder={{ color: "gray.600" }}
+      value={searchTerm}
+      onChange={(e) => setSearchTerm(e.target.value)}
+      color="black"
+      bg="white"
+      boxShadow="sm"
+      aria-label="Search events"
+      border="1px solid"
+      borderColor="gray.300"
+    />
+    
+    {/* 
+      FIX: Door position="absolute" en top="100%" zweeft de melding 
+      altijd perfect onder de input zonder de zoekbalk omhoog te duwen!
+    */}
+    {searchTerm?.trim() !== "" && filteredEvents.length === 0 && (
+      <Text 
+        color="red.500" 
+        textAlign="center" 
+        fontWeight="medium" 
+        position="absolute"
+        top="100%"
+        left="0"
+        right="0"
+        mt={1} // Kleine marge direct onder de input rand
+      >
+        No Event Found
+      </Text>
+    )}
+  </Box>
+)}
 
+        {/* BUTTONS / RIGHT CONTENT */}
         {(rightContent || onCreate) && (
           <Box
             display="flex"
             justifyContent={{ base: "center", md: "flex-end" }}
-            pr={{ base: 0, md: "20px" }}
-            mb={{ base: 7, md: 0 }}
+            justifySelf={{ base: "center", md: "flex-end" }}
+            alignItems="center"
+            w="100%"
           >
             {rightContent ? (
               rightContent
             ) : (
-              <ButtonGroup>
+              <Box 
+                display="flex" 
+                gap={2} 
+                flexWrap="wrap" 
+                justifyContent={{ base: "center", md: "flex-end" }}
+                alignItems="center"
+              >
                 <Button
                   variant="outline"
                   border="1px solid"
                   borderColor="gray.500"
                   onClick={onCreate}
                   colorScheme="blue"
+                  size="sm"
                 >
                   Create new event
                 </Button>
@@ -149,19 +189,21 @@ export default function HeadingExample({
                   variant="outline"
                   border="1px solid"
                   borderColor="gray.500"
+                  size="sm"
                 >
                   About Us
                 </Button>
 
-                <ColorModeButton />
-              </ButtonGroup>
+                <ColorModeButton size="sm" />
+              </Box>
             )}
           </Box>
         )}
       </Grid>
 
+      {/* CATEGORIES */}
       {categories.length > 0 && (
-        <Box mt={{ base: 3, md: 1 }} mb={2}>
+        <Box mt={{ base: 4, md: 1 }} mb={2}>
           <Box display="flex" gap={3} flexWrap="wrap" justifyContent="center">
             {categories.map((cat) => {
               const active = selectedCategories.includes(cat.id);
@@ -211,12 +253,6 @@ export default function HeadingExample({
             </Button>
           </Box>
         </Box>
-      )}
-
-      {searchEnabled && searchTerm?.trim() !== "" && filteredEvents.length === 0 && (
-        <Text color="gray.700" textAlign="center">
-          No Event Found
-        </Text>
       )}
     </Box>
   );

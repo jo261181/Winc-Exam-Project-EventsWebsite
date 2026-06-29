@@ -1,11 +1,16 @@
+import React, { useMemo } from "react";
 import {
   Box,
+  Input,
+  Button,
+  Text,
+  Image,
   Grid,
   Skeleton,
-  SkeletonText,
-  ButtonGroup,
 } from "@chakra-ui/react";
-import { useColorMode } from "./color-mode";
+import { Link as RouterLink } from "react-router-dom";
+
+import { useColorMode, ColorModeButton } from "./color-mode";
 
 export default function HeadingSkeleton({
   data = {},
@@ -20,16 +25,12 @@ export default function HeadingSkeleton({
 }) {
   const { colorMode } = useColorMode();
 
+  // EXACT OVERGENOMEN LOGICA EN BEREKENINGEN UIT HEADING.JSX
   const searchEnabled =
-    typeof searchTerm === "string" && typeof setSearchTerm === "function";
+    typeof searchTerm === "undefined" && typeof setSearchTerm === "undefined"
+      ? true
+      : typeof searchTerm === "string" && typeof setSearchTerm === "function";
 
-  const templateColumns = {
-    base: rightContent ? "1fr 1fr" : "1fr",
-    md: searchEnabled ? "1fr 2fr 1fr" : rightContent ? "1fr 1fr" : "1fr",
-    lg: searchEnabled ? "1fr 3fr 1fr" : rightContent ? "1fr 1fr" : "1fr",
-  };
-
-  // ⭐ Dummy categories zodat skeleton ALTIJD knoppen toont
   const skeletonCategories =
     categories.length > 0
       ? categories
@@ -39,96 +40,162 @@ export default function HeadingSkeleton({
           { id: 3, name: "relaxation" },
         ];
 
+  const templateColumns = {
+    base: "1fr",
+    md: searchEnabled ? "1fr 2fr 1fr" : rightContent ? "1fr 1fr" : "1fr",
+    lg: searchEnabled ? "1fr 3fr 1fr" : rightContent ? "1fr 1fr" : "1fr",
+  };
+
   return (
     <Box
       pt={5}
       pb={3}
-      px={3}
+      px={4}
       bg={colorMode === "dark" ? "black" : "white"}
       position={noSticky ? "relative" : "sticky"}
       top={noSticky ? "auto" : "0"}
       zIndex={100}
       boxShadow="sm"
     >
-      {/* HEADER GRID */}
       <Grid
         templateColumns={templateColumns}
         alignItems="center"
         gap={4}
         mb={2}
         minH={{ base: "auto", md: "90px" }}
+        justifyItems="center" // Exact overgenomen uit Heading.jsx
       >
-        {/* LOGO */}
-        {/* LOGO */}
+        {/* LOGO BOX - STRUCTUUR EN PROPS EXACT GELIJK */}
         <Box
           display="flex"
           alignItems="center"
-          justifyContent={{ base: "center", md: "flex-start" }}
+          justifyContent="center"
           height="100%"
+          w="100%"
         >
-          <Box
-            w={{ base: "130px", md: "160px" }}
-            ml={{ base: 0, md: "20px" }}
-            aspectRatio={160 / 152} // ⭐ exact jouw logo verhouding
-          >
-            <Skeleton w="100%" h="100%" borderRadius="md" />
-          </Box>
+          <Skeleton borderRadius="md">
+            <Image
+              src="/images/logo.png"
+              alt="Winc Events Logo"
+              w={{ base: "140px", md: "160px" }}
+              style={{ opacity: 0, userSelect: "none" }} // Onzichtbaar voor de skeleton look
+            />
+          </Skeleton>
         </Box>
 
-        {/* SEARCH BAR */}
+        {/* SEARCH INPUT - STRUCTUUR EN PROPS EXACT GELIJK */}
         {searchEnabled && (
-          <Skeleton
-            height="40px"
-            width="100%"
-            maxW={{ base: "100%", md: "500px", lg: "700px" }}
-            justifySelf="center"
-          />
+          <Skeleton width="100%" maxW={{ base: "100%", md: "500px", lg: "700px" }} borderRadius="md">
+            <Input
+              width="100%"
+              maxW={{ base: "100%", md: "500px", lg: "700px" }}
+              placeholder="Search events..."
+              _placeholder={{ color: "gray.600" }}
+              color="black"
+              bg="white"
+              boxShadow="sm"
+              aria-label="Search events"
+              border="1px solid"
+              borderColor="gray.300"
+              style={{ opacity: 0 }}
+            />
+          </Skeleton>
         )}
 
-        {/* BUTTONS */}
-        {(rightContent || onCreate) && (
+        {/* BUTTONS / RIGHT CONTENT - STRUCTUUR EN PROPS EXACT GELIJK */}
+        {(rightContent || onCreate || true) && (
           <Box
             display="flex"
-            justifyContent={{ base: "center", md: "flex-end" }}
-            pr={{ base: 0, md: "20px" }}
-            mb={{ base: 7, md: 0 }}
+            justifyContent="center"
+            alignItems="center"
+            w="100%"
           >
             {rightContent ? (
-              <Skeleton height="40px" width="160px" borderRadius="md" />
+              <Skeleton borderRadius="md">
+                <Box style={{ opacity: 0 }}>{rightContent}</Box>
+              </Skeleton>
             ) : (
-              <ButtonGroup>
-                <Skeleton height="40px" width="150px" borderRadius="md" />
-                <Skeleton height="40px" width="110px" borderRadius="md" />
-                <Skeleton height="40px" width="40px" borderRadius="md" />
-              </ButtonGroup>
+              <Box 
+                display="flex" 
+                gap={2} 
+                flexWrap="wrap" 
+                justifyContent="center"
+                alignItems="center"
+              >
+                <Skeleton borderRadius="md">
+                  <Button
+                    variant="outline"
+                    border="1px solid"
+                    borderColor="gray.500"
+                    colorScheme="blue"
+                    size="sm"
+                    style={{ opacity: 0, userSelect: "none" }}
+                  >
+                    Create new event
+                  </Button>
+                </Skeleton>
+
+                <Skeleton borderRadius="md">
+                  <Button
+                    as={RouterLink}
+                    to="/about-us"
+                    variant="outline"
+                    border="1px solid"
+                    borderColor="gray.500"
+                    size="sm"
+                    style={{ opacity: 0, userSelect: "none" }}
+                  >
+                    About Us
+                  </Button>
+                </Skeleton>
+
+                <Skeleton borderRadius="md">
+                  <Box style={{ opacity: 0, userSelect: "none" }}>
+                    <ColorModeButton size="sm" />
+                  </Box>
+                </Skeleton>
+              </Box>
             )}
           </Box>
         )}
       </Grid>
 
-      {/* CATEGORY FILTERS — ⭐ ALTIJD TONEN */}
-      <Box mt={{ base: 3, md: 1 }} mb={2}>
-        <Box display="flex" gap={3} flexWrap="wrap" justifyContent="center">
-          {skeletonCategories.map((cat) => (
-            <Skeleton
-              key={cat.id}
-              height="32px"
-              width={`${cat.name.length * 8 + 24}px`}
-              borderRadius="md"
-            />
-          ))}
-        </Box>
+      {/* CATEGORIES - STRUCTUUR EN PROPS EXACT GELIJK */}
+      {skeletonCategories.length > 0 && (
+        <Box mt={{ base: 4, md: 1 }} mb={2}>
+          <Box display="flex" gap={3} flexWrap="wrap" justifyContent="center">
+            {skeletonCategories.map((cat) => (
+              <Skeleton key={cat.id} borderRadius="md">
+                <Box
+                  as="button"
+                  px={3}
+                  py={1}
+                  borderRadius="md"
+                  fontSize="sm"
+                  fontWeight="medium"
+                  border="1px solid"
+                  style={{ opacity: 0, userSelect: "none" }}
+                >
+                  {cat.name}
+                </Box>
+              </Skeleton>
+            ))}
+          </Box>
 
-        {/* RESET BUTTON */}
-        <Box textAlign="center" mt={3} mb={3}>
-          <Skeleton height="32px" width="110px" borderRadius="md" mx="auto" />
-        </Box>
-      </Box>
-
-      {/* NO RESULTS */}
-      {searchEnabled && searchTerm?.trim() !== "" && (
-        <Box textAlign="center">
-          <SkeletonText noOfLines={1} width="140px" mx="auto" />
+          {/* RESET FILTERS - STRUCTUUR EN PROPS EXACT GELIJK */}
+          <Box textAlign="center" mt={3} mb={3}>
+            <Skeleton borderRadius="md" display="inline-block">
+              <Button
+                size="sm"
+                variant="outline"
+                borderColor="orange.400"
+                color="orange.600"
+                style={{ opacity: 0, userSelect: "none" }}
+              >
+                Reset filters
+              </Button>
+            </Skeleton>
+          </Box>
         </Box>
       )}
     </Box>

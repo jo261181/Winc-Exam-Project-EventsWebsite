@@ -1,29 +1,17 @@
-import {
-  Image,
-  HStack,
-  Badge,
-  Button,
-  Box,
-  Text,
-  Card,
-  SimpleGrid,
-} from "@chakra-ui/react";
+import { Box, Text, SimpleGrid } from "@chakra-ui/react";
+import { useState } from "react";
+import { useNavigate, useOutletContext } from "react-router-dom";
 
 import Footer from "../components/ui/Footer";
 import HeadingExample from "../components/ui/Heading";
 import SimpleModal from "../components/ui/modal";
-import { useState } from "react";
-import EventCardSkeleton from "../components/ui/EventCardSkeleton";
-import { useNavigate, useOutletContext } from "react-router-dom";
 import EventForm from "../components/ui/EventForm";
 import HeadingSkeleton from "../components/ui/HeadingSkeleton";
-import { toaster } from "../components/ui/toaster"; 
+import EventCard from "../components/ui/EventCard"; 
+import { EventsPageSkeleton } from "../components/ui/EventsPageSkeleton"; // FIX: Juiste skeleton geïmporteerd
+import { toaster } from "../components/ui/toaster";
 
-import {
-  createEvent,
-  updateEvent,
-  deleteEvent,
-} from "../services/events";
+import { createEvent, updateEvent, deleteEvent } from "../services/events";
 
 export const EventsPage = () => {
   const { data, setData } = useOutletContext();
@@ -39,7 +27,7 @@ export const EventsPage = () => {
   const eventsArray = data?.events || [];
 
   // -----------------------------------------------------
-  // LOADING STATE
+  // LOADING STATE (Nu perfect uitgelijnd met de live pagina)
   // -----------------------------------------------------
   if (!data) {
     return (
@@ -65,13 +53,8 @@ export const EventsPage = () => {
           zIndex="-1"
         />
 
-        <Box position="relative" zIndex="1" p={6}>
-          <SimpleGrid columns={[1, 2, 3, 4]} gap={6}>
-            {[...Array(4)].map((_, i) => (
-              <EventCardSkeleton key={i} />
-            ))}
-          </SimpleGrid>
-        </Box>
+        {/* FIX: Direct de complete pagina-skeleton aanroepen zonder extra wrapper-grid */}
+        <EventsPageSkeleton />
 
         <Footer>
           <Text textAlign="center" py={4} color="black.800">
@@ -85,105 +68,83 @@ export const EventsPage = () => {
   // -----------------------------------------------------
   // CRUD HANDLERS
   // -----------------------------------------------------
-
   async function handleCreate(values) {
-    const newEvent = await createEvent(values);
-
-    setData({
-      ...data,
-      events: [...data.events, newEvent],
-    });
+    try {
+      const newEvent = await createEvent(values);
+      setData({
+        ...data,
+        events: [...data.events, newEvent],
+      });
+      toaster.create({
+        title: "Event created!",
+        description: "The new event has been saved successfully.",
+        type: "success",
+        duration: 3000,
+      });
+    } catch (error) {
+      toaster.create({
+        title: "Something went wrong",
+        description: "Could not create the event.",
+        type: "error",
+      });
+    }
   }
 
   async function handleUpdate(values) {
-    const updated = await updateEvent(values.id, values);
-
-    setData({
-      ...data,
-      events: data.events.map((evt) =>
-        evt.id === updated.id ? updated : evt
-      ),
-    });
+    try {
+      const updated = await updateEvent(values.id, values);
+      setData({
+        ...data,
+        events: data.events.map((evt) =>
+          evt.id === updated.id ? updated : evt
+        ),
+      });
+      toaster.create({
+        title: "Event updated!",
+        description: "The changes have been saved successfully.",
+        type: "success",
+        duration: 3000,
+      });
+    } catch (error) {
+      toaster.create({
+        title: "Something went wrong",
+        description: "Could not save the changes.",
+        type: "error",
+      });
+    }
   }
 
   async function handleDelete(id) {
-    await deleteEvent(id);
-
-    setData({
-      ...data,
-      events: data.events.filter((evt) => evt.id !== id),
-    });
-
-    setEditOpen(false);
+    try {
+      await deleteEvent(id);
+      setData({
+        ...data,
+        events: data.events.filter((evt) => evt.id !== id),
+      });
+      setEditOpen(false);
+    } catch (error) {
+      toaster.create({
+        title: "Something went wrong",
+        description: "Could not delete the event.",
+        type: "error",
+      });
+    }
   }
 
-  async function handleCreate(values) {
-  try {
-    const newEvent = await createEvent(values);
-
-    setData({
-      ...data,
-      events: [...data.events, newEvent],
-    });
-
-    // Toon succes melding
-    toaster.create({
-      title: "Event created!",
-      description: "The new event has been saved successfully.",
-      type: "success",
-      duration: 3000,
-    });
-  } catch (error) {
-    // Altijd handig: een foutmelding als er iets misgaat met de server
-    toaster.create({
-      title: "Something went wrong",
-      description: "Could not create the event.",
-      type: "error",
-    });
-  }
-}
-
-async function handleUpdate(values) {
-  try {
-    const updated = await updateEvent(values.id, values);
-
-    setData({
-      ...data,
-      events: data.events.map((evt) =>
-        evt.id === updated.id ? updated : evt
-      ),
-    });
-
-    // Toon succes melding
-    toaster.create({
-      title: "Event updated!",
-      description: "The changes have been saved successfully.",
-      type: "success",
-      duration: 3000,
-    });
-  } catch (error) {
-    toaster.create({
-      title: "Something went wrong",
-      description: "Could not save the changes.",
-      type: "error",
-    });
-  }
-}
   // -----------------------------------------------------
   // FILTERING
   // -----------------------------------------------------
   const filteredEvents = eventsArray.filter((evt) => {
     const search = searchTerm.toLowerCase();
 
-const matchesSearch =
-  (evt.title || "").toLowerCase().includes(search) ||
-  (evt.description || "").toLowerCase().includes(search) ||
-  (evt.location || "").toLowerCase().includes(search) ||
-  evt.categoryIds?.some((id) => {
-    const category = categories.find((c) => c.id === id);
-    return (category?.name || "").toLowerCase().includes(search);
-  });
-
+    const matchesSearch =
+      (evt.title || "").toLowerCase().includes(search) ||
+      (evt.description || "").toLowerCase().includes(search) ||
+      (evt.location || "").toLowerCase().includes(search) ||
+      evt.categoryIds?.some((id) => {
+        const category = categories.find((c) => c.id === id);
+        return (category?.name || "").toLowerCase().includes(search);
+      });
 
     const matchesCategories =
       selectedCategories.length === 0 ||
@@ -191,6 +152,17 @@ const matchesSearch =
 
     return matchesSearch && matchesCategories;
   });
+
+  // Helper om de edit modal te triggeren vanuit de kaart component
+  const triggerEdit = (evt) => {
+    setEditEvent({
+      ...evt,
+      categoryIds: Array.isArray(evt.categoryIds)
+        ? evt.categoryIds
+        : [Number(evt.categoryIds)],
+    });
+    setEditOpen(true);
+  };
 
   // -----------------------------------------------------
   // RENDER
@@ -255,116 +227,22 @@ const matchesSearch =
       />
 
       {/* CONTENT */}
-      <Box position="relative" zIndex="1" px={6} pb={6} mt={6}>
-        <SimpleGrid columns={[1, 2, 3, 4]} columnGap={6} rowGap={6}>
+      <Box position="relative" zIndex="1" px={{ base: 4, md: 6 }} pb={6} mt={6}>
+        <SimpleGrid 
+          columns={[1, 2, 3, 4]} 
+          columnGap={6} 
+          rowGap={6}
+          justifyItems={{ base: "center", md: "stretch" }}
+          maxW="1400px" 
+          mx="auto"             
+        >
           {filteredEvents.map((evt) => (
-            <Card.Root
-              key={evt.id}
-              w="100%"
-              borderRadius="lg"
-              cursor="pointer"
-              onClick={() => navigate(`/events/${evt.id}`)}
-              boxShadow="md"
-              _hover={{ transform: "scale(1.03)", boxShadow: "lg" }}
-              transition="0.2s"
-            >
-              <Card.Header p={6} w="100%">
-                <Image
-                  src={evt.image}
-                  alt={evt.title}
-                  w="100%"
-                  h={{ base: "140px", md: "160px", lg: "190px" }}
-                  objectFit="cover"
-                  borderRadius="md"
-                  mb={4}
-                />
-
-                <Card.Title
-                  fontSize={{ base: "lg", md: "xl", lg: "2xl" }}
-                  fontWeight="bold"
-                  lineHeight="1.2"
-                  textAlign={{ base: "center", md: "left" }}
-                >
-                  {evt.title}
-                </Card.Title>
-
-                <Card.Description
-                  fontSize={{ base: "md", md: "lg", lg: "xl" }}
-                  lineHeight="1.3"
-                  textAlign={{ base: "center", md: "left" }}
-                  mt={2}
-                  color="gray.600"
-                >
-                  {evt.description}
-                </Card.Description>
-              </Card.Header>
-
-              <Card.Body px={6} pb={4}>
-                <Text mt={1} fontWeight="medium">
-                  {evt.location}
-                </Text>
-
-                <Text mt={1}>
-                  {new Date(evt.startTime).toLocaleString("nl-NL", {
-                    dateStyle: "medium",
-                    timeStyle: "short",
-                  })}
-                  {" – "}
-                  {new Date(evt.endTime).toLocaleString("nl-NL", {
-                    dateStyle: "medium",
-                    timeStyle: "short",
-                  })}
-                </Text>
-
-                <HStack mt={4} gap={2}>
-                  {(evt.categoryIds || []).map((id) => {
-                    const category = categories.find((c) => c.id === id);
-                    return (
-                      <Badge
-                        key={id}
-                        size="lg"
-                        variant="solid"
-                        colorPalette="orange"
-                      >
-                        {category?.name}
-                      </Badge>
-                    );
-                  })}
-                </HStack>
-              </Card.Body>
-
-              <Card.Footer gap={3} px={6} pb={6}>
-                <Button
-                  variant="surface"
-                  border="1px solid"
-                  borderColor="gray.500"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    navigate(`/events/${evt.id}`);
-                  }}
-                >
-                  View details
-                </Button>
-
-                <Button
-                  variant="surface"
-                  border="1px solid"
-                  borderColor="gray.500"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    setEditEvent({
-                      ...evt,
-                      categoryIds: Array.isArray(evt.categoryIds)
-                        ? evt.categoryIds
-                        : [Number(evt.categoryIds)],
-                    });
-                    setEditOpen(true);
-                  }}
-                >
-                  Edit
-                </Button>
-              </Card.Footer>
-            </Card.Root>
+            <EventCard 
+              key={evt.id} 
+              event={evt} 
+              categories={categories} 
+              onEditClick={() => triggerEdit(evt)}
+            />
           ))}
         </SimpleGrid>
       </Box>

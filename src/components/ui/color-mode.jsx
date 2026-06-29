@@ -7,7 +7,13 @@ import * as React from 'react'
 
 export function ColorModeProvider(props) {
   return (
-    <ThemeProvider attribute="class" disableTransitionOnChange {...props} />
+    <ThemeProvider 
+      attribute="class" 
+      disableTransitionOnChange 
+      defaultTheme="system" // <-- FIX 1: Vertelt next-themes dat de systeemvoorkeur de basis is
+      enableSystem={true}   // <-- FIX 2: Zorgt ervoor dat hij actief luistert naar de DevTools media query
+      {...props} 
+    />
   )
 }
 
@@ -46,14 +52,16 @@ export const ColorModeButton = React.forwardRef(function ColorModeButton(
 
   return (
     <ClientOnly fallback={<Skeleton boxSize="9" />}>
-<IconButton
-  onClick={toggleColorMode}
-  variant="ghost"
-  aria-label="Toggle color mode"
-  boxSize="42px"
->
-  <ColorModeIcon />
-</IconButton>
+      <IconButton
+        onClick={toggleColorMode}
+        variant="ghost"
+        aria-label="Toggle color mode"
+        boxSize="42px"
+        ref={ref} // Netjes de ref doorsturen aangezien het een forwardRef is
+        {...props}
+      >
+        <ColorModeIcon />
+      </IconButton>
     </ClientOnly>
   )
 })

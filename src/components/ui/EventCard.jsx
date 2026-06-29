@@ -1,7 +1,7 @@
-import { Card, Image, Text, Badge, HStack } from "@chakra-ui/react";
+import { Card, Image, Text, Badge, HStack, Stack, Button } from "@chakra-ui/react";
 import { useNavigate } from "react-router-dom";
 
-export default function EventCard({ event, categories }) {
+export default function EventCard({ event, categories, onEditClick }) {
   const navigate = useNavigate();
 
   const eventCategories =
@@ -30,45 +30,53 @@ export default function EventCard({ event, categories }) {
           mb={4}
         />
 
-        {/* TITLE */}
-        <Text
-          fontSize={{ base: "lg", md: "xl" }}
+        {/* TITLE - Responsive centrering */}
+        <Card.Title
+          fontSize={{ base: "lg", md: "xl", lg: "2xl" }}
           fontWeight="bold"
-          mb={1}
+          lineHeight="1.2"
+          textAlign={{ base: "center", md: "left" }}
         >
           {event.title}
-        </Text>
+        </Card.Title>
 
-        {/* DESCRIPTION */}
-        <Text
+        {/* DESCRIPTION - Responsive centrering */}
+        <Card.Description
           fontSize={{ base: "sm", md: "md" }}
+          lineHeight="1.3"
+          textAlign={{ base: "center", md: "left" }}
+          mt={2}
           color="gray.600"
           noOfLines={2}
         >
           {event.description}
-        </Text>
+        </Card.Description>
       </Card.Header>
 
       {/* BODY */}
       <Card.Body px={6} pb={4}>
-        {/* LOCATION */}
-        <Text mt={1}>{event.location}</Text>
+        <Stack gap={1} alignItems={{ base: "center", md: "flex-start" }}>
+          {/* LOCATION */}
+          <Text fontWeight="medium" textAlign={{ base: "center", md: "left" }}>
+            {event.location}
+          </Text>
 
-        {/* DATE RANGE */}
-        <Text mt={1} fontSize="sm" color="gray.700">
-          {new Date(event.startTime).toLocaleString("nl-NL", {
-            dateStyle: "medium",
-            timeStyle: "short",
-          })}
-          {" – "}
-          {new Date(event.endTime).toLocaleString("nl-NL", {
-            dateStyle: "medium",
-            timeStyle: "short",
-          })}
-        </Text>
+          {/* DATE RANGE */}
+          <Text textAlign={{ base: "center", md: "left" }}>
+            {new Date(event.startTime).toLocaleString("nl-NL", {
+              dateStyle: "medium",
+              timeStyle: "short",
+            })}
+            {" – "}
+            {new Date(event.endTime).toLocaleString("nl-NL", {
+              dateStyle: "medium",
+              timeStyle: "short",
+            })}
+          </Text>
+        </Stack>
 
-        {/* CATEGORY BADGES */}
-        <HStack mt={4} flexWrap="wrap" gap={2}>
+        {/* CATEGORY BADGES - Gecentreerd op mobiel */}
+        <HStack mt={4} flexWrap="wrap" gap={2} justifyContent={{ base: "center", md: "flex-start" }}>
           {eventCategories.map((cat) => (
             <Badge
               key={cat?.id}
@@ -82,17 +90,31 @@ export default function EventCard({ event, categories }) {
         </HStack>
       </Card.Body>
 
-      {/* FOOTER */}
-      <Card.Footer gap={3} px={6} pb={6}>
-        <Badge
-          size="md"
+      {/* FOOTER - Actieknoppen gecentreerd op mobiel */}
+      <Card.Footer gap={3} px={6} pb={6} justifyContent={{ base: "center", md: "flex-start" }}>
+        <Button
           variant="surface"
           border="1px solid"
-          borderColor="gray.300"
-          px={3}
+          borderColor="gray.500"
+          onClick={(e) => {
+            e.stopPropagation();
+            navigate(`/events/${event.id}`);
+          }}
         >
-          View Details
-        </Badge>
+          View details
+        </Button>
+
+        <Button
+          variant="surface"
+          border="1px solid"
+          borderColor="gray.500"
+          onClick={(e) => {
+            e.stopPropagation();
+            onEditClick(); // Roept de edit-handler aan op de EventsPage
+          }}
+        >
+          Edit
+        </Button>
       </Card.Footer>
     </Card.Root>
   );
