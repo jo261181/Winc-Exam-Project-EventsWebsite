@@ -9,9 +9,9 @@ import {
   Image,
   HStack,
   Card,
+  Dialog, // We gebruiken nu direct de officiële Chakra v3 Dialog
 } from "@chakra-ui/react";
 
-import SimpleModal from "../components/ui/modal";
 import EventForm from "../components/ui/EventForm";
 import { toaster } from "../components/ui/toaster";
 import Footer from "../components/ui/Footer";
@@ -25,7 +25,7 @@ export default function EventPage() {
   const [editOpen, setEditOpen] = useState(false);
   const [deleteOpen, setDeleteOpen] = useState(false);
   
-  // Slaat het ID op dat vanuit het formulier (of de pagina) gekozen is om te verwijderen
+  // Slaat het ID op dat verwijderd moet worden
   const [activeDeleteId, setActiveDeleteId] = useState(null);
 
   if (!data) {
@@ -42,7 +42,6 @@ export default function EventPage() {
   const events = data.events || [];
   const categories = data.categories || [];
   
-  // Bepaal het huidige actieve event (op basis van URL óf geopende edit-modal)
   const currentId = id || activeDeleteId;
   const event = events.find((evt) => evt.id.toString() === currentId?.toString());
 
@@ -97,7 +96,6 @@ export default function EventPage() {
     });
   }
 
-  // DE INTERNE DELETE LOGICA MET TOASTER AFHANDELING
   async function handleDelete() {
     const eventId = activeDeleteId || id;
 
@@ -124,26 +122,25 @@ export default function EventPage() {
         return;
       }
 
-      // 1. Update de lokale context
+      // 1. Lokale context direct bijwerken
       const updated = {
         ...data,
         events: data.events.filter((e) => e.id.toString() !== eventId.toString()),
       };
       setData(updated);
 
-      // 2. VUUR DE SUCCES TOASTER AF
+      // 2. Toon de succes-toaster
       toaster.create({
         title: "Event deleted",
         description: "The event has been deleted.",
         type: "success",
       });
 
-      // 3. Sluit alle schermen en reset de state
+      // 3. Sluit alles af en reset de state
       setDeleteOpen(false);
       setEditOpen(false);
       setActiveDeleteId(null);
       
-      // Navigeer alleen als je op de detailpagina stond
       if (id) {
         navigate("/");
       }
@@ -304,47 +301,46 @@ export default function EventPage() {
           </Card.Root>
         )}
 
-        {/* EDIT MODAL */}
-        <SimpleModal
-          open={editOpen}
-          onClose={() => setEditOpen(false)}
-          title="Edit event"
-        >
-          {event && (
-            <EventForm
-              initialValues={event}
-              allCategories={categories}
-              onSubmit={(values) => {
-                updateEvent(event.id, values);
-                setEditOpen(false);
-              }}
-              onCancel={() => setEditOpen(false)}
-              onDelete={(incomingId) => {
-                // HIER VANGEN WE HET ID UIT HET FORMULIER OP!
-                setActiveDeleteId(incomingId); 
-                setDeleteOpen(true); // Open de bevestigingsmodal over het formulier heen
-              }}
-            />
-          )}
+        {/* 1. OFFICILE CHAKRA EDIT DIALOG (Geen SimpleModal meer nodig) */}
+        <Dialog.Root open={editOpen} onOpenChange={(e) => setEditOpen(e.open)}>
+          <Dialog.Content>
+            <Dialog.Body>
+              {event && (
+                <EventForm
+                  initialValues={event}
+                  allCategories={categories}
+                  onSubmit={(values) => {
+                    updateEvent(event.id, values);
+                    setEditOpen(false);
+                  }}
+                  onCancel={() => setEditOpen(false)}
+                  onDelete={(incomingId) => {
+                    setActiveDeleteId(incomingId); 
+                    setDeleteOpen(true); // Schiet direct de losstaande bevestigingspop-up in
+                  }}
+                />
+              )}
+            </Dialog.Body>
+          </Dialog.Content>
+        </Dialog.Root>
 
-          {/* NESTED CONFIRMATION POPUP (Are you sure?) */}
-          <SimpleModal
-            open={deleteOpen}
-            onClose={() => setDeleteOpen(false)}
-            title="Delete event"
-          >
-            <Box p={2}>
-              <Text mb={4}>
-                Are you sure you want to delete this event?
-              </Text>
-
-              <HStack justify="flex-end" gap={3} mt={4}>
+        {/* 2. OFFICILE CHAKRA BEVESTIGINGS DIALOG (Losstaand, garandeert 100% zichtbaarheid) */}
+        <Dialog.Root open={deleteOpen} onOpenChange={(e) => setDeleteOpen(e.open)}>
+          <Dialog.Content>
+            <Dialog.Header>
+              <Dialog.Title fontWeight="bold">Delete event</Dialog.Title>
+            </Dialog.Header>
+            <Dialog.Body>
+              <Text>Are you sure you want to delete this event?</Text>
+            </Dialog.Body>
+            <Dialog.Footer mt={4}>
+              <HStack gap={3}>
                 <Button 
                   colorPalette="red" 
                   bg="red.500" 
                   color="white" 
                   _hover={{ bg: "red.600" }}
-                  onClick={handleDelete} // Vangt alles af én toont de toaster
+                  onClick={handleDelete}
                 >
                   Delete
                 </Button>
@@ -352,9 +348,10 @@ export default function EventPage() {
                   Cancel
                 </Button>
               </HStack>
-            </Box>
-          </SimpleModal>
-        </SimpleModal>
+            </Dialog.Footer>
+          </Dialog.Content>
+        </Dialog.Root>
+
       </Box>
 
       <Footer />

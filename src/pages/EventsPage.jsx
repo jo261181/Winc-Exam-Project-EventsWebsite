@@ -1,4 +1,4 @@
-import { Box, Text, SimpleGrid } from "@chakra-ui/react";
+import { Box, Text, SimpleGrid, HStack, Button } from "@chakra-ui/react";
 import { useState } from "react";
 import { useNavigate, useOutletContext } from "react-router-dom";
 
@@ -8,7 +8,7 @@ import SimpleModal from "../components/ui/modal";
 import EventForm from "../components/ui/EventForm";
 import HeadingSkeleton from "../components/ui/HeadingSkeleton";
 import EventCard from "../components/ui/EventCard"; 
-import { EventsPageSkeleton } from "../components/ui/EventsPageSkeleton"; // FIX: Juiste skeleton geïmporteerd
+import { EventsPageSkeleton } from "../components/ui/EventsPageSkeleton"; 
 import { toaster } from "../components/ui/toaster";
 
 import { createEvent, updateEvent, deleteEvent } from "../services/events";
@@ -20,6 +20,7 @@ export const EventsPage = () => {
   const [selectedCategories, setSelectedCategories] = useState([]);
   const [createOpen, setCreateOpen] = useState(false);
   const [editOpen, setEditOpen] = useState(false);
+  const [deleteOpen, setDeleteOpen] = useState(false); // STATE VOOR BEVESTIGINGSMODAL
   const [editEvent, setEditEvent] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
 
@@ -27,7 +28,7 @@ export const EventsPage = () => {
   const eventsArray = data?.events || [];
 
   // -----------------------------------------------------
-  // LOADING STATE (Nu perfect uitgelijnd met de live pagina)
+  // LOADING STATE
   // -----------------------------------------------------
   if (!data) {
     return (
@@ -53,7 +54,6 @@ export const EventsPage = () => {
           zIndex="-1"
         />
 
-        {/* FIX: Direct de complete pagina-skeleton aanroepen zonder extra wrapper-grid */}
         <EventsPageSkeleton />
 
         <Footer>
@@ -114,14 +114,30 @@ export const EventsPage = () => {
     }
   }
 
-  async function handleDelete(id) {
+  // GECORRIGEERDE DELETE ACTIE DIE PAS DOOR DE PROMPT WORDT AFGEVUURD
+  async function handleDeleteConfirm() {
+    if (!editEvent?.id) return;
+
     try {
-      await deleteEvent(id);
+      await deleteEvent(editEvent.id);
+      
       setData({
         ...data,
-        events: data.events.filter((evt) => evt.id !== id),
+        events: data.events.filter((evt) => evt.id !== editEvent.id),
       });
+
+      // TOASTER TOEVOEGEN BIJ SUCCES
+      toaster.create({
+        title: "Event deleted",
+        description: "The event has been deleted successfully.",
+        type: "success",
+        duration: 3000,
+      });
+
+      // SLUIT ALLE OPENSTAANDE SCHERMEN
+      setDeleteOpen(false);
       setEditOpen(false);
+      setEditEvent(null);
     } catch (error) {
       toaster.create({
         title: "Something went wrong",
@@ -153,7 +169,6 @@ export const EventsPage = () => {
     return matchesSearch && matchesCategories;
   });
 
-  // Helper om de edit modal te triggeren vanuit de kaart component
   const triggerEdit = (evt) => {
     setEditEvent({
       ...evt,
@@ -209,10 +224,38 @@ export const EventsPage = () => {
             handleUpdate(values);
             setEditOpen(false);
           }}
-          onDelete={handleDelete}
+          // VERANDERING: In plaats van direct wissen, openen we nu de vraag pop-up
+          onDelete={() => {
+            setDeleteOpen(true);
+          }}
           cancel={() => setEditOpen(false)}
           allCategories={categories}
         />
+      </SimpleModal>
+
+      {/* NIEUWE BEVESTIGINGSMODAL DIE GESTACKT WORDT BOVENOP HET FORMULIER */}
+      <SimpleModal
+        open={deleteOpen}
+        onClose={() => setDeleteOpen(false)}
+        title="Delete event"
+      >
+        <Box p={2}>
+          <Text mb={4}>Are you sure you want to delete this event?</Text>
+          <HStack justify="flex-end" gap={3}>
+            <Button 
+              colorPalette="red" 
+              bg="red.500" 
+              color="white" 
+              _hover={{ bg: "red.600" }}
+              onClick={handleDeleteConfirm}
+            >
+              Delete
+            </Button>
+            <Button variant="outline" onClick={() => setDeleteOpen(false)}>
+              Cancel
+            </Button>
+          </HStack>
+        </Box>
       </SimpleModal>
 
       {/* BACKGROUND */}
