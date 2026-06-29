@@ -42,11 +42,11 @@ export default function EventCardSkeleton() {
         </Stack>
 
         {/* CATEGORY BADGES PLACEHOLDER - Gecentreerd op mobiel */}
-        <HStack mt={4} flexWrap="wrap" gap={2} justifyContent={{ base: "center", md: "flex-start" }}>
-          <Skeleton height="24px" width="60px" borderRadius="md" />
-          <Skeleton height="24px" width="75px" borderRadius="md" />
+      <HStack mt={4} flexWrap="wrap" gap={2} justifyContent={{ base: "center", md: "flex-start" }}>
+          <Skeleton height="22px" width="60px" borderRadius="md" />
+          <Skeleton height="22px" width="75px" borderRadius="md" />
         </HStack>
-      </Card.Body>
+      </Card.Body> */
 
       {/* FOOTER - Twee knoppen gecentreerd op mobiel */}
       <Card.Footer gap={3} px={6} pb={6} justifyContent={{ base: "center", md: "flex-start" }}>

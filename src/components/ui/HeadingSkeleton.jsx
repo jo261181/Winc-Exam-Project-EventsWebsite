@@ -1,9 +1,8 @@
-import React, { useMemo } from "react";
+import React from "react";
 import {
   Box,
   Input,
   Button,
-  Text,
   Image,
   Grid,
   Skeleton,
@@ -25,7 +24,6 @@ export default function HeadingSkeleton({
 }) {
   const { colorMode } = useColorMode();
 
-  // EXACT OVERGENOMEN LOGICA EN BEREKENINGEN UIT HEADING.JSX
   const searchEnabled =
     typeof searchTerm === "undefined" && typeof setSearchTerm === "undefined"
       ? true
@@ -40,10 +38,11 @@ export default function HeadingSkeleton({
           { id: 3, name: "relaxation" },
         ];
 
+  // MATCH FIX: Precies dezelfde gecentreerde verdeling (1fr 2fr 1fr) als de echte Heading
   const templateColumns = {
     base: "1fr",
     md: searchEnabled ? "1fr 2fr 1fr" : rightContent ? "1fr 1fr" : "1fr",
-    lg: searchEnabled ? "1fr 3fr 1fr" : rightContent ? "1fr 1fr" : "1fr",
+    lg: searchEnabled ? "1fr 2fr 1fr" : rightContent ? "1fr 1fr" : "1fr",
   };
 
   return (
@@ -60,55 +59,53 @@ export default function HeadingSkeleton({
       <Grid
         templateColumns={templateColumns}
         alignItems="center"
-        gap={4}
-        mb={2}
+        gap={6}
+        mb={6}
         minH={{ base: "auto", md: "90px" }}
-        justifyItems="center" // Exact overgenomen uit Heading.jsx
+        justifyItems="center"
       >
-        {/* LOGO BOX - STRUCTUUR EN PROPS EXACT GELIJK */}
+        {/* LOGO BOX SKELETON */}
         <Box
           display="flex"
           alignItems="center"
-          justifyContent="center"
+          justifyContent={{ base: "center", md: "flex-start" }} // MATCH FIX: Links uitlijnen op desktop
+          justifySelf="stretch" // MATCH FIX: Rekken over de 1fr kolom
           height="100%"
           w="100%"
+          ps={{ base: 0, md: 4, lg: 8 }}
         >
           <Skeleton borderRadius="md">
             <Image
               src="/images/logo.png"
               alt="Winc Events Logo"
               w={{ base: "140px", md: "160px" }}
-              style={{ opacity: 0, userSelect: "none" }} // Onzichtbaar voor de skeleton look
+              style={{ opacity: 0, userSelect: "none" }}
             />
           </Skeleton>
         </Box>
 
-        {/* SEARCH INPUT - STRUCTUUR EN PROPS EXACT GELIJK */}
+        {/* SEARCH INPUT SKELETON */}
         {searchEnabled && (
-          <Skeleton width="100%" maxW={{ base: "100%", md: "500px", lg: "700px" }} borderRadius="md">
+          <Skeleton width="100%" maxW={{ base: "100%", md: "500px", lg: "600px" }} borderRadius="md" justifySelf="center">
+            {/* MATCH FIX: maxW veranderd naar 600px en justifySelf="center" toegevoegd voor het perfecte midden */}
             <Input
               width="100%"
-              maxW={{ base: "100%", md: "500px", lg: "700px" }}
               placeholder="Search events..."
-              _placeholder={{ color: "gray.600" }}
-              color="black"
-              bg="white"
-              boxShadow="sm"
-              aria-label="Search events"
-              border="1px solid"
-              borderColor="gray.300"
               style={{ opacity: 0 }}
+              disabled
             />
           </Skeleton>
         )}
 
-        {/* BUTTONS / RIGHT CONTENT - STRUCTUUR EN PROPS EXACT GELIJK */}
+        {/* BUTTONS / RIGHT CONTENT SKELETON */}
         {(rightContent || onCreate || true) && (
           <Box
             display="flex"
-            justifyContent="center"
+            justifyContent={{ base: "center", md: "flex-end" }}
+            justifySelf="stretch" // MATCH FIX: Rekken over de 1fr kolom
             alignItems="center"
             w="100%"
+            pe={{ base: 0, md: 4, lg: 8 }}
           >
             {rightContent ? (
               <Skeleton borderRadius="md">
@@ -118,8 +115,8 @@ export default function HeadingSkeleton({
               <Box 
                 display="flex" 
                 gap={2} 
-                flexWrap="wrap" 
-                justifyContent="center"
+                flexWrap="nowrap" 
+                justifyContent={{ base: "center", md: "flex-end" }}
                 alignItems="center"
               >
                 <Skeleton borderRadius="md">
@@ -127,7 +124,6 @@ export default function HeadingSkeleton({
                     variant="outline"
                     border="1px solid"
                     borderColor="gray.500"
-                    colorScheme="blue"
                     size="sm"
                     style={{ opacity: 0, userSelect: "none" }}
                   >
@@ -160,7 +156,7 @@ export default function HeadingSkeleton({
         )}
       </Grid>
 
-      {/* CATEGORIES - STRUCTUUR EN PROPS EXACT GELIJK */}
+      {/* CATEGORIES SKELETON */}
       {skeletonCategories.length > 0 && (
         <Box mt={{ base: 4, md: 1 }} mb={2}>
           <Box display="flex" gap={3} flexWrap="wrap" justifyContent="center">
@@ -182,7 +178,7 @@ export default function HeadingSkeleton({
             ))}
           </Box>
 
-          {/* RESET FILTERS - STRUCTUUR EN PROPS EXACT GELIJK */}
+          {/* RESET FILTERS SKELETON */}
           <Box textAlign="center" mt={3} mb={3}>
             <Skeleton borderRadius="md" display="inline-block">
               <Button

@@ -17,6 +17,7 @@ import { toaster } from "../components/ui/toaster";
 import Footer from "../components/ui/Footer";
 import EventDetailSkeleton from "../components/ui/EventDetailSkeleton";
 
+
 export default function EventPage() {
   const { id } = useParams();
   const navigate = useNavigate();

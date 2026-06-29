@@ -8,12 +8,13 @@ import {
   Checkbox,
   Button,
   Image,
+  Text,
 } from "@chakra-ui/react";
 import { useState } from "react";
 
 export default function EventForm({
   initialValues = {},
-  categories = [],
+  allCategories = [], // FIX 1: Aangepast van categories naar allCategories om te matchen met de paginas
   onSubmit,
   onCancel,
   onDelete,
@@ -22,7 +23,6 @@ export default function EventForm({
     if (!dateString) return "";
     const d = new Date(dateString);
 
-    // lokale tijdcomponenten
     const year = d.getFullYear();
     const month = String(d.getMonth() + 1).padStart(2, "0");
     const day = String(d.getDate()).padStart(2, "0");
@@ -31,6 +31,7 @@ export default function EventForm({
 
     return `${year}-${month}-${day}T${hours}:${minutes}`;
   }
+
   const [formData, setFormData] = useState({
     title: initialValues.title || "",
     description: initialValues.description || "",
@@ -49,12 +50,16 @@ export default function EventForm({
   };
 
   const toggleCategory = (id) => {
-    setFormData((prev) => ({
-      ...prev,
-      categoryIds: prev.categoryIds.includes(id)
-        ? prev.categoryIds.filter((c) => c !== id)
-        : [...prev.categoryIds, id],
-    }));
+    setFormData((prev) => {
+      const numericId = Number(id); // Zorg dat de IDs altijd als numbers worden opgeslagen
+      const exists = prev.categoryIds.includes(numericId);
+      return {
+        ...prev,
+        categoryIds: exists
+          ? prev.categoryIds.filter((c) => c !== numericId)
+          : [...prev.categoryIds, numericId],
+      };
+    });
   };
 
   const handleImageUpload = (e) => {
@@ -71,7 +76,7 @@ export default function EventForm({
   return (
     <Card.Root maxW="sm" mx="auto" p={0}>
       {/* HEADER */}
-      <Card.Header p={6}>
+      <Card.Header p={6} fontWeight="bold" fontSize="lg">
         {initialValues.id ? "Edit Event" : "Create Event"}
       </Card.Header>
 
@@ -82,21 +87,29 @@ export default function EventForm({
           <Box>
             <Input
               placeholder="Event name"
-              value={formData.title} // Aangepast van formData.name naar formData.title
+              value={formData.title}
               onChange={handleChange("title")}
             />
           </Box>
 
-          {/* Categories */}
-          <Box>
+          {/* Categories checkboxes (Nu gekoppeld via allCategories) */}
+          <Box border="1px solid" borderColor="gray.200" p={3} borderRadius="md" _dark={{ borderColor: "gray.700" }}>
+            <Text fontWeight="medium" mb={2} fontSize="sm" color="orange.500">
+              Categories
+            </Text>
             <Stack gap={2}>
-              {categories.map((cat) => (
+              {allCategories.map((cat) => (
                 <HStack key={cat.id} gap={2}>
-                  <Checkbox
-                    isChecked={formData.categoryIds.includes(cat.id)}
-                    onChange={() => toggleCategory(cat.id)}
-                  />
-                  <Box>{cat.name}</Box>
+                  {/* FIX 2: Chakra v3 gebruikt 'checked' en 'onCheckedChange' in plaats van 'isChecked' */}
+                  <Checkbox.Root
+                    checked={formData.categoryIds.includes(cat.id)}
+                    onCheckedChange={() => toggleCategory(cat.id)}
+                    colorPalette="orange"
+                  >
+                    <Checkbox.HiddenInput />
+                    <Checkbox.Control />
+                    <Checkbox.Label fontSize="sm">{cat.name}</Checkbox.Label>
+                  </Checkbox.Root>
                 </HStack>
               ))}
             </Stack>
@@ -124,7 +137,7 @@ export default function EventForm({
           <Box>
             <Input
               type="datetime-local"
-              value={formData.startTime} // Aangepast van formData.startdate naar formData.startTime
+              value={formData.startTime}
               onChange={handleChange("startTime")}
             />
           </Box>
@@ -133,7 +146,7 @@ export default function EventForm({
           <Box>
             <Input
               type="datetime-local"
-              value={formData.endTime} // Aangepast van formData.enddate naar formData.endTime
+              value={formData.endTime}
               onChange={handleChange("endTime")}
             />
           </Box>
@@ -151,7 +164,6 @@ export default function EventForm({
                 objectFit="cover"
               />
             )}
-
             <Input type="file" accept="image/*" onChange={handleImageUpload} />
           </Box>
         </Stack>
@@ -161,18 +173,18 @@ export default function EventForm({
       <Card.Footer justifyContent="center" gap={6} pt={4} pb={6}>
         {initialValues.id && (
           <Button
-            colorScheme="red"
             variant="outline"
             onClick={onDelete}
             bg="red.500"
             color="white"
+            _hover={{ bg: "red.600" }}
           >
             Delete
           </Button>
         )}
 
         <Button
-          colorScheme="blue"
+          colorPalette="blue"
           onClick={() => onSubmit({ ...formData, id: initialValues.id })}
         >
           {initialValues.id ? "Save" : "Create"}

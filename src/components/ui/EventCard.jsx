@@ -44,9 +44,10 @@ export default function EventCard({ event, categories, onEditClick }) {
         <Card.Description
           fontSize={{ base: "sm", md: "md" }}
           lineHeight="1.3"
+          fontWeight="bold"
           textAlign={{ base: "center", md: "left" }}
           mt={2}
-          color="gray.600"
+          color="gray.500"
           noOfLines={2}
         >
           {event.description}

@@ -67,10 +67,11 @@ export default function HeadingExample({
     if (searchEnabled) setSearchTerm("");
   };
 
+  // VERANDERING: Kolommen veranderd naar 1fr delen zodat het midden ook écht het absolute midden is
   const templateColumns = {
     base: "1fr",
     md: searchEnabled ? "1fr 2fr 1fr" : rightContent ? "1fr 1fr" : "1fr",
-    lg: searchEnabled ? "1fr 3fr 1fr" : rightContent ? "1fr 1fr" : "1fr",
+    lg: searchEnabled ? "1fr 2fr 1fr" : rightContent ? "1fr 1fr" : "1fr",
   };
 
   return (
@@ -87,8 +88,8 @@ export default function HeadingExample({
       <Grid
         templateColumns={templateColumns}
         alignItems="center"
-        gap={4}
-        mb={2}
+        gap={6}
+        mb={6}
         minH={{ base: "auto", md: "90px" }}
         justifyItems="center"
       >
@@ -96,10 +97,11 @@ export default function HeadingExample({
         <Box
           display="flex"
           alignItems="center"
-          justifyContent={{ base: "center", md: "flex-start" }}
-          justifySelf={{ base: "center", md: "flex-start" }}
+          justifyContent={{ base: "center", md: "flex-start" }} // Aangepast naar links uitlijnen op desktop voor betere balans
+          justifySelf="stretch" // Strekt uit om de 1fr kolom te vullen
           height="100%"
           w="100%"
+          ps={{ base: 0, md: 4, lg: 8 }}
         >
           <Image
             src="/images/logo.png"
@@ -108,59 +110,57 @@ export default function HeadingExample({
           />
         </Box>
 
-       {/* SEARCH INPUT + NO EVENT FOUND MELDING */}
-{searchEnabled && (
-  <Box 
-    width="100%" 
-    maxW={{ base: "100%", md: "500px", lg: "700px" }}
-    display="flex"
-    flexDirection="column"
-    alignItems="center"
-    position="relative" // Zorgt dat de absolute melding hierbinnen blijft
-  >
-    <Input
-      width="100%"
-      placeholder="Search events..."
-      _placeholder={{ color: "gray.600" }}
-      value={searchTerm}
-      onChange={(e) => setSearchTerm(e.target.value)}
-      color="black"
-      bg="white"
-      boxShadow="sm"
-      aria-label="Search events"
-      border="1px solid"
-      borderColor="gray.300"
-    />
-    
-    {/* 
-      FIX: Door position="absolute" en top="100%" zweeft de melding 
-      altijd perfect onder de input zonder de zoekbalk omhoog te duwen!
-    */}
-    {searchTerm?.trim() !== "" && filteredEvents.length === 0 && (
-      <Text 
-        color="red.500" 
-        textAlign="center" 
-        fontWeight="medium" 
-        position="absolute"
-        top="100%"
-        left="0"
-        right="0"
-        mt={1} // Kleine marge direct onder de input rand
-      >
-        No Event Found
-      </Text>
-    )}
-  </Box>
-)}
+        {/* SEARCH INPUT + NO EVENT FOUND MELDING */}
+        {searchEnabled && (
+          <Box 
+            width="100%" 
+            maxW={{ base: "100%", md: "500px", lg: "600px" }} // Iets verfijnde max breedte voor een strakkere look
+            display="flex"
+            flexDirection="column"
+            alignItems="center"
+            position="relative"
+            justifySelf="center" // Forceert de box exact in het midden van zijn grid-sectie
+          >
+            <Input
+              width="100%"
+              placeholder="Search events..."
+              _placeholder={{ color: "gray.600" }}
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              color="black"
+              bg="white"
+              boxShadow="sm"
+              aria-label="Search events"
+              border="1px solid"
+              borderColor="gray.300"
+            />
+            
+            {searchTerm?.trim() !== "" && filteredEvents.length === 0 && (
+              <Text 
+                color="red.500" 
+                textAlign="center" 
+                fontWeight="medium" 
+                position="absolute"
+                top="100%"
+                left="0"
+                right="0"
+                mt={1}
+              >
+                No Event Found
+              </Text>
+            )}
+          </Box>
+        )}
 
         {/* BUTTONS / RIGHT CONTENT */}
         {(rightContent || onCreate) && (
           <Box
             display="flex"
             justifyContent={{ base: "center", md: "flex-end" }}
-            justifySelf={{ base: "center", md: "flex-end" }}
+            justifySelf="stretch" // Strekt uit om de 1fr kolom te vullen
             alignItems="center"
             w="100%"
+            pe={{ base: 0, md: 4, lg: 8 }}
           >
             {rightContent ? (
               rightContent
@@ -168,9 +168,10 @@ export default function HeadingExample({
               <Box 
                 display="flex" 
                 gap={2} 
-                flexWrap="wrap" 
+                flexWrap="nowrap" 
                 justifyContent={{ base: "center", md: "flex-end" }}
                 alignItems="center"
+                whiteSpace="nowrap"
               >
                 <Button
                   variant="outline"
