@@ -17,7 +17,6 @@ import { toaster } from "../components/ui/toaster";
 import Footer from "../components/ui/Footer";
 import EventDetailSkeleton from "../components/ui/EventDetailSkeleton";
 
-
 export default function EventPage() {
   const { id } = useParams();
   const navigate = useNavigate();
@@ -25,46 +24,49 @@ export default function EventPage() {
 
   const [editOpen, setEditOpen] = useState(false);
   const [deleteOpen, setDeleteOpen] = useState(false);
+  
+  // Slaat het ID op dat vanuit het formulier (of de pagina) gekozen is om te verwijderen
+  const [activeDeleteId, setActiveDeleteId] = useState(null);
 
-if (!data) {
-  return (
-    <>
-      <Box p={6} position="relative">
-        <EventDetailSkeleton />
-      </Box>
-
-      <Footer />
-    </>
-  );
-}
-
+  if (!data) {
+    return (
+      <>
+        <Box p={6} position="relative">
+          <EventDetailSkeleton />
+        </Box>
+        <Footer />
+      </>
+    );
+  }
 
   const events = data.events || [];
   const categories = data.categories || [];
-  const event = events.find((evt) => evt.id.toString() === id);
+  
+  // Bepaal het huidige actieve event (op basis van URL óf geopende edit-modal)
+  const currentId = id || activeDeleteId;
+  const event = events.find((evt) => evt.id.toString() === currentId?.toString());
 
-  if (!event) {
+  if (!event && id) {
     return (
       <Box p={6}>
         <Text>Event not found</Text>
-        <Button mt={4} variant="outline" onClick={() => navigate("/events")}>
+        <Button mt={4} variant="outline" onClick={() => navigate("/")}>
           Go back
         </Button>
       </Box>
     );
   }
 
-  async function updateEvent(id, values) {
+  async function updateEvent(targetId, values) {
     const updatedEvent = {
       ...event,
       ...values,
-      id: Number(id),
+      id: Number(targetId),
       categoryIds: values.categoryIds || [],
       image: values.image || event.image || "",
     };
 
-    // PUT naar JSON-server
-    const res = await fetch(`http://localhost:3000/events/${id}`, {
+    const res = await fetch(`http://localhost:3000/events/${targetId}`, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(updatedEvent),
@@ -81,7 +83,6 @@ if (!data) {
 
     const saved = await res.json();
 
-    // Context updaten
     const updated = {
       ...data,
       events: data.events.map((evt) => (evt.id === saved.id ? saved : evt)),
@@ -96,35 +97,65 @@ if (!data) {
     });
   }
 
+  // DE INTERNE DELETE LOGICA MET TOASTER AFHANDELING
   async function handleDelete() {
-    const res = await fetch(`http://localhost:3000/events/${event.id}`, {
-      method: "DELETE",
-    });
+    const eventId = activeDeleteId || id;
 
-    if (!res.ok) {
+    if (!eventId || eventId === "undefined") {
       toaster.create({
         title: "Error",
-        description: "The event couldn't be deleted.",
+        description: "Invalid event ID. Cannot delete.",
         type: "error",
       });
       return;
     }
 
-    const updated = {
-      ...data,
-      events: data.events.filter((e) => e.id !== event.id),
-    };
+    try {
+      const res = await fetch(`http://localhost:3000/events/${eventId}`, {
+        method: "DELETE",
+      });
 
-    setData(updated);
+      if (!res.ok) {
+        toaster.create({
+          title: "Error",
+          description: "The event couldn't be deleted on the server.",
+          type: "error",
+        });
+        return;
+      }
 
-    toaster.create({
-      title: "Event deleted",
-      description: "The event has been deleted.",
-      type: "success",
-    });
+      // 1. Update de lokale context
+      const updated = {
+        ...data,
+        events: data.events.filter((e) => e.id.toString() !== eventId.toString()),
+      };
+      setData(updated);
 
-    setDeleteOpen(false);
-    navigate("/events");
+      // 2. VUUR DE SUCCES TOASTER AF
+      toaster.create({
+        title: "Event deleted",
+        description: "The event has been deleted.",
+        type: "success",
+      });
+
+      // 3. Sluit alle schermen en reset de state
+      setDeleteOpen(false);
+      setEditOpen(false);
+      setActiveDeleteId(null);
+      
+      // Navigeer alleen als je op de detailpagina stond
+      if (id) {
+        navigate("/");
+      }
+      
+    } catch (error) {
+      console.error(error);
+      toaster.create({
+        title: "Error",
+        description: "A network error occurred while deleting.",
+        type: "error",
+      });
+    }
   }
 
   return (
@@ -140,165 +171,189 @@ if (!data) {
           zIndex="-1"
         />
 
-        <Card.Root
-          w="100%"
-          maxW={{ base: "100%", sm: "500px", md: "650px", lg: "700px" }}
-          mx="auto"
-          p={{ base: 4, md: 6 }}
-          boxShadow="md"
-        >
-          <Image
-            src={event.image}
-            alt={event.title}
+        {event && id && (
+          <Card.Root
             w="100%"
-            h={{ base: "180px", sm: "220px", md: "260px" }}
-            objectFit="cover"
-            borderRadius="md"
-            mb={3}
-          />
+            maxW={{ base: "100%", sm: "500px", md: "650px", lg: "700px" }}
+            mx="auto"
+            p={{ base: 4, md: 6 }}
+            boxShadow="md"
+          >
+            <Image
+              src={event.image}
+              alt={event.title}
+              w="100%"
+              h={{ base: "180px", sm: "220px", md: "260px" }}
+              objectFit="cover"
+              borderRadius="md"
+              mb={3}
+            />
 
-          <Card.Header>
-            <Card.Title
-              fontSize={{ base: "xl", md: "2xl", lg: "3xl" }}
-              fontWeight="bold"
-              textAlign={{ base: "center", md: "left" }}
-            >
-              {event.title}
-            </Card.Title>
+            <Card.Header>
+              <Card.Title
+                fontSize={{ base: "xl", md: "2xl", lg: "3xl" }}
+                fontWeight="bold"
+                textAlign={{ base: "center", md: "left" }}
+              >
+                {event.title}
+              </Card.Title>
 
-            <Card.Description
-              fontSize={{ base: "md", md: "lg", lg: "xl" }}
-              textAlign={{ base: "center", md: "left" }}
-              color="gray.600"
-            >
-              {event.description}
-            </Card.Description>
-          </Card.Header>
+              <Card.Description
+                fontSize={{ base: "md", md: "lg", lg: "xl" }}
+                textAlign={{ base: "center", md: "left" }}
+                color="gray.600"
+              >
+                {event.description}
+              </Card.Description>
+            </Card.Header>
 
-          <Card.Body px={6} pb={4}>
-            <Text
-              mt={2}
-              fontWeight="semibold"
-              fontSize={{ base: "md", sm: "lg" }}
-              textAlign={{ base: "center", md: "left" }}
-            >
-              Location: {event.location}
-            </Text>
+            <Card.Body px={6} pb={4}>
+              <Text
+                mt={2}
+                fontWeight="semibold"
+                fontSize={{ base: "md", sm: "lg" }}
+                textAlign={{ base: "center", md: "left" }}
+              >
+                Location: {event.location}
+              </Text>
 
-            <Text
-              mt={2}
-              fontSize={{ base: "sm", sm: "md" }}
-              textAlign={{ base: "center", md: "left" }}
-            >
-              Date: {" "}
-              {new Date(event.startTime).toLocaleString("nl-NL", {
-                dateStyle: "medium",
-                timeStyle: "short",
-              })}
-              {" – "}
-              {new Date(event.endTime).toLocaleString("nl-NL", {
-                dateStyle: "medium",
-                timeStyle: "short",
-              })}
-            </Text>
+              <Text
+                mt={2}
+                fontSize={{ base: "sm", sm: "md" }}
+                textAlign={{ base: "center", md: "left" }}
+              >
+                Date:{" "}
+                {new Date(event.startTime).toLocaleString("nl-NL", {
+                  dateStyle: "medium",
+                  timeStyle: "short",
+                })}
+                {" – "}
+                {new Date(event.endTime).toLocaleString("nl-NL", {
+                  dateStyle: "medium",
+                  timeStyle: "short",
+                })}
+              </Text>
 
-            <HStack
-              mt={4}
+              <HStack
+                mt={4}
+                justify={{ base: "center", md: "flex-start" }}
+                flexWrap="wrap"
+                gap={2}
+              >
+                {event.categoryIds?.map((id) => {
+                  const category = categories.find((c) => c.id === id);
+                  return (
+                    <Badge
+                      key={id}
+                      size="lg"
+                      variant="solid"
+                      colorPalette="orange"
+                    >
+                      {category?.name}
+                    </Badge>
+                  );
+                })}
+              </HStack>
+            </Card.Body>
+
+            <Card.Footer
+              gap={3}
+              px={6}
+              pb={6}
               justify={{ base: "center", md: "flex-start" }}
               flexWrap="wrap"
-              gap={2}
             >
-              {event.categoryIds?.map((id) => {
-                const category = categories.find((c) => c.id === id);
-                return (
-                  <Badge
-                    key={id}
-                    size="lg"
-                    variant="solid"
-                    colorPalette="orange"
-                  >
-                    {category?.name}
-                  </Badge>
-                );
-              })}
-            </HStack>
-          </Card.Body>
+              <Button
+                variant="surface"
+                border="1px solid"
+                color="black"
+                bg="white"
+                borderColor="gray.500"
+                onClick={() => {
+                  setActiveDeleteId(event.id);
+                  setEditOpen(true);
+                }}
+              >
+                Edit Event
+              </Button>
 
-          <Card.Footer
-            gap={3}
-            px={6}
-            pb={6}
-            justify={{ base: "center", md: "flex-start" }}
-            flexWrap="wrap"
-          >
-            <Button
-              variant="surface"
-              border="1px solid"
-              color=" black"
-              bg="white"
-              borderColor="gray.500"
-              onClick={() => setEditOpen(true)}
-            >
-              Edit Event
-            </Button>
+              <Button
+                variant="surface"
+                border="1px solid"
+                bg="red.500"
+                color="white"
+                borderColor="red.500"
+                onClick={() => {
+                  setActiveDeleteId(event.id);
+                  setDeleteOpen(true);
+                }}
+              >
+                Delete Event
+              </Button>
 
-            <Button
-              variant="surface"
-              border="1px solid"
-              bg="red.500"
-              color="white"
-              borderColor="red.500"
-              onClick={() => setDeleteOpen(true)}
-            >
-              Delete Event
-            </Button>
+              <Button
+                variant="surface"
+                border="1px solid"
+                ml="auto"
+                borderColor="gray.500"
+                onClick={() => navigate("/")}
+              >
+                Back
+              </Button>
+            </Card.Footer>
+          </Card.Root>
+        )}
 
-            <Button
-              variant="surface"
-              border="1px solid"
-              ml="auto"
-              borderColor="gray.500"
-              onClick={() => navigate("/events")}
-            >
-              Back
-            </Button>
-          </Card.Footer>
-        </Card.Root>
-
+        {/* EDIT MODAL */}
         <SimpleModal
           open={editOpen}
           onClose={() => setEditOpen(false)}
           title="Edit event"
         >
-          <EventForm
-            initialValues={event}
-            allCategories={categories}
-            onSubmit={(values) => {
-              updateEvent(event.id, values);
-              setEditOpen(false);
-            }}
-            cancel={() => setEditOpen(false)}
-            onDelete={() => {
-              setEditOpen(false);
-              setDeleteOpen(true);
-            }}
-          />
-        </SimpleModal>
+          {event && (
+            <EventForm
+              initialValues={event}
+              allCategories={categories}
+              onSubmit={(values) => {
+                updateEvent(event.id, values);
+                setEditOpen(false);
+              }}
+              onCancel={() => setEditOpen(false)}
+              onDelete={(incomingId) => {
+                // HIER VANGEN WE HET ID UIT HET FORMULIER OP!
+                setActiveDeleteId(incomingId); 
+                setDeleteOpen(true); // Open de bevestigingsmodal over het formulier heen
+              }}
+            />
+          )}
 
-        <SimpleModal
-          open={deleteOpen}
-          onClose={() => setDeleteOpen(false)}
-          title="Delete event"
-        >
-          <Text>Are you sure you want to delete this event?</Text>
+          {/* NESTED CONFIRMATION POPUP (Are you sure?) */}
+          <SimpleModal
+            open={deleteOpen}
+            onClose={() => setDeleteOpen(false)}
+            title="Delete event"
+          >
+            <Box p={2}>
+              <Text mb={4}>
+                Are you sure you want to delete this event?
+              </Text>
 
-          <HStack mt={4}>
-            <Button colorPalette="red" onClick={handleDelete}>
-              Delete
-            </Button>
-
-            <Button onClick={() => setDeleteOpen(false)}>Cancel</Button>
-          </HStack>
+              <HStack justify="flex-end" gap={3} mt={4}>
+                <Button 
+                  colorPalette="red" 
+                  bg="red.500" 
+                  color="white" 
+                  _hover={{ bg: "red.600" }}
+                  onClick={handleDelete} // Vangt alles af én toont de toaster
+                >
+                  Delete
+                </Button>
+                <Button variant="outline" onClick={() => setDeleteOpen(false)}>
+                  Cancel
+                </Button>
+              </HStack>
+            </Box>
+          </SimpleModal>
         </SimpleModal>
       </Box>
 

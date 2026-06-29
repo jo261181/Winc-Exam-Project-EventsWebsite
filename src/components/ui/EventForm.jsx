@@ -14,7 +14,7 @@ import { useState } from "react";
 
 export default function EventForm({
   initialValues = {},
-  allCategories = [], // FIX 1: Aangepast van categories naar allCategories om te matchen met de paginas
+  allCategories = [],
   onSubmit,
   onCancel,
   onDelete,
@@ -51,7 +51,7 @@ export default function EventForm({
 
   const toggleCategory = (id) => {
     setFormData((prev) => {
-      const numericId = Number(id); // Zorg dat de IDs altijd als numbers worden opgeslagen
+      const numericId = Number(id);
       const exists = prev.categoryIds.includes(numericId);
       return {
         ...prev,
@@ -74,7 +74,7 @@ export default function EventForm({
   };
 
   return (
-    <Card.Root maxW="sm" mx="auto" p={0}>
+    <Card.Root maxW="sm" mx="auto" p={0} variant="unstyled" boxShadow="none">
       {/* HEADER */}
       <Card.Header p={6} fontWeight="bold" fontSize="lg">
         {initialValues.id ? "Edit Event" : "Create Event"}
@@ -92,7 +92,7 @@ export default function EventForm({
             />
           </Box>
 
-          {/* Categories checkboxes (Nu gekoppeld via allCategories) */}
+          {/* Categories checkboxes */}
           <Box border="1px solid" borderColor="gray.200" p={3} borderRadius="md" _dark={{ borderColor: "gray.700" }}>
             <Text fontWeight="medium" mb={2} fontSize="sm" color="orange.500">
               Categories
@@ -100,7 +100,6 @@ export default function EventForm({
             <Stack gap={2}>
               {allCategories.map((cat) => (
                 <HStack key={cat.id} gap={2}>
-                  {/* FIX 2: Chakra v3 gebruikt 'checked' en 'onCheckedChange' in plaats van 'isChecked' */}
                   <Checkbox.Root
                     checked={formData.categoryIds.includes(cat.id)}
                     onCheckedChange={() => toggleCategory(cat.id)}
@@ -173,11 +172,19 @@ export default function EventForm({
       <Card.Footer justifyContent="center" gap={6} pt={4} pb={6}>
         {initialValues.id && (
           <Button
+            type="button"
             variant="outline"
-            onClick={onDelete}
             bg="red.500"
             color="white"
             _hover={{ bg: "red.600" }}
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              if (typeof onDelete === "function") {
+                // FIX: Geef nu het ID expliciet mee aan de parent functie!
+                onDelete(initialValues.id);
+              }
+            }}
           >
             Delete
           </Button>
