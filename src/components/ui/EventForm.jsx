@@ -18,32 +18,28 @@ export default function EventForm({
   onCancel,
   onDelete,
 }) {
+  function toLocalInputValue(dateString) {
+    if (!dateString) return "";
+    const d = new Date(dateString);
 
+    // lokale tijdcomponenten
+    const year = d.getFullYear();
+    const month = String(d.getMonth() + 1).padStart(2, "0");
+    const day = String(d.getDate()).padStart(2, "0");
+    const hours = String(d.getHours()).padStart(2, "0");
+    const minutes = String(d.getMinutes()).padStart(2, "0");
 
-function toLocalInputValue(dateString) {
-  if (!dateString) return "";
-  const d = new Date(dateString);
-
-  // lokale tijdcomponenten
-  const year = d.getFullYear();
-  const month = String(d.getMonth() + 1).padStart(2, "0");
-  const day = String(d.getDate()).padStart(2, "0");
-  const hours = String(d.getHours()).padStart(2, "0");
-  const minutes = String(d.getMinutes()).padStart(2, "0");
-
-  return `${year}-${month}-${day}T${hours}:${minutes}`;
-}
+    return `${year}-${month}-${day}T${hours}:${minutes}`;
+  }
   const [formData, setFormData] = useState({
-    name: initialValues.title || "",
+    title: initialValues.title || "",
     description: initialValues.description || "",
     location: initialValues.location || "",
-    startdate: toLocalInputValue(initialValues.startTime),
-    enddate: toLocalInputValue(initialValues.endTime),
+    startTime: toLocalInputValue(initialValues.startTime),
+    endTime: toLocalInputValue(initialValues.endTime),
     image: initialValues.image || "",
     categoryIds: initialValues.categoryIds || [],
   });
-
-
 
   const handleChange = (field) => (e) => {
     setFormData((prev) => ({
@@ -86,8 +82,8 @@ function toLocalInputValue(dateString) {
           <Box>
             <Input
               placeholder="Event name"
-              value={formData.name}
-              onChange={handleChange("name")}
+              value={formData.title} // Aangepast van formData.name naar formData.title
+              onChange={handleChange("title")}
             />
           </Box>
 
@@ -128,8 +124,8 @@ function toLocalInputValue(dateString) {
           <Box>
             <Input
               type="datetime-local"
-              value={formData.startdate}
-              onChange={handleChange("startdate")}
+              value={formData.startTime} // Aangepast van formData.startdate naar formData.startTime
+              onChange={handleChange("startTime")}
             />
           </Box>
 
@@ -137,8 +133,8 @@ function toLocalInputValue(dateString) {
           <Box>
             <Input
               type="datetime-local"
-              value={formData.enddate}
-              onChange={handleChange("enddate")}
+              value={formData.endTime} // Aangepast van formData.enddate naar formData.endTime
+              onChange={handleChange("endTime")}
             />
           </Box>
 

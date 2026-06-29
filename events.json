@@ -47,18 +47,17 @@
       "id": 2
     },
     {
-      "id": 3,
-      "createdBy": 2,
-      "title": "Badminton game",
+      "title": "",
       "description": "Hit that shuttle!",
+      "location": "The Park",
+      "startTime": "2026-07-01T18:00",
+      "endTime": "2026-07-07T19:00",
       "image": "https://wincacademy.github.io/webpages/media/pexels-vladvictoria-2202685.jpg",
       "categoryIds": [
         1,
         2
       ],
-      "location": "The Park",
-      "startTime": "2023-03-15T12:00:00.000Z",
-      "endTime": "2023-03-15T13:30:00.000Z"
+      "id": 3
     },
     {
       "id": 4,
