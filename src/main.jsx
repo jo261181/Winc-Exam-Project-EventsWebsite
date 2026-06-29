@@ -7,6 +7,7 @@ import EventPage from "./pages/EventPage";
 import { EventsPage } from "./pages/EventsPage";
 import { AboutUs } from "./pages/AboutUs";
 import { ColorModeProvider } from "./components/ui/color-mode";
+import {Toaster} from "./components/ui/toaster";
 
 const router = createBrowserRouter([
   {
@@ -26,6 +27,7 @@ ReactDOM.createRoot(document.getElementById("root")).render(
     <ColorModeProvider>
       <Provider>
         <RouterProvider router={router} />
+        <Toaster />
       </Provider>
     </ColorModeProvider>
   </React.StrictMode>

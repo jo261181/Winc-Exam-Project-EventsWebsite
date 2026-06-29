@@ -17,6 +17,7 @@ import EventCardSkeleton from "../components/ui/EventCardSkeleton";
 import { useNavigate, useOutletContext } from "react-router-dom";
 import EventForm from "../components/ui/EventForm";
 import HeadingSkeleton from "../components/ui/HeadingSkeleton";
+import { toaster } from "../components/ui/toaster"; 
 
 import {
   createEvent,
@@ -116,6 +117,58 @@ export const EventsPage = () => {
     setEditOpen(false);
   }
 
+  async function handleCreate(values) {
+  try {
+    const newEvent = await createEvent(values);
+
+    setData({
+      ...data,
+      events: [...data.events, newEvent],
+    });
+
+    // Toon succes melding
+    toaster.create({
+      title: "Event created!",
+      description: "The new event has been saved successfully.",
+      type: "success",
+      duration: 3000,
+    });
+  } catch (error) {
+    // Altijd handig: een foutmelding als er iets misgaat met de server
+    toaster.create({
+      title: "Something went wrong",
+      description: "Could not create the event.",
+      type: "error",
+    });
+  }
+}
+
+async function handleUpdate(values) {
+  try {
+    const updated = await updateEvent(values.id, values);
+
+    setData({
+      ...data,
+      events: data.events.map((evt) =>
+        evt.id === updated.id ? updated : evt
+      ),
+    });
+
+    // Toon succes melding
+    toaster.create({
+      title: "Event updated!",
+      description: "The changes have been saved successfully.",
+      type: "success",
+      duration: 3000,
+    });
+  } catch (error) {
+    toaster.create({
+      title: "Something went wrong",
+      description: "Could not save the changes.",
+      type: "error",
+    });
+  }
+}
   // -----------------------------------------------------
   // FILTERING
   // -----------------------------------------------------
