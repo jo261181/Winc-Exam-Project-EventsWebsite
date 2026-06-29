@@ -18,15 +18,31 @@ export default function EventForm({
   onCancel,
   onDelete,
 }) {
-const [formData, setFormData] = useState({
-  name: initialValues.title || "",
-  description: initialValues.description || "",
-  location: initialValues.location || "",
-  startdate: initialValues.startTime || "",
-  enddate: initialValues.endTime || "",
-  image: initialValues.image || "",
-  categoryIds: initialValues.categoryIds || [],
-});
+
+
+function toLocalInputValue(dateString) {
+  if (!dateString) return "";
+  const d = new Date(dateString);
+
+  // lokale tijdcomponenten
+  const year = d.getFullYear();
+  const month = String(d.getMonth() + 1).padStart(2, "0");
+  const day = String(d.getDate()).padStart(2, "0");
+  const hours = String(d.getHours()).padStart(2, "0");
+  const minutes = String(d.getMinutes()).padStart(2, "0");
+
+  return `${year}-${month}-${day}T${hours}:${minutes}`;
+}
+  const [formData, setFormData] = useState({
+    name: initialValues.title || "",
+    description: initialValues.description || "",
+    location: initialValues.location || "",
+    startdate: toLocalInputValue(initialValues.startTime),
+    enddate: toLocalInputValue(initialValues.endTime),
+    image: initialValues.image || "",
+    categoryIds: initialValues.categoryIds || [],
+  });
+
 
 
   const handleChange = (field) => (e) => {
