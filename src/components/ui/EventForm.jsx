@@ -16,7 +16,7 @@ export default function EventForm({
   initialValues = {},
   allCategories = [],
   onSubmit,
-  cancel, // Vangt de sluit-prop op uit EventsPage
+  cancel,
   onDelete,
 }) {
   function toLocalInputValue(dateString) {
@@ -42,11 +42,18 @@ export default function EventForm({
     categoryIds: initialValues.categoryIds || [],
   });
 
+  // State om per veld een foutmelding bij te houden
+  const [errors, setErrors] = useState({});
+
   const handleChange = (field) => (e) => {
     setFormData((prev) => ({
       ...prev,
       [field]: e.target.value,
     }));
+    // Wis de foutmelding zodra de gebruiker begint te typen
+    if (errors[field]) {
+      setErrors((prev) => ({ ...prev, [field]: null }));
+    }
   };
 
   const toggleCategory = (id) => {
@@ -73,21 +80,57 @@ export default function EventForm({
     reader.readAsDataURL(file);
   };
 
+  // Validatiefunctie die wordt aangeroepen bij het indienen
+  const handleValidateAndSubmit = () => {
+    const newErrors = {};
+
+    if (!formData.title.trim()) {
+      newErrors.title = "Event name is required.";
+    }
+    if (!formData.location.trim()) {
+      newErrors.location = "Location is required.";
+    }
+    if (!formData.startTime) {
+      newErrors.startTime = "Start date and time are required.";
+    }
+    if (!formData.endTime) {
+      newErrors.endTime = "End date and time are required.";
+    }
+
+    // Extra logische check: eindtijd mag niet voor de starttijd liggen
+    if (formData.startTime && formData.endTime) {
+      const start = new Date(formData.startTime);
+      const end = new Date(formData.endTime);
+      if (end <= start) {
+        newErrors.endTime = "End time must be after the start time.";
+      }
+    }
+
+    // Als er fouten zijn gevonden, toon ze en stop het proces
+    if (Object.keys(newErrors).length > 0) {
+      setErrors(newErrors);
+      return;
+    }
+
+    // Geen fouten? Dan pas sturen we het door naar de parent component
+    onSubmit({ ...formData, id: initialValues.id });
+  };
+
 return (
     <Card.Root maxW="sm" mx="auto" p={0} variant="unstyled" boxShadow="none" position="relative">
       
-      {/* PERFECT UITGELIJND MET DE MODAL TITEL 'EDIT EVENT' */}
+      {/* HANDMATIGE CANCEL KNOP (Werkt nu perfect in zowel Light als Dark mode) */}
       <Button
         type="button"
         size="sm"
         variant="outline"
         borderColor="gray.500"
-        color="white"
+        color="fg" // FIX: Schakelt nu automatisch mee met de actieve modus (zwart in light, wit in dark)
         position="absolute"
-        top="-48px"  // Schuift de knop exact naar de hoogte van de 'Edit event' titel
-        right="0px"   // Strak uitgelijnd aan de rechterkant van de modal box
-        zIndex="50"   // Zorgt dat hij gegarandeerd bovenop alle lagen ligt
-        _hover={{ bg: "gray.700" }}
+        top="-48px"  
+        right="0px"   
+        zIndex="50"   
+        _hover={{ bg: "gray.100", _dark: { bg: "gray.700" } }} // Subtiele hover-kleur voor beide modi
         onClick={(e) => {
           e.preventDefault();
           if (typeof cancel === "function") {
@@ -98,7 +141,7 @@ return (
         Cancel
       </Button>
 
-      {/* BODY (Mooi aansluitend op het eerste invoerveld) */}
+      {/* BODY */}
       <Card.Body px={6} pb={4} pt={2}>
         <Stack gap={4} w="full">
           {/* Event Name */}
@@ -107,7 +150,14 @@ return (
               placeholder="Event name"
               value={formData.title}
               onChange={handleChange("title")}
+              borderColor={errors.title ? "red.500" : "gray.200"}
+              _focus={{ borderColor: errors.title ? "red.500" : "blue.500" }}
             />
+            {errors.title && (
+              <Text color="red.500" fontSize="xs" mt={1} fontWeight="medium">
+                {errors.title}
+              </Text>
+            )}
           </Box>
 
           {/* Categories checkboxes */}
@@ -147,25 +197,48 @@ return (
               placeholder="Location"
               value={formData.location}
               onChange={handleChange("location")}
+              borderColor={errors.location ? "red.500" : "gray.200"}
+              _focus={{ borderColor: errors.location ? "red.500" : "blue.500" }}
             />
+            {errors.location && (
+              <Text color="red.500" fontSize="xs" mt={1} fontWeight="medium">
+                {errors.location}
+              </Text>
+            )}
           </Box>
 
           {/* Startdate */}
           <Box>
+            <Text fontSize="xs" color="gray.400" mb={1}>Start Date & Time</Text>
             <Input
               type="datetime-local"
               value={formData.startTime}
               onChange={handleChange("startTime")}
+              borderColor={errors.startTime ? "red.500" : "gray.200"}
+              _focus={{ borderColor: errors.startTime ? "red.500" : "blue.500" }}
             />
+            {errors.startTime && (
+              <Text color="red.500" fontSize="xs" mt={1} fontWeight="medium">
+                {errors.startTime}
+              </Text>
+            )}
           </Box>
 
           {/* Enddate */}
           <Box>
+            <Text fontSize="xs" color="gray.400" mb={1}>End Date & Time</Text>
             <Input
               type="datetime-local"
               value={formData.endTime}
               onChange={handleChange("endTime")}
+              borderColor={errors.endTime ? "red.500" : "gray.200"}
+              _focus={{ borderColor: errors.endTime ? "red.500" : "blue.500" }}
             />
+            {errors.endTime && (
+              <Text color="red.500" fontSize="xs" mt={1} fontWeight="medium">
+                {errors.endTime}
+              </Text>
+            )}
           </Box>
 
           {/* Image preview + upload */}
@@ -209,7 +282,7 @@ return (
 
         <Button
           colorPalette="blue"
-          onClick={() => onSubmit({ ...formData, id: initialValues.id })}
+          onClick={handleValidateAndSubmit} // We roepen nu eerst de validatie aan!
         >
           {initialValues.id ? "Save" : "Create"}
         </Button>
