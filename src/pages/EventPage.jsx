@@ -296,7 +296,6 @@ export default function EventPage() {
               </Button>
             </Card.Footer>
 
-            {/* 1. EDIT MODAL */}
             <SimpleModal
               open={editOpen}
               onClose={() => setEditOpen(false)}
@@ -309,7 +308,7 @@ export default function EventPage() {
                   updateEvent(event.id, values);
                   setEditOpen(false);
                 }}
-                cancel={() => setEditOpen(false)} // MATCH FIX: Veranderd van onCancel naar cancel zodat je formulierknop werkt!
+                cancel={() => setEditOpen(false)}
                 onDelete={(incomingId) => {
                   setEditOpen(false);
                   setActiveDeleteId(incomingId); 
@@ -318,7 +317,6 @@ export default function EventPage() {
               />
             </SimpleModal>
 
-            {/* 2. DELETE MODAL */}
             <SimpleModal
               open={deleteOpen}
               onClose={() => setDeleteOpen(false)}

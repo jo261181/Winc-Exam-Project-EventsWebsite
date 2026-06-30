@@ -42,7 +42,6 @@ export default function EventForm({
     categoryIds: initialValues.categoryIds || [],
   });
 
-  // State om per veld een foutmelding bij te houden
   const [errors, setErrors] = useState({});
 
   const handleChange = (field) => (e) => {
@@ -50,7 +49,6 @@ export default function EventForm({
       ...prev,
       [field]: e.target.value,
     }));
-    // Wis de foutmelding zodra de gebruiker begint te typen
     if (errors[field]) {
       setErrors((prev) => ({ ...prev, [field]: null }));
     }
@@ -80,7 +78,6 @@ export default function EventForm({
     reader.readAsDataURL(file);
   };
 
-  // Validatiefunctie die wordt aangeroepen bij het indienen
   const handleValidateAndSubmit = () => {
     const newErrors = {};
 
@@ -97,7 +94,6 @@ export default function EventForm({
       newErrors.endTime = "End date and time are required.";
     }
 
-    // Extra logische check: eindtijd mag niet voor de starttijd liggen
     if (formData.startTime && formData.endTime) {
       const start = new Date(formData.startTime);
       const end = new Date(formData.endTime);
@@ -106,31 +102,28 @@ export default function EventForm({
       }
     }
 
-    // Als er fouten zijn gevonden, toon ze en stop het proces
     if (Object.keys(newErrors).length > 0) {
       setErrors(newErrors);
       return;
     }
 
-    // Geen fouten? Dan pas sturen we het door naar de parent component
     onSubmit({ ...formData, id: initialValues.id });
   };
 
 return (
     <Card.Root maxW="sm" mx="auto" p={0} variant="unstyled" boxShadow="none" position="relative">
       
-      {/* HANDMATIGE CANCEL KNOP (Werkt nu perfect in zowel Light als Dark mode) */}
       <Button
         type="button"
         size="sm"
         variant="outline"
         borderColor="gray.500"
-        color="fg" // FIX: Schakelt nu automatisch mee met de actieve modus (zwart in light, wit in dark)
+        color="fg" 
         position="absolute"
-        top="-48px"  
-        right="0px"   
-        zIndex="50"   
-        _hover={{ bg: "gray.100", _dark: { bg: "gray.700" } }} // Subtiele hover-kleur voor beide modi
+        top="-48px"
+        right="0px"
+        zIndex="50"
+        _hover={{ bg: "gray.100", _dark: { bg: "gray.700" } }}
         onClick={(e) => {
           e.preventDefault();
           if (typeof cancel === "function") {
@@ -141,10 +134,8 @@ return (
         Cancel
       </Button>
 
-      {/* BODY */}
       <Card.Body px={6} pb={4} pt={2}>
         <Stack gap={4} w="full">
-          {/* Event Name */}
           <Box>
             <Input
               placeholder="Event name"
@@ -160,7 +151,6 @@ return (
             )}
           </Box>
 
-          {/* Categories checkboxes */}
           <Box border="1px solid" borderColor="gray.200" p={3} borderRadius="md" _dark={{ borderColor: "gray.700" }}>
             <Text fontWeight="medium" mb={2} fontSize="sm" color="orange.500">
               Categories
@@ -182,7 +172,6 @@ return (
             </Stack>
           </Box>
 
-          {/* Description */}
           <Box>
             <Textarea
               placeholder="Description"
@@ -191,7 +180,6 @@ return (
             />
           </Box>
 
-          {/* Location */}
           <Box>
             <Input
               placeholder="Location"
@@ -207,7 +195,6 @@ return (
             )}
           </Box>
 
-          {/* Startdate */}
           <Box>
             <Text fontSize="xs" color="gray.400" mb={1}>Start Date & Time</Text>
             <Input
@@ -224,7 +211,6 @@ return (
             )}
           </Box>
 
-          {/* Enddate */}
           <Box>
             <Text fontSize="xs" color="gray.400" mb={1}>End Date & Time</Text>
             <Input
@@ -241,7 +227,6 @@ return (
             )}
           </Box>
 
-          {/* Image preview + upload */}
           <Box>
             {formData.image && (
               <Image
@@ -259,7 +244,6 @@ return (
         </Stack>
       </Card.Body>
 
-      {/* FOOTER */}
       <Card.Footer justifyContent="center" gap={6} pt={4} pb={6}>
         {initialValues.id && (
           <Button
@@ -282,7 +266,7 @@ return (
 
         <Button
           colorPalette="blue"
-          onClick={handleValidateAndSubmit} // We roepen nu eerst de validatie aan!
+          onClick={handleValidateAndSubmit}
         >
           {initialValues.id ? "Save" : "Create"}
         </Button>

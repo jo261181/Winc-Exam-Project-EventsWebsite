@@ -17,9 +17,7 @@ export default function EventCard({ event, categories, onEditClick }) {
       transition="0.2s"
       onClick={() => navigate(`/events/${event.id}`)}
     >
-      {/* HEADER */}
       <Card.Header p={6} w="100%">
-        {/* IMAGE */}
         <Image
           src={event.image}
           alt={event.title}
@@ -30,7 +28,6 @@ export default function EventCard({ event, categories, onEditClick }) {
           mb={4}
         />
 
-        {/* TITLE - Responsive centrering */}
         <Card.Title
           fontSize={{ base: "lg", md: "xl", lg: "2xl" }}
           fontWeight="bold"
@@ -40,7 +37,6 @@ export default function EventCard({ event, categories, onEditClick }) {
           {event.title}
         </Card.Title>
 
-        {/* DESCRIPTION - Responsive centrering */}
         <Card.Description
           fontSize={{ base: "sm", md: "md" }}
           lineHeight="1.3"
@@ -54,15 +50,12 @@ export default function EventCard({ event, categories, onEditClick }) {
         </Card.Description>
       </Card.Header>
 
-      {/* BODY */}
       <Card.Body px={6} pb={4}>
         <Stack gap={1} alignItems={{ base: "center", md: "flex-start" }}>
-          {/* LOCATION */}
           <Text fontWeight="medium" textAlign={{ base: "center", md: "left" }}>
             {event.location}
           </Text>
 
-          {/* DATE RANGE */}
           <Text textAlign={{ base: "center", md: "left" }}>
             {new Date(event.startTime).toLocaleString("nl-NL", {
               dateStyle: "medium",
@@ -76,7 +69,6 @@ export default function EventCard({ event, categories, onEditClick }) {
           </Text>
         </Stack>
 
-        {/* CATEGORY BADGES - Gecentreerd op mobiel */}
         <HStack mt={4} flexWrap="wrap" gap={2} justifyContent={{ base: "center", md: "flex-start" }}>
           {eventCategories.map((cat) => (
             <Badge
@@ -91,7 +83,6 @@ export default function EventCard({ event, categories, onEditClick }) {
         </HStack>
       </Card.Body>
 
-      {/* FOOTER - Actieknoppen gecentreerd op mobiel */}
       <Card.Footer gap={3} px={6} pb={6} justifyContent={{ base: "center", md: "flex-start" }}>
         <Button
           variant="surface"
@@ -111,7 +102,7 @@ export default function EventCard({ event, categories, onEditClick }) {
           borderColor="gray.500"
           onClick={(e) => {
             e.stopPropagation();
-            onEditClick(); // Roept de edit-handler aan op de EventsPage
+            onEditClick(); 
           }}
         >
           Edit

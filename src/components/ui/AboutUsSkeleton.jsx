@@ -8,7 +8,6 @@ export const AboutUsSkeleton = () => {
 
   return (
     <>
-      {/* Vaste achtergrondafbeelding (Exact gelijk aan live) */}
       <Box
         position="fixed"
         inset="0"
@@ -19,14 +18,12 @@ export const AboutUsSkeleton = () => {
         zIndex="-1"
       />
 
-      {/* Heading Skeleton die de rightContent knop simuleert */}
       <HeadingSkeleton
         rightContent={
           <Skeleton height="36px" width="120px" borderRadius="md" />
         }
       />
 
-      {/* Main Content Container (Exact dezelfde layout & glassmorphism) */}
       <Box
         maxW="900px"
         mx="auto"
@@ -41,7 +38,6 @@ export const AboutUsSkeleton = () => {
         borderColor={colorMode === "dark" ? "whiteAlpha.100" : "blackAlpha.100"}
       >
         <Stack gap={6}>
-          {/* TITEL SKELETON (About Us) */}
           <Skeleton 
             height="40px" 
             width="200px" 
@@ -49,16 +45,13 @@ export const AboutUsSkeleton = () => {
             borderRadius="md" 
           />
 
-          {/* INTRO TEKST SKELETON (3 regels) */}
           <Stack gap={2} maxW="750px" mx="auto" w="100%" mb={4}>
             <Skeleton height="18px" width="100%" borderRadius="sm" />
             <Skeleton height="18px" width="95%" borderRadius="sm" mx="auto" />
             <Skeleton height="18px" width="60%" borderRadius="sm" mx="auto" />
           </Stack>
 
-          {/* GRID LAYOUT SKELETON */}
           <SimpleGrid columns={{ base: 1, md: 2 }} gap={8} mt={2}>
-            {/* Links: Experience */}
             <Box>
               <Skeleton height="24px" width="150px" mb={3} borderRadius="sm" />
               <Stack gap={2}>
@@ -68,7 +61,6 @@ export const AboutUsSkeleton = () => {
               </Stack>
             </Box>
 
-            {/* Rechts: Mission */}
             <Box>
               <Skeleton height="24px" width="130px" mb={3} borderRadius="sm" />
               <Stack gap={2}>
@@ -79,7 +71,6 @@ export const AboutUsSkeleton = () => {
             </Box>
           </SimpleGrid>
 
-          {/* COMMUNITY BANNER SKELETON */}
           <Box 
             p={5} 
             borderRadius="lg" 

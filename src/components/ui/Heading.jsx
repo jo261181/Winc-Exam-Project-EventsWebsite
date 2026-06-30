@@ -67,7 +67,6 @@ export default function HeadingExample({
     if (searchEnabled) setSearchTerm("");
   };
 
-  // VERANDERING: Kolommen veranderd naar 1fr delen zodat het midden ook écht het absolute midden is
   const templateColumns = {
     base: "1fr",
     md: searchEnabled ? "1fr 2fr 1fr" : rightContent ? "1fr 1fr" : "1fr",
@@ -93,12 +92,11 @@ export default function HeadingExample({
         minH={{ base: "auto", md: "90px" }}
         justifyItems="center"
       >
-        {/* LOGO BOX */}
         <Box
           display="flex"
           alignItems="center"
-          justifyContent={{ base: "center", md: "flex-start" }} // Aangepast naar links uitlijnen op desktop voor betere balans
-          justifySelf="stretch" // Strekt uit om de 1fr kolom te vullen
+          justifyContent={{ base: "center", md: "flex-start" }}
+          justifySelf="stretch"
           height="100%"
           w="100%"
           ps={{ base: 0, md: 4, lg: 8 }}
@@ -110,16 +108,15 @@ export default function HeadingExample({
           />
         </Box>
 
-        {/* SEARCH INPUT + NO EVENT FOUND MELDING */}
         {searchEnabled && (
           <Box 
             width="100%" 
-            maxW={{ base: "100%", md: "500px", lg: "600px" }} // Iets verfijnde max breedte voor een strakkere look
+            maxW={{ base: "100%", md: "500px", lg: "600px" }}
             display="flex"
             flexDirection="column"
             alignItems="center"
             position="relative"
-            justifySelf="center" // Forceert de box exact in het midden van zijn grid-sectie
+            justifySelf="center"
           >
             <Input
               width="100%"
@@ -152,12 +149,11 @@ export default function HeadingExample({
           </Box>
         )}
 
-        {/* BUTTONS / RIGHT CONTENT */}
         {(rightContent || onCreate) && (
           <Box
             display="flex"
             justifyContent={{ base: "center", md: "flex-end" }}
-            justifySelf="stretch" // Strekt uit om de 1fr kolom te vullen
+            justifySelf="stretch"
             alignItems="center"
             w="100%"
             pe={{ base: 0, md: 4, lg: 8 }}
@@ -202,7 +198,6 @@ export default function HeadingExample({
         )}
       </Grid>
 
-      {/* CATEGORIES */}
       {categories.length > 0 && (
         <Box mt={{ base: 4, md: 1 }} mb={2}>
           <Box display="flex" gap={3} flexWrap="wrap" justifyContent="center">

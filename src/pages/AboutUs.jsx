@@ -10,7 +10,6 @@ export const AboutUs = () => {
 
   return (
     <>
-      {/* Vaste achtergrondafbeelding */}
       <Box
         position="fixed"
         inset="0"
@@ -38,7 +37,6 @@ export const AboutUs = () => {
         }
       />
 
-      {/* Main Content Container met Glassmorphism effect */}
       <Box
         maxW="900px"
         mx="auto"
@@ -77,7 +75,6 @@ export const AboutUs = () => {
             of bringing people together — sparking creativity, excitement, and genuine connection.
           </Text>
 
-          {/* Grid Layout voor extra visuele structuur */}
           <SimpleGrid columns={{ base: 1, md: 2 }} gap={8} mt={2}>
             <Box>
               <Heading fontSize="xl" mb={2} color="orange.500">

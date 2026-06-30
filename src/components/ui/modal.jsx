@@ -27,7 +27,6 @@ export default function SimpleModal({ open, onClose, title, children }) {
       p={4}
       overflowY="auto"
     >
-      {/* DONKERE BACKDROP OVERLAY */}
       <Box
         position="absolute"
         inset="0"
@@ -37,7 +36,6 @@ export default function SimpleModal({ open, onClose, title, children }) {
         position="fixed"
       />
 
-      {/* MODAL CONTENT CONTAINER */}
       <Box
         position="relative"
         maxW="450px"
@@ -50,9 +48,8 @@ export default function SimpleModal({ open, onClose, title, children }) {
         display="flex"
         flexDirection="column"
       >
-        {/* HEADER (Lijntje is hier nu volledig weggehaald) */}
         <Box 
-          pt={5} // Iets meer padding aan de bovenkant voor een mooie balans
+          pt={5}
           px={4}
           pb={1} 
           position="relative"
@@ -63,12 +60,10 @@ export default function SimpleModal({ open, onClose, title, children }) {
             <Box style={{ margin: "0 auto", fontWeight: "bold", fontSize: "1.2rem" }} pointerEvents="auto">
               {title}
             </Box>
-            {/* Ruimtehouder aan de rechterkant zodat de titel exact in het midden blijft staan */}
             <Box w="1px" /> 
           </HStack>
         </Box>
 
-        {/* BODY */}
         <Box p={4} position="relative" zIndex={2}>
           {children}
         </Box>

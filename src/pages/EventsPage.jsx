@@ -1,7 +1,6 @@
 import { Box, Text, SimpleGrid, HStack, Button } from "@chakra-ui/react";
 import { useState } from "react";
 import { useNavigate, useOutletContext } from "react-router-dom";
-
 import Footer from "../components/ui/Footer";
 import HeadingExample from "../components/ui/Heading";
 import SimpleModal from "../components/ui/modal";
@@ -27,9 +26,6 @@ export const EventsPage = () => {
   const categories = data?.categories || [];
   const eventsArray = data?.events || [];
 
-  // -----------------------------------------------------
-  // LOADING STATE
-  // -----------------------------------------------------
   if (!data) {
     return (
       <>
@@ -65,9 +61,6 @@ export const EventsPage = () => {
     );
   }
 
-  // -----------------------------------------------------
-  // CRUD HANDLERS
-  // -----------------------------------------------------
   async function handleCreate(values) {
     try {
       const newEvent = await createEvent(values);
@@ -114,7 +107,6 @@ export const EventsPage = () => {
     }
   }
 
-  // GEOPTIMALISEERDE DELETE DIE TIMING CRASHES VOORKOMT
   async function handleDeleteConfirm() {
     if (!editEvent?.id) return;
 
@@ -133,11 +125,9 @@ export const EventsPage = () => {
         duration: 3000,
       });
 
-      // 1. Sluit direct de visuele schermen af
       setDeleteOpen(false);
       setEditOpen(false);
 
-      // 2. Wacht heel even tot de animatie weg is voordat we de state op null zetten
       setTimeout(() => {
         setEditEvent(null);
       }, 300);
@@ -151,9 +141,6 @@ export const EventsPage = () => {
     }
   }
 
-  // -----------------------------------------------------
-  // FILTERING
-  // -----------------------------------------------------
   const filteredEvents = eventsArray.filter((evt) => {
     const search = searchTerm.toLowerCase();
 
@@ -183,9 +170,6 @@ export const EventsPage = () => {
     setEditOpen(true);
   };
 
-  // -----------------------------------------------------
-  // RENDER
-  // -----------------------------------------------------
   return (
     <>
       <HeadingExample
@@ -199,7 +183,6 @@ export const EventsPage = () => {
         noSticky
       />
 
-      {/* CREATE MODAL */}
       <SimpleModal
         open={createOpen}
         onClose={() => setCreateOpen(false)}
@@ -215,13 +198,11 @@ export const EventsPage = () => {
         />
       </SimpleModal>
 
-      {/* EDIT MODAL */}
       <SimpleModal
         open={editOpen}
         onClose={() => setEditOpen(false)}
         title="Edit event"
       >
-        {/* VEILIGHEIDSCHECK: Alleen renderen als editEvent niet null is */}
         {editEvent && (
           <EventForm
             key={editEvent.id}
@@ -239,7 +220,6 @@ export const EventsPage = () => {
         )}
       </SimpleModal>
 
-      {/* BEVESTIGINGSMODAL */}
       <SimpleModal
         open={deleteOpen}
         onClose={() => setDeleteOpen(false)}
@@ -264,7 +244,6 @@ export const EventsPage = () => {
         </Box>
       </SimpleModal>
 
-      {/* BACKGROUND */}
       <Box
         position="fixed"
         inset="0"
@@ -275,15 +254,14 @@ export const EventsPage = () => {
         zIndex="-1"
       />
 
-      {/* CONTENT */}
       <Box position="relative" zIndex="1" px={{ base: 4, md: 6 }} pb={6} mt={6}>
         <SimpleGrid 
           columns={[1, 2, 3, 4]} 
-          columnGap={6} 
+          columnGap={6}
           rowGap={6}
           justifyItems={{ base: "center", md: "stretch" }}
           maxW="1400px" 
-          mx="auto"             
+          mx="auto"
         >
           {filteredEvents.map((evt) => (
             <EventCard 

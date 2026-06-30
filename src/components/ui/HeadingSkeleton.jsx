@@ -38,7 +38,6 @@ export default function HeadingSkeleton({
           { id: 3, name: "relaxation" },
         ];
 
-  // MATCH FIX: Precies dezelfde gecentreerde verdeling (1fr 2fr 1fr) als de echte Heading
   const templateColumns = {
     base: "1fr",
     md: searchEnabled ? "1fr 2fr 1fr" : rightContent ? "1fr 1fr" : "1fr",
@@ -64,12 +63,11 @@ export default function HeadingSkeleton({
         minH={{ base: "auto", md: "90px" }}
         justifyItems="center"
       >
-        {/* LOGO BOX SKELETON */}
         <Box
           display="flex"
           alignItems="center"
-          justifyContent={{ base: "center", md: "flex-start" }} // MATCH FIX: Links uitlijnen op desktop
-          justifySelf="stretch" // MATCH FIX: Rekken over de 1fr kolom
+          justifyContent={{ base: "center", md: "flex-start" }}
+          justifySelf="stretch"
           height="100%"
           w="100%"
           ps={{ base: 0, md: 4, lg: 8 }}
@@ -84,10 +82,8 @@ export default function HeadingSkeleton({
           </Skeleton>
         </Box>
 
-        {/* SEARCH INPUT SKELETON */}
         {searchEnabled && (
           <Skeleton width="100%" maxW={{ base: "100%", md: "500px", lg: "600px" }} borderRadius="md" justifySelf="center">
-            {/* MATCH FIX: maxW veranderd naar 600px en justifySelf="center" toegevoegd voor het perfecte midden */}
             <Input
               width="100%"
               placeholder="Search events..."
@@ -97,12 +93,11 @@ export default function HeadingSkeleton({
           </Skeleton>
         )}
 
-        {/* BUTTONS / RIGHT CONTENT SKELETON */}
         {(rightContent || onCreate || true) && (
           <Box
             display="flex"
             justifyContent={{ base: "center", md: "flex-end" }}
-            justifySelf="stretch" // MATCH FIX: Rekken over de 1fr kolom
+            justifySelf="stretch"
             alignItems="center"
             w="100%"
             pe={{ base: 0, md: 4, lg: 8 }}
@@ -156,7 +151,6 @@ export default function HeadingSkeleton({
         )}
       </Grid>
 
-      {/* CATEGORIES SKELETON */}
       {skeletonCategories.length > 0 && (
         <Box mt={{ base: 4, md: 1 }} mb={2}>
           <Box display="flex" gap={3} flexWrap="wrap" justifyContent="center">
@@ -178,7 +172,6 @@ export default function HeadingSkeleton({
             ))}
           </Box>
 
-          {/* RESET FILTERS SKELETON */}
           <Box textAlign="center" mt={3} mb={3}>
             <Skeleton borderRadius="md" display="inline-block">
               <Button

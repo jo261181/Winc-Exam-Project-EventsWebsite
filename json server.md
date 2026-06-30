@@ -1,1 +1,0 @@
-json-server --watch events.json --port 3000

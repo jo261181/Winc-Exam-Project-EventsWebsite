@@ -10,8 +10,8 @@ export function ColorModeProvider(props) {
     <ThemeProvider 
       attribute="class" 
       disableTransitionOnChange 
-      defaultTheme="system" // <-- FIX 1: Vertelt next-themes dat de systeemvoorkeur de basis is
-      enableSystem={true}   // <-- FIX 2: Zorgt ervoor dat hij actief luistert naar de DevTools media query
+      defaultTheme="system"
+      enableSystem={true}
       {...props} 
     />
   )
@@ -57,7 +57,7 @@ export const ColorModeButton = React.forwardRef(function ColorModeButton(
         variant="ghost"
         aria-label="Toggle color mode"
         boxSize="42px"
-        ref={ref} // Netjes de ref doorsturen aangezien het een forwardRef is
+        ref={ref} 
         {...props}
       >
         <ColorModeIcon />
