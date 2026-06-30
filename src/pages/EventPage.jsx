@@ -194,7 +194,8 @@ export default function EventPage() {
               <Card.Description
                 fontSize={{ base: "md", md: "lg", lg: "xl" }}
                 textAlign={{ base: "center", md: "left" }}
-                color="gray.600"
+                color="gray.500"
+                fontWeight="bold"
               >
                 {event.description}
               </Card.Description>
