@@ -9,9 +9,9 @@ import {
   Image,
   HStack,
   Card,
-  Dialog, // We gebruiken nu direct de officiële Chakra v3 Dialog
 } from "@chakra-ui/react";
 
+import SimpleModal from "../components/ui/modal"; 
 import EventForm from "../components/ui/EventForm";
 import { toaster } from "../components/ui/toaster";
 import Footer from "../components/ui/Footer";
@@ -25,7 +25,6 @@ export default function EventPage() {
   const [editOpen, setEditOpen] = useState(false);
   const [deleteOpen, setDeleteOpen] = useState(false);
   
-  // Slaat het ID op dat verwijderd moet worden
   const [activeDeleteId, setActiveDeleteId] = useState(null);
 
   if (!data) {
@@ -122,21 +121,18 @@ export default function EventPage() {
         return;
       }
 
-      // 1. Lokale context direct bijwerken
       const updated = {
         ...data,
         events: data.events.filter((e) => e.id.toString() !== eventId.toString()),
       };
       setData(updated);
 
-      // 2. Toon de succes-toaster
       toaster.create({
         title: "Event deleted",
         description: "The event has been deleted.",
         type: "success",
       });
 
-      // 3. Sluit alles af en reset de state
       setDeleteOpen(false);
       setEditOpen(false);
       setActiveDeleteId(null);
@@ -298,43 +294,37 @@ export default function EventPage() {
                 Back
               </Button>
             </Card.Footer>
-          </Card.Root>
-        )}
 
-        {/* 1. OFFICILE CHAKRA EDIT DIALOG (Geen SimpleModal meer nodig) */}
-        <Dialog.Root open={editOpen} onOpenChange={(e) => setEditOpen(e.open)}>
-          <Dialog.Content>
-            <Dialog.Body>
-              {event && (
-                <EventForm
-                  initialValues={event}
-                  allCategories={categories}
-                  onSubmit={(values) => {
-                    updateEvent(event.id, values);
-                    setEditOpen(false);
-                  }}
-                  onCancel={() => setEditOpen(false)}
-                  onDelete={(incomingId) => {
-                    setActiveDeleteId(incomingId); 
-                    setDeleteOpen(true); // Schiet direct de losstaande bevestigingspop-up in
-                  }}
-                />
-              )}
-            </Dialog.Body>
-          </Dialog.Content>
-        </Dialog.Root>
+            {/* 1. EDIT MODAL */}
+            <SimpleModal
+              open={editOpen}
+              onClose={() => setEditOpen(false)}
+              title="Edit event"
+            >
+              <EventForm
+                initialValues={event}
+                allCategories={categories}
+                onSubmit={(values) => {
+                  updateEvent(event.id, values);
+                  setEditOpen(false);
+                }}
+                cancel={() => setEditOpen(false)} // MATCH FIX: Veranderd van onCancel naar cancel zodat je formulierknop werkt!
+                onDelete={(incomingId) => {
+                  setEditOpen(false);
+                  setActiveDeleteId(incomingId); 
+                  setDeleteOpen(true);
+                }}
+              />
+            </SimpleModal>
 
-        {/* 2. OFFICILE CHAKRA BEVESTIGINGS DIALOG (Losstaand, garandeert 100% zichtbaarheid) */}
-        <Dialog.Root open={deleteOpen} onOpenChange={(e) => setDeleteOpen(e.open)}>
-          <Dialog.Content>
-            <Dialog.Header>
-              <Dialog.Title fontWeight="bold">Delete event</Dialog.Title>
-            </Dialog.Header>
-            <Dialog.Body>
+            {/* 2. DELETE MODAL */}
+            <SimpleModal
+              open={deleteOpen}
+              onClose={() => setDeleteOpen(false)}
+              title="Delete event"
+            >
               <Text>Are you sure you want to delete this event?</Text>
-            </Dialog.Body>
-            <Dialog.Footer mt={4}>
-              <HStack gap={3}>
+              <HStack mt={4} gap={3} justify="flex-end">
                 <Button 
                   colorPalette="red" 
                   bg="red.500" 
@@ -348,10 +338,10 @@ export default function EventPage() {
                   Cancel
                 </Button>
               </HStack>
-            </Dialog.Footer>
-          </Dialog.Content>
-        </Dialog.Root>
+            </SimpleModal>
 
+          </Card.Root>
+        )}
       </Box>
 
       <Footer />
