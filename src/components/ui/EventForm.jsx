@@ -16,7 +16,7 @@ export default function EventForm({
   initialValues = {},
   allCategories = [],
   onSubmit,
-  onCancel,
+  cancel, // Vangt de sluit-prop op uit EventsPage
   onDelete,
 }) {
   function toLocalInputValue(dateString) {
@@ -73,15 +73,33 @@ export default function EventForm({
     reader.readAsDataURL(file);
   };
 
-  return (
-    <Card.Root maxW="sm" mx="auto" p={0} variant="unstyled" boxShadow="none">
-      {/* HEADER */}
-      <Card.Header p={6} fontWeight="bold" fontSize="lg">
-        {initialValues.id ? "Edit Event" : "Create Event"}
-      </Card.Header>
+return (
+    <Card.Root maxW="sm" mx="auto" p={0} variant="unstyled" boxShadow="none" position="relative">
+      
+      {/* PERFECT UITGELIJND MET DE MODAL TITEL 'EDIT EVENT' */}
+      <Button
+        type="button"
+        size="sm"
+        variant="outline"
+        borderColor="gray.500"
+        color="white"
+        position="absolute"
+        top="-48px"  // Schuift de knop exact naar de hoogte van de 'Edit event' titel
+        right="0px"   // Strak uitgelijnd aan de rechterkant van de modal box
+        zIndex="50"   // Zorgt dat hij gegarandeerd bovenop alle lagen ligt
+        _hover={{ bg: "gray.700" }}
+        onClick={(e) => {
+          e.preventDefault();
+          if (typeof cancel === "function") {
+            cancel(); 
+          }
+        }}
+      >
+        Cancel
+      </Button>
 
-      {/* BODY */}
-      <Card.Body px={6} pb={4}>
+      {/* BODY (Mooi aansluitend op het eerste invoerveld) */}
+      <Card.Body px={6} pb={4} pt={2}>
         <Stack gap={4} w="full">
           {/* Event Name */}
           <Box>
@@ -181,7 +199,6 @@ export default function EventForm({
               e.preventDefault();
               e.stopPropagation();
               if (typeof onDelete === "function") {
-                // FIX: Geef nu het ID expliciet mee aan de parent functie!
                 onDelete(initialValues.id);
               }
             }}

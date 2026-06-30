@@ -9,7 +9,7 @@ export default function SimpleModal({ open, onClose, title, children }) {
           <Dialog.Content maxW="450px" w="100%">
             <Dialog.Header>
               <HStack justify="space-between" align="center" w="100%">
-                <Button
+                {/* <Button
                   variant="surface"
                   
                   size="sm"
@@ -24,7 +24,7 @@ export default function SimpleModal({ open, onClose, title, children }) {
                  
                 >
                  Back
-                </Button>
+                </Button> */}
 
                 <Dialog.Title style={{ margin: "0 auto" }}>
                   {title}

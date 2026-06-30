@@ -20,7 +20,7 @@ export const EventsPage = () => {
   const [selectedCategories, setSelectedCategories] = useState([]);
   const [createOpen, setCreateOpen] = useState(false);
   const [editOpen, setEditOpen] = useState(false);
-  const [deleteOpen, setDeleteOpen] = useState(false); // STATE VOOR BEVESTIGINGSMODAL
+  const [deleteOpen, setDeleteOpen] = useState(false); 
   const [editEvent, setEditEvent] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
 
@@ -114,7 +114,7 @@ export const EventsPage = () => {
     }
   }
 
-  // GECORRIGEERDE DELETE ACTIE DIE PAS DOOR DE PROMPT WORDT AFGEVUURD
+  // GEOPTIMALISEERDE DELETE DIE TIMING CRASHES VOORKOMT
   async function handleDeleteConfirm() {
     if (!editEvent?.id) return;
 
@@ -126,7 +126,6 @@ export const EventsPage = () => {
         events: data.events.filter((evt) => evt.id !== editEvent.id),
       });
 
-      // TOASTER TOEVOEGEN BIJ SUCCES
       toaster.create({
         title: "Event deleted",
         description: "The event has been deleted successfully.",
@@ -134,10 +133,15 @@ export const EventsPage = () => {
         duration: 3000,
       });
 
-      // SLUIT ALLE OPENSTAANDE SCHERMEN
+      // 1. Sluit direct de visuele schermen af
       setDeleteOpen(false);
       setEditOpen(false);
-      setEditEvent(null);
+
+      // 2. Wacht heel even tot de animatie weg is voordat we de state op null zetten
+      setTimeout(() => {
+        setEditEvent(null);
+      }, 300);
+
     } catch (error) {
       toaster.create({
         title: "Something went wrong",
@@ -217,23 +221,25 @@ export const EventsPage = () => {
         onClose={() => setEditOpen(false)}
         title="Edit event"
       >
-        <EventForm
-          key={editEvent?.id}
-          initialValues={editEvent}
-          onSubmit={(values) => {
-            handleUpdate(values);
-            setEditOpen(false);
-          }}
-          // VERANDERING: In plaats van direct wissen, openen we nu de vraag pop-up
-          onDelete={() => {
-            setDeleteOpen(true);
-          }}
-          cancel={() => setEditOpen(false)}
-          allCategories={categories}
-        />
+        {/* VEILIGHEIDSCHECK: Alleen renderen als editEvent niet null is */}
+        {editEvent && (
+          <EventForm
+            key={editEvent.id}
+            initialValues={editEvent}
+            onSubmit={(values) => {
+              handleUpdate(values);
+              setEditOpen(false);
+            }}
+            onDelete={() => {
+              setDeleteOpen(true);
+            }}
+            cancel={() => setEditOpen(false)}
+            allCategories={categories}
+          />
+        )}
       </SimpleModal>
 
-      {/* NIEUWE BEVESTIGINGSMODAL DIE GESTACKT WORDT BOVENOP HET FORMULIER */}
+      {/* BEVESTIGINGSMODAL */}
       <SimpleModal
         open={deleteOpen}
         onClose={() => setDeleteOpen(false)}
